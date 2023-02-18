@@ -1,0 +1,10 @@
+.build
+.mbed
+projectfiles
+mbed-os
+BUILD
+
+# Python
+.env
+__pycache__/
+
