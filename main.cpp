@@ -26,8 +26,8 @@ int main() {
   Can c;
   DUT d(c);
   while (true) {
-      unsigned int test = 0x69;
-      c.send((char*)&test, sizeof(test));
-      ThisThread::sleep_for(1s);
+    char data[8] = "hello!";
+    c.send(0x69, data, sizeof(data));
+    ThisThread::sleep_for(1s);
   }
 }

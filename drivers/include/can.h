@@ -25,6 +25,7 @@ public:
   class device {
   private:
     Can &_c;
+
   public:
     device(Can &c) : _c(c) { _c.add(this); }
 
@@ -34,14 +35,14 @@ public:
     */
     virtual int callback(CANMessage &msg) = 0;
   };
-  
+
   Can();
   void add(device *d) { devices.push_back(d); }
   void interrupt();
   void canThread();
   int init();
   int read(CANMessage &msg);
-  int send(char* data, int len);
+  int send(unsigned int id, char *data, int len);
 
 private:
   CAN canBus;
