@@ -1,4 +1,3 @@
-#include "ThisThread.h"
 #include "can.h"
 #include "mbed.h"
 

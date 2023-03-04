@@ -28,7 +28,7 @@ then
 
   UNAME=$(uname)
   ARCH=$(arch)
-  if [ ! -d $ROOT_DIR/.env/$FILE ]
+  if [ ! -d $PYTHON_ENV/$FILE ]
   then
     if [ "$UNAME" == "Darwin" ]
     then
@@ -45,9 +45,9 @@ then
       oops "uHHHHHhhhhHHh..."
     fi
     curl -LO https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/$FILE$TYPE.tar.bz2
-    tar xf $ROOT_DIR/$FILE$TYPE.tar.bz2 -C $ROOT_DIR/.env
+    tar xf $ROOT_DIR/$FILE$TYPE.tar.bz2 -C $PYTHON_ENV
     rm -f $ROOT_DIR/$FILE$TYPE.tar.bz2
-    ln -sf $ROOT_DIR/.env/$FILE/bin/* $ROOT_DIR/.env/bin
+    ln -sf $PYTHON_ENV/$FILE/bin/* $PYTHON_ENV/bin
   fi
 else
   oops "uHHHHHhhhhHHh..."
