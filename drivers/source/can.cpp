@@ -44,7 +44,7 @@ int Can::read(CANMessage &msg) {
   return 0;
 }
 
-int Can::send(unsigned int id, char *data, int len) {
+int Can::send(unsigned int id, char *data, unsigned int len) {
   CANMessage msg;
   if (init() < 0 || len > sizeof(msg.data))
     return -1;

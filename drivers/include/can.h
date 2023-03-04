@@ -42,7 +42,7 @@ public:
   void canThread();
   int init();
   int read(CANMessage &msg);
-  int send(unsigned int id, char *data, int len);
+  int send(unsigned int id, char *data, unsigned int len);
 
 private:
   CAN canBus;

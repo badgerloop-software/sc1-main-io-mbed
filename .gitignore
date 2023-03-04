@@ -1,7 +1,7 @@
 .build
 .mbed
+.env
 projectfiles
 *.py*
 mbed-os
 BUILD
-
