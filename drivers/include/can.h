@@ -37,6 +37,7 @@ public:
   };
 
   Can();
+  ~Can();
   void add(device *d) { devices.push_back(d); }
   void interrupt();
   void canThread();

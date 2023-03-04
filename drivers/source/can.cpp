@@ -2,6 +2,12 @@
 
 Can::Can() : canBus(CAN_RD, CAN_TD), isInit(false), t(osPriorityHigh) {}
 
+Can::~Can() {
+  isInit = 0;
+  eventFlags.set(CAN_STOP);
+  t.join();
+}
+
 void Can::interrupt() { eventFlags.set(CAN_RX_INT_FLAG); }
 
 void Can::canThread() {
@@ -9,6 +15,8 @@ void Can::canThread() {
   while (isInit) {
     if (canBus.tderror() || canBus.rderror()) {
       isInit = 0;
+      eventFlags.set(CAN_STOP);
+      t.join();
       init();
     }
     eventFlags.wait_any(CAN_RX_INT_FLAG | CAN_STOP);
@@ -25,8 +33,6 @@ void Can::canThread() {
 int Can::init() {
   if (isInit)
     return 1;
-  eventFlags.set(CAN_STOP);
-  t.join();
 
   canBus.reset();
   canBus.attach(callback(this, &Can::interrupt), CAN::RxIrq);
