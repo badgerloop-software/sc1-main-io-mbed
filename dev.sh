@@ -15,15 +15,20 @@ oops() {
 if [ "$1" == "build" ]
 then
   source $PYTHON_ENV/bin/activate
-  mbed compile -m NUCLEO_F767ZI -t gcc_arm
+  OUT=$ROOT_DIR/cmake_build/NUCLEO_F767ZI/develop/GCC_ARM
+  mbed-tools configure -m NUCLEO_F767ZI -t gcc_arm
+  cmake -S . -B $OUT -GNinja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+  cmake --build $OUT
+  ln -sf $OUT/compile_commands.json $ROOT_DIR
   deactivate
 elif [ "$1" == "setup" ]
 then
   python3 -m venv $PYTHON_ENV
   source $PYTHON_ENV/bin/activate
-  pip install mbed-cli
-  mbed deploy
+  pip install mbed-tools
+  mbed-tools deploy
   pip install -r mbed-os/requirements.txt
+  pip install ninja
   deactivate
 
   UNAME=$(uname)

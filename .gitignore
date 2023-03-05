@@ -1,7 +1,5 @@
-.build
-.mbed
+.mbedbuild
 .env
-projectfiles
-*.py*
+cmake_build
+compile_commands.json
 mbed-os
-BUILD

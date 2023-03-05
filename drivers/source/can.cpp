@@ -1,5 +1,4 @@
 #include "can.h"
-#include "greentea-client/test_env.h"
 
 Can::Can() : canBus(CAN_RD, CAN_TD), isInit(false), t(osPriorityHigh) {}
 
