@@ -2,7 +2,6 @@
 #include "mbed.h"
 
 // main() runs in its own thread in the OS
-#if !MBED_TEST_MODE
 int main() {
   class DUT : Can::device {
   public:
@@ -31,4 +30,3 @@ int main() {
     ThisThread::sleep_for(1s);
   }
 }
-#endif
