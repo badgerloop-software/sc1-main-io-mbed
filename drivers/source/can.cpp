@@ -1,4 +1,5 @@
 #include "can.h"
+#include "greentea-client/test_env.h"
 
 Can::Can() : canBus(CAN_RD, CAN_TD), isInit(false), t(osPriorityHigh) {}
 
@@ -46,7 +47,11 @@ int Can::init() {
 
 int Can::read(CANMessage &msg) {
   LockGuard l(mu);
+#if !MBED_TEST_MODE
   canBus.read(msg);
+#else
+  greentea_parse_kv((char*)msg.data, (char*)&msg.id, sizeof(msg.data), sizeof(msg.id));
+#endif
   return 0;
 }
 
@@ -57,6 +62,16 @@ int Can::send(unsigned int id, char *data, unsigned int len) {
   LockGuard l(mu);
   msg.id = id;
   memcpy(msg.data, data, len);
-  return canBus.write(msg) == 1; // returns 1 on success
-                                 // we return 0 on success
+#if !MBED_TEST_MODE
+  return canBus.write(msg) == 1;
+#else
+  char* d = (char*)malloc(sizeof(msg.data)+1);
+  memcpy(d, msg.data, sizeof(msg.data));
+  d[sizeof(msg.data)] = '\0';
+  char* i = (char*)malloc(sizeof(msg.data)+1);
+  memcpy(i, (char*)&msg.id, sizeof(msg.id));
+  i[sizeof(msg.id)] = '\0';
+  greentea_send_kv(d, i);
+#endif
+  return 0;
 }

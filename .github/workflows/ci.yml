@@ -1,0 +1,13 @@
+name: Main-IO CI
+
+on: push
+
+jobs:
+  WubbaLubbaDubDub:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup
+      run: ./dev.sh setup
+    - name: Build
+      run: ./dev.sh build
