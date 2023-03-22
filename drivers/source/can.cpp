@@ -15,8 +15,6 @@ void Can::canThread() {
   while (isInit) {
     if (canBus.tderror() || canBus.rderror()) {
       isInit = 0;
-      eventFlags.set(CAN_STOP);
-      t.join();
       init();
     }
     eventFlags.wait_any(CAN_RX_INT_FLAG | CAN_STOP);
@@ -35,6 +33,7 @@ int Can::init() {
     return 1;
 
   canBus.reset();
+  wait_us(1000);
   canBus.attach(callback(this, &Can::interrupt), CAN::RxIrq);
   if (canBus.frequency(CAN_FREQ) != 1 ||
       t.start(callback(this, &Can::canThread)) != osOK)
