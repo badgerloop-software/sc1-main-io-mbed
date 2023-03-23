@@ -1,6 +1,12 @@
 #include "can.h"
 
-Can::Can() : canBus(CAN_RD, CAN_TD), isInit(false), t(osPriorityHigh) {}
+Can::Can(CAN* canBus) : t(osPriorityHigh) {
+    this->canBus = canBus;
+    this->isInit = true;
+
+    canBus->frequency(CAN_FREQ);
+    t.start(callback(this, &Can::canThread));
+}
 
 Can::~Can() {
   isInit = 0;
@@ -11,13 +17,15 @@ Can::~Can() {
 void Can::interrupt() { eventFlags.set(CAN_RX_INT_FLAG); }
 
 void Can::canThread() {
+  printf("in thread\n");
   CANMessage msg;
   while (isInit) {
-    if (canBus.tderror() || canBus.rderror()) {
-      isInit = 0;
-      init();
+    if (canBus->tderror() || canBus->rderror()) {
+        reset();
     }
+    
     eventFlags.wait_any(CAN_RX_INT_FLAG | CAN_STOP);
+    printf("Here\n");
     CANMessage msg;
     if (read(msg) < 0)
       break;
@@ -25,36 +33,23 @@ void Can::canThread() {
       if (!d->callback(msg))
         break;
   }
-  isInit = 0;
+
 }
 
-int Can::init() {
-  if (isInit)
-    return 1;
-
-  canBus.reset();
-  wait_us(1000);
-  canBus.attach(callback(this, &Can::interrupt), CAN::RxIrq);
-  if (canBus.frequency(CAN_FREQ) != 1 ||
-      t.start(callback(this, &Can::canThread)) != osOK)
-    return -1;
-  isInit = 1;
-
-  return 0;
+void Can::reset() {
+    canBus->reset();
+    wait_us(1000);
+    canBus->attach(callback(this, &Can::interrupt), CAN::RxIrq);
 }
 
 int Can::read(CANMessage &msg) {
-  LockGuard l(mu);
-  canBus.read(msg);
+  canBus->read(msg);
   return 0;
 }
 
 int Can::send(unsigned int id, char *data, unsigned int len) {
-  CANMessage msg;
-  if (init() < 0 || len > sizeof(msg.data))
+  if (len > 8)
     return -1;
-  LockGuard l(mu);
-  msg.id = id;
-  memcpy(msg.data, data, len);
-  return canBus.write(msg) == 1;
+  CANMessage msg(id, data, len);
+  return !(canBus->write(msg));
 }
