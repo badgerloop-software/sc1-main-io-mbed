@@ -1,6 +1,6 @@
 #ifndef __lsm6dsl__h__
 #define __lsm6dsl__h__
-#include "i2c.h"
+#include "mbed.h"
 #include "stdint.h"
 
 //#define g_full_scale 0x0
@@ -9,7 +9,7 @@
 #define RESET 0x01
 #define DEVID 0x6A
 
-#define CRTL3_C 0x12
+#define RESET 0x12
 #define WHO_AM_I 0x0F
 
 #define CTRL1_XL 0x10  // 4 and 5 are two bits for XL full scale selection
@@ -31,8 +31,13 @@
 #define POWER_MODE_XL 0x01
 
 class lsm6dsl {
+ private:
+ I2C* i2cBus;
+ int address;
+
  public:
-  lsm6dsl(int bus, int addr);
+  lsm6dsl(I2C* bus, int addr);
+  int begin();
   double getXLX();
   double getXLY();
   double getXLZ();
