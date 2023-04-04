@@ -1,6 +1,9 @@
-.mbedbuild
-.env
-cmake_build
-compile_commands.json
+.build
+.mbed
+projectfiles
 mbed-os
 BUILD
+
+# Python
+.env
+__pycache__/
