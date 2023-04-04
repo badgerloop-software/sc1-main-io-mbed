@@ -20,22 +20,20 @@ class TCA6416 {
  private:
   I2C* i2cBus;
   int address;
-
+  uint8_t read_from_reg(uint8_t reg); // Helper
+  void write_data(uint8_t reg, uint8_t val);
 
  public:
 
+  /// Address is either 0x20 or 0x21
   TCA6416(I2C*  bus, int addr);
-  int write(char buf[], int length);
-  int read(uint8_t commandByte);
-  uint8_t read_from_reg(uint8_t reg); // Helper
-  void write_data(uint8_t reg, uint8_t val);
   int clear_settings();
-  int begin(const uint8_t directions[]);
+  /// First 8 for pins 0-7 bank 0, second 8 for bank 1
+  int begin(const uint8_t directions[16]);
   int set_dir(bool bank, int pin, uint8_t dir);
   int get_dir(bool bank, int pin);
   int get_state(bool bank, int pin);
   int set_state(bool bank, int pin, uint8_t val);
-  
 };
 
 #endif
