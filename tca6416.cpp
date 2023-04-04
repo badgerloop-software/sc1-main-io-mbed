@@ -1,9 +1,6 @@
 #include "tca6416.h"
 #include "i2cutil.h"
 
-//#define write_data(reg, val) writeI2CWrapper(this->i2cBus, this->address, reg, {val}, 1);
-//#define read_from_reg(reg) readI2CWrapper(this->i2cBus, this->address, reg, char buffer[], int numBytes); DEPRECATED USE FUNCTION
-
 TCA6416::TCA6416(I2C *bus, int addr){
     this->address = addr << 1;
     this->i2cBus = bus;
@@ -58,10 +55,13 @@ int TCA6416::clear_settings(){
 
 int TCA6416::set_state(bool bank, int pin, uint8_t val) {
     if (pin >= TCA_NUM_PINS_PER_BANK || pin < 0) return -1;
+
     uint8_t dirReg = bank ? TCA_CFG1_REG : TCA_CFG0_REG;
     uint8_t stateReg = bank ? TCA_OUT1_REG : TCA_OUT0_REG;
+
     uint8_t current_dir = this->read_from_reg(dirReg);
     if ((current_dir >> pin) & 0x1) return -1;
+
     uint8_t current_status = this->read_from_reg(stateReg);
     if (val)
         write_data(stateReg, current_status | (1 << pin));
@@ -69,7 +69,6 @@ int TCA6416::set_state(bool bank, int pin, uint8_t val) {
         write_data(stateReg, current_status & ~(1 << pin));
 
     return 0;
-
 }
 
 int TCA6416::get_state(bool bank, int pin) {
