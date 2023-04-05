@@ -9,7 +9,7 @@
 #define RESET 0x01
 #define DEVID 0x6A
 
-#define RESET 0x12
+#define SOFTWARE_RESET 0x12 // need to change this
 #define WHO_AM_I 0x0F
 
 #define CTRL1_XL 0x10  // 4 and 5 are two bits for XL full scale selection
@@ -34,6 +34,8 @@ class lsm6dsl {
  private:
  I2C* i2cBus;
  int address;
+ uint8_t rangeXL;
+ uint8_t rangeG;
 
  public:
   lsm6dsl(I2C* bus, int addr);
@@ -49,6 +51,7 @@ class lsm6dsl {
   int setPowerModeG(uint8_t select);
   int setRangeXL(uint8_t select);
   int setRangeG(uint8_t select);
+  int16_t twos_complement (int16_t twos_complement_val, int full_scale_selection);
 };
 
 #endif

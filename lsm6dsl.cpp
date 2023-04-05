@@ -14,7 +14,7 @@ lsm6dsl :: lsm6dsl(I2C*bus, int addr) {
 // verifies that device is correct, resets device, sets range and power settings
 int lsm6dsl :: begin() {
     char data[1] = {1};
-    if(writeI2CWrapper(i2cBus, address, RESET, data, 1)) {
+    if(writeI2CWrapper(i2cBus, address, SOFTWARE_RESET, data, 1)) {
         return -1;
     }
     char buf[1];
