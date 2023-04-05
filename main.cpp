@@ -1,6 +1,5 @@
 #include "mbed.h"
 #include "uartApp.h"
-
 #include "i2cutil.h"
 #include "tca6416.h"
 
