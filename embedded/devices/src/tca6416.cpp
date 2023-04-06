@@ -1,21 +1,20 @@
 #include "tca6416.h"
-#include "i2cutil.h"
 
-TCA6416::TCA6416(I2C *bus, int addr){
-    this->address = addr << 1;
-    this->i2cBus = bus;
+
+TCA6416::TCA6416(I2C *bus, uint8_t addr) : I2CDevice(bus, addr) {
+
 }
 
 uint8_t TCA6416::read_from_reg(uint8_t reg){
     static char dat[16];
-    readI2CWrapper(this->i2cBus, this->address, reg, dat, 1);
+    readI2CWrapper(reg, dat, 1);
     return dat[0];
 }
 
 void TCA6416::write_data(uint8_t reg, uint8_t val){
     static char dat[1];
     dat[0] = val;
-    writeI2CWrapper(this->i2cBus, this->address, reg, dat, 1);
+    writeI2CWrapper(reg, dat, 1);
 }
 
 int TCA6416::begin(const uint8_t directions[]){
@@ -45,11 +44,14 @@ int TCA6416::begin(const uint8_t directions[]){
 }
 
 int TCA6416::clear_settings(){
+    char dat[1] = {0xFF};
+
     //Clears settings to initial states
     write_data(TCA_CFG0_REG, 0xFF);
     write_data(TCA_CFG1_REG, 0xFF);
     write_data(TCA_OUT0_REG, 0xFF);
     write_data(TCA_OUT1_REG, 0xFF);
+
     return 0;
 }
 
