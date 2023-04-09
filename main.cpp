@@ -9,10 +9,13 @@ I2C i2cBus(PF_0, PF_1);
 
 int main(void){
 
-    if(runUart()) {
-        printf("UART application is not running\n");
+	if(!runUart()) {
+        printf("the UART application is running\n");
+    } else {
+        printf("NOT RUNNING\n");
         exit(1);
-    } 
+    }
+
     
 
     Can c(&canBus);
