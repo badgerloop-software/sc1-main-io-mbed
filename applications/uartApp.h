@@ -185,6 +185,7 @@ typedef struct {
   bool discharge_enable;
 } data_format;
 
+
 float get_speed();
 void set_speed(float val);
 

@@ -54,7 +54,7 @@ int readUartTimeout(void *buffer, unsigned int maxNbBytes, unsigned int timeOut_
         NVIC_DisableIRQ(USART1_IRQn);
         // check if there's enough bytes in the buffer to read
         if(rxBuff.size() >= maxNbBytes) {
-            readUart(buffer, maxNbBytes); // call the other read function to read.
+            NbByteRead = readUart(buffer, maxNbBytes); // call the other read function to read.
             NVIC_EnableIRQ(USART1_IRQn); 
             return NbByteRead;
         }
