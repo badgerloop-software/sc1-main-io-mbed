@@ -34,8 +34,16 @@ int main(void){
         printf("Internal Temp:%f\n", bms.getInternalTemperature());
         printf("Fan Speed: %d\n", bms.getFanSpeed());
         wait_us(3000000);
+        // modify the byte array and put printouts here
+
+        // this has to be set to 1 for the UART app to not get stuck at the fault screen. 
+        // it will probably change in the future once software updates the
+        // checkRestartEnable() method in DataUnpacker.cpp 
+        set_door(1); 
     }
     
     printf("Hello, Mbed!\n");
     return 0;
 }
+
+
