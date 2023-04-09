@@ -6,6 +6,7 @@
 * Authors: Khiem Vu and Jonathan Wang
 */
 int MCC::callback(CANMessage &msg) {
+  printf("callback entered\n");
   switch (msg.id) {
   case 0x200:
     curRPM = *((float*) msg.data);

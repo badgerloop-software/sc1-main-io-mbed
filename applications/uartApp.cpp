@@ -16,6 +16,8 @@ data_format dfwrite;
 data_format dfdata;
 data_format emptyStruct;
 
+Mutex uart_buffer;
+
 bool restart_enable;
 
 void clearDataFormatRead() { dfdata = emptyStruct; }
@@ -720,7 +722,7 @@ void set_power_tc(bool val) {
 
 uint16_t get_tstamp_ms() {
   tstamp_ms_mutex.lock();
-  uint16 val = dfdata.tstamp_ms;
+  uint16_t val = dfdata.tstamp_ms;
   tstamp_ms_mutex.unlock();
   return val;
 }
@@ -732,7 +734,7 @@ void set_tstamp_ms(uint16_t val) {
 
 uint8_t get_tstamp_sc() {
   tstamp_sc_mutex.lock();
-  uint8 val = dfdata.tstamp_sc;
+  uint8_t val = dfdata.tstamp_sc;
   tstamp_sc_mutex.unlock();
   return val;
 }
@@ -744,7 +746,7 @@ void set_tstamp_sc(uint8_t val) {
 
 uint8_t get_tstamp_mn() {
   tstamp_mn_mutex.lock();
-  uint8 val = dfdata.tstamp_mn;
+  uint8_t val = dfdata.tstamp_mn;
   tstamp_mn_mutex.unlock();
   return val;
 }
@@ -756,7 +758,7 @@ void set_tstamp_mn(uint8_t val) {
 
 uint8_t get_tstamp_hr() {
   tstamp_hr_mutex.lock();
-  uint8 val = dfdata.tstamp_hr;
+  uint8_t val = dfdata.tstamp_hr;
   tstamp_hr_mutex.unlock();
   return val;
 }
@@ -1356,7 +1358,7 @@ void set_bps_fault(bool val) {
 
 uint8_t get_fan_speed() {
   fan_speed_mutex.lock();
-  uint8 val = dfdata.fan_speed;
+  uint8_t val = dfdata.fan_speed;
   fan_speed_mutex.unlock();
   return val;
 }

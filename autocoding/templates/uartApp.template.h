@@ -1,11 +1,11 @@
-#include "mbed.h"
-#include "uart.h"
+// #include "mbed.h"
+// #include "uart.h"
 
-#define numCommandBytes 1
-/*!!AUTO-GENERATE HERE!!*/
+// #define numCommandBytes 1
+// /*!!AUTO-GENERATE HERE!!*/
 
-bool get_restart_enable();
+// bool get_restart_enable();
 
-void cleardfdata();
+// void cleardfdata();
 
-int runUart();
+// int runUart();
