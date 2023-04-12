@@ -2,6 +2,7 @@
 #define __MCC_H__
 
 #include "can.h"
+#include "uartApp.h"
 #include "mbed.h"
 #include "stdio.h"
 

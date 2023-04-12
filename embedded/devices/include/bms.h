@@ -1,6 +1,8 @@
 #ifndef __BMS_H__
 #define __BMS_H__
+
 #include "can.h"
+#include "uartApp.h"
 #include "stdio.h"
 #include "mbed.h"
 #include <cstdint>
@@ -16,7 +18,6 @@ private:
   float packStateOfCharge;
   float packCurrent;
   float packVoltage;
-  float maxPackVoltage;
   float packAmpHours;
   bool failsafeStatuses;
   float DTC1;
@@ -39,7 +40,6 @@ public:
   float getPackStateOfCharge();
   float getPackCurrent();
   float getPackVoltage();
-  float getMaxPackVoltage();
   float getPackAmpHours();
   bool getFailsafeStatuses();
   float getDTC1();

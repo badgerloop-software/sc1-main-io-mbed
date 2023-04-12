@@ -2,6 +2,7 @@
 #define __MPPT_H__
 #include "can.h"
 #include "stdio.h"
+#include "uartApp.h"
 #include "mbed.h"
 
 /**

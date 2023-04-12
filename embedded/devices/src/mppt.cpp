@@ -9,6 +9,7 @@
 int MPPT::callback(CANMessage &msg) {
 	if (msg.id == msgIdMaxCurrent) {
     maxCurrent = *((float *)msg.data);
+    set_mppt_current_out(maxCurrent);
   }
 
   return 0;
