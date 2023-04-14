@@ -18,19 +18,18 @@ private:
   float packStateOfCharge;
   float packCurrent;
   float packVoltage;
-  float packAmpHours;
+  uint8_t packAmpHours;
   bool failsafeStatuses;
-  float DTC1;
-  float DTC2;
+  bool DTC1;
+  bool DTC2;
   float packHealth;
   float powerInputVoltage;
   float avgTemperature;
   float internalTemperature;
   uint8_t fanSpeed;
   float packResistance;
-  float avgCellInternalResistance;
   float adaptiveTotalCapacity;
-  float populatedCells;
+  uint16_t populatedCells;
 
 public:
   BMS(Can &c) : device(c) {}
@@ -40,19 +39,18 @@ public:
   float getPackStateOfCharge();
   float getPackCurrent();
   float getPackVoltage();
-  float getPackAmpHours();
+  uint8_t getPackAmpHours();
   bool getFailsafeStatuses();
-  float getDTC1();
-  float getDTC2();
+  bool getDTC1();
+  bool getDTC2();
   float getPackHealth();
   float getPowerInputVoltage();
   float getAvgTemperature();
   float getInternalTemperature();
   uint8_t getFanSpeed();
   float getPackResistance();
-  float getAvgCellInternalResistance();
   float getAdaptiveTotalCapacity();
-  float getPopulatedCells();
+  uint16_t getPopulatedCells();
 };
 
 #endif
