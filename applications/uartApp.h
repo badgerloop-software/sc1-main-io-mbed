@@ -5,8 +5,11 @@
 
 
         
+#ifndef __uartApp__h__
+#define __uartApp__h__
+
 #include "mbed.h"
-#include "uart.h"
+//#include "uart.h"
 #pragma pack(push, 1)
 
 #define TOTAL_BYTES 407
@@ -706,3 +709,6 @@ bool get_restart_enable();
 void cleardfdata();
 
 int runUart();
+
+#pragma pack(pop)
+#endif
