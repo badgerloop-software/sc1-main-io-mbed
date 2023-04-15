@@ -16,15 +16,15 @@ int BMS::callback(CANMessage &msg) {
   case 0x101:
     // packCurrent = (float) (*((int*) msg.data) & (0x3 << 6));
     // packVoltage = (float) (*((int*) msg.data) & (0x3 << 4));
-    packCurrent = (msg.data[0] | msg.data[1] << 8) * 10.0; // default unit: 0.1 A
-    packVoltage = (msg.data[2] | msg.data[3] << 8) * 10.0; // default unit: 0.1 V
+    packCurrent = (msg.data[0] | msg.data[1] << 8) / 10.0; // default unit: 0.1 A
+    packVoltage = (msg.data[2] | msg.data[3] << 8) / 10.0; // default unit: 0.1 V
     set_pack_current(packCurrent);
     set_pack_voltage(packVoltage);
     break;
 
   case 0x102:
     // packAmpHours = (float) (*((int*) msg.data) & (0x3 << 6));
-    packAmpHours = (msg.data[0] | msg.data[1] << 8) * 10.0; // default unit: 0.1 Ahr
+    packAmpHours = (msg.data[0] | msg.data[1] << 8) / 10.0; // default unit: 0.1 Ahr
     set_tstamp_hr(packAmpHours);
     break;
 
@@ -74,7 +74,7 @@ int BMS::callback(CANMessage &msg) {
 
 //   case TODO: commented out only because case # not chosen
 //     powerInputVoltage = (float) (*((int*) msg.data) & (0x1 << 7));
-    // powerInputVoltage = msg.data[0] * 10.0; // default unit: 0.1v
+    // powerInputVoltage = msg.data[0] / 10.0; // default unit: 0.1v
     // set_bms_input_voltage(powerInputVoltage);
     // break;
 
@@ -92,13 +92,13 @@ int BMS::callback(CANMessage &msg) {
 
   case 0x105:
     // packResistance = (float) (*((int*) msg.data) & (0x3 << 6));
-    packResistance = (msg.data[0] | msg.data[1] << 8) * 1000; // default unit: 1 mOhm
+    packResistance = (msg.data[0] | msg.data[1] << 8) / 1000; // default unit: 1 mOhm
     set_pack_resistance(packResistance);
     break;
 
   case 0x106:
     // adaptiveTotalCapacity = (float) (*((int*) msg.data) & (0x3 << 6));
-    adaptiveTotalCapacity = (msg.data[0] | msg.data[1] << 8) * 10.0; // default unit: 0.1 Amp-hours
+    adaptiveTotalCapacity = (msg.data[0] | msg.data[1] << 8) / 10.0; // default unit: 0.1 Amp-hours
     set_adaptive_total_capacity(adaptiveTotalCapacity);
     break;
 

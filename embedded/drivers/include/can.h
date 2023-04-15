@@ -1,3 +1,6 @@
+#ifndef __can__h__
+#define __can__h__
+
 #include "mbed.h"
 #include <vector>
 
@@ -53,3 +56,5 @@ private:
   Thread t;
   vector<device *> devices;
 };
+
+#endif

@@ -3,7 +3,8 @@
          * This is an auto-generated file which is automatically generated whenever the target is built
          */
 
-
+#ifndef __uartApp__h__
+#define __uartApp__h__
         
 #include "mbed.h"
 #include "uart.h"
@@ -184,7 +185,6 @@ typedef struct {
   bool charge_enable;
   bool discharge_enable;
 } data_format;
-
 
 float get_speed();
 void set_speed(float val);
@@ -706,3 +706,6 @@ bool get_restart_enable();
 void cleardfdata();
 
 int runUart();
+
+#pragma pack(pop)
+#endif

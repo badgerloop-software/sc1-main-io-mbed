@@ -1,6 +1,8 @@
 #include "mbed.h"
 #include "uartApp.h"
 #include "mcc.h"
+#include "mppt.h"
+#include "bms.h"
 
 CAN canBus(PD_0, PD_1);
 
@@ -14,14 +16,23 @@ int main()
     canBus.frequency(20000);
     Can c(&canBus);
     
-    MCC d(c);
+    MCC mcc(c);
+    MPPT mppt(c);
+    BMS bms(c);
+
+    int id = 0x200;
+    char data[8] = {1, 1, 1, 1, 1, 1, 1, 1};
+    CANMessage msg = CANMessage(id, data);
+    mppt.callback(msg);
+    mcc.callback(msg);
 
     for (;;) {
         //printf("\e[1;1H\e[2J");
-        printf("%f\n", d.getCurAcc());
-        printf("%f\n", d.getCurBrk());
-        printf("%i\n", d.getCurGPIO());
-        printf("%f\n", d.getCurRPM());
+        // printf("%f\n", mppt.getMaxCurrent());
+        printf("%f\n", mcc.getCurRPM());
+        printf("%hu\n", mcc.getCurGPIO());
+        printf("%f\n", mcc.getCurAcc());
+        printf("%f\n", mcc.getCurBrk());
         printf("\n");
         wait_us(3000000);
     }
