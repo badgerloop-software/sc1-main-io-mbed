@@ -29,11 +29,7 @@ public:
 
   Can(CAN* canBus);
   ~Can();
-  void add(device *d) { 
-      this->devices.push_back(d); 
-      printf("Device added\n");
-      printf("%d\n", devices.size());
-    }
+  void add(device *d) { this->devices.push_back(d); }
   void interrupt();
   void canThread();
   void reset();

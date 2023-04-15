@@ -25,14 +25,10 @@ void Can::canThread() {
     }
 
     eventFlags.wait_any(CAN_RX_INT_FLAG | CAN_STOP);
-    printf("Got it!\n");
     CANMessage msg;
     if (read(msg) < 0)
       break;
-    printf("Sending out\n");
-    printf("%d\n", this->devices.size());
     for (auto d : this->devices) {
-        printf("Calling device\n");
         if (!d->callback(msg))
             break;
     }

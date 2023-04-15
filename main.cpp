@@ -17,27 +17,13 @@ int main()
     BMS bms(c);
     MCC mcc(c);
     MPPT mppt(c);
-    
 
-    // int id = 0x200;
-    // char data[8] = {1, 1, 1, 1, 1, 1, 1, 1};
-    // CANMessage msg = CANMessage(id, data);
-    // mppt.callback(msg);
-    // mcc.callback(msg);
-
-    // for (;;) {
-    //     //printf("\e[1;1H\e[2J");
-    //     // printf("%f\n", mppt.getMaxCurrent());
-    //     printf("%f\n", mcc.getCurRPM());
-    //     printf("%hu\n", mcc.getCurGPIO());
-    //     printf("%f\n", mcc.getCurAcc());
-    //     printf("%f\n", mcc.getCurBrk());
-    //     printf("\n");
-    // BMS bms(c);
 
     for (;;) {
         //printf("\e[1;1H\e[2J");
-        printf("BMS Voltage: %f\n", bms.getPackStateOfCharge());
+        printf("Charge: %f\n", bms.getPackStateOfCharge());
+        printf("Voltage: %f\n", bms.getPackVoltage());
+        printf("Current: %f\n", bms.getPackCurrent());
         wait_us(3000000);
     }
     

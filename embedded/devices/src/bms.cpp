@@ -6,26 +6,20 @@
 * Authors: Khiem Vu and Jonathan Wang
 */
 int BMS::callback(CANMessage &msg) {
-    printf("Processing %x\n", msg.id);
   switch (msg.id) {
   case 0x100:
-    printf("Got it\n");
-    // packStateOfCharge = (float) (*((int*) msg.data) & (0x1 << 7));
-    packStateOfCharge = (float)(msg.data[1] | msg.data[0] << 8) / 10;
-    //set_soc(packStateOfCharge);
+    packStateOfCharge = (float)msg.data[0] / 2;
+    set_soc(packStateOfCharge);
     break;
 
   case 0x101:
-    // packCurrent = (float) (*((int*) msg.data) & (0x3 << 6));
-    // packVoltage = (float) (*((int*) msg.data) & (0x3 << 4));
-    packCurrent = (msg.data[0] | msg.data[1] << 8) / 10.0; // default unit: 0.1 A
-    packVoltage = (msg.data[2] | msg.data[3] << 8) / 10.0; // default unit: 0.1 V
+    packCurrent = (msg.data[1] | msg.data[0] << 8) / 10.0; // default unit: 0.1 A
+    packVoltage = (msg.data[3] | msg.data[2] << 8) / 10.0; // default unit: 0.1 V
     set_pack_current(packCurrent);
     set_pack_voltage(packVoltage);
     break;
 
   case 0x102:
-    // packAmpHours = (float) (*((int*) msg.data) & (0x3 << 6));
     packAmpHours = (msg.data[0] | msg.data[1] << 8) / 10.0; // default unit: 0.1 Ahr
     set_tstamp_hr(packAmpHours);
     break;
@@ -69,7 +63,6 @@ int BMS::callback(CANMessage &msg) {
     // break;
 
   case 0x103:
-    // packHealth = (float) (*((int*) msg.data) & (0x1 << 7));
     packHealth = msg.data[0];
     set_soh(packHealth);
     break;
@@ -81,9 +74,6 @@ int BMS::callback(CANMessage &msg) {
     // break;
 
   case 0x104:
-    // avgTemperature = (float) (*((int*) msg.data) & (0x1 << 7));
-    // internalTemperature = (float) (*((int*) msg.data) & (0x1 << 6));
-    // fanSpeed = (uint8_t) (*((int*) msg.data) & (0x1 << 5));
     avgTemperature = msg.data[0]; // default unit: 1 C
     internalTemperature = msg.data[1]; // default unit: 1 C
     fanSpeed = msg.data[2]; // default units: 0-6 speed
@@ -93,19 +83,16 @@ int BMS::callback(CANMessage &msg) {
     break;
 
   case 0x105:
-    // packResistance = (float) (*((int*) msg.data) & (0x3 << 6));
     packResistance = (msg.data[0] | msg.data[1] << 8) / 1000; // default unit: 1 mOhm
     set_pack_resistance(packResistance);
     break;
 
   case 0x106:
-    // adaptiveTotalCapacity = (float) (*((int*) msg.data) & (0x3 << 6));
     adaptiveTotalCapacity = (msg.data[0] | msg.data[1] << 8) / 10.0; // default unit: 0.1 Amp-hours
     set_adaptive_total_capacity(adaptiveTotalCapacity);
     break;
 
   case 0x107:
-    // populatedCells = (float) (*((int*) msg.data) & (0x1 << 7));
     populatedCells = msg.data[0];
     set_populated_cells(populatedCells);
     break;
