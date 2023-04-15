@@ -14,10 +14,10 @@ int main()
     //     exit(1);
     // } 
     Can c(&canBus);
-    
+    BMS bms(c);
     MCC mcc(c);
     MPPT mppt(c);
-    BMS bms(c);
+    
 
     // int id = 0x200;
     // char data[8] = {1, 1, 1, 1, 1, 1, 1, 1};

@@ -30,7 +30,7 @@ public:
   Can(CAN* canBus);
   ~Can();
   void add(device *d) { 
-      devices.push_back(d); 
+      this->devices.push_back(d); 
       printf("Device added\n");
       printf("%d\n", devices.size());
     }

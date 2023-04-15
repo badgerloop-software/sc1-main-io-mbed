@@ -111,6 +111,7 @@ int BMS::callback(CANMessage &msg) {
     break;
 
   default:
+    return 1;
     break;
     
   }
