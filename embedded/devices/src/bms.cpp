@@ -6,11 +6,13 @@
 * Authors: Khiem Vu and Jonathan Wang
 */
 int BMS::callback(CANMessage &msg) {
+    printf("Processing %x\n", msg.id);
   switch (msg.id) {
   case 0x100:
+    printf("Got it\n");
     // packStateOfCharge = (float) (*((int*) msg.data) & (0x1 << 7));
-    packStateOfCharge = msg.data[0];
-    set_soc(packStateOfCharge);
+    packStateOfCharge = (float)(msg.data[1] | msg.data[0] << 8) / 10;
+    //set_soc(packStateOfCharge);
     break;
 
   case 0x101:

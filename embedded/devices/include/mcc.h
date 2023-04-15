@@ -19,7 +19,7 @@ private:
   float curBrk;
 
 public:
-  MCC(Can &c) : device(c) {}
+  MCC(Can& c) : device(c) {}
 
   int callback(CANMessage &msg);
 

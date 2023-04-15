@@ -8,21 +8,8 @@
 #define CAN_TD (PD_1)
 #define CAN_RX_INT_FLAG (1UL << 0)
 #define CAN_STOP (1UL << 1)
-#define CAN_FREQ (115200)
+#define CAN_FREQ (125000)
 
-
-// Locks a mutex when constructed, unlocks when out of scope
-// https://os.mbed.com/docs/mbed-os/v6.5/feature-i2c-doxy/_lock_guard_8h_source.html#l00028
-class LockGuard {
-  Mutex &_mutex;
-  // make non-copyable
-  LockGuard(const LockGuard &) = delete;
-  LockGuard &operator=(const LockGuard &) = delete;
-
-public:
-  LockGuard(Mutex &mutex) : _mutex(mutex) { _mutex.lock(); }
-  ~LockGuard() { _mutex.unlock(); }
-};
 
 class Can {
 public:
@@ -42,7 +29,11 @@ public:
 
   Can(CAN* canBus);
   ~Can();
-  void add(device *d) { devices.push_back(d); }
+  void add(device *d) { 
+      devices.push_back(d); 
+      printf("Device added\n");
+      printf("%d\n", devices.size());
+    }
   void interrupt();
   void canThread();
   void reset();

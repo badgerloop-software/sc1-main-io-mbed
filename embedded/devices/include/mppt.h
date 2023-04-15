@@ -15,7 +15,7 @@ private:
   float maxCurrent;
 
 public:
-  MPPT(Can &c) : device(c) {}
+  MPPT(Can& c) : device(c) {}
 
   int callback(CANMessage &msg);
 

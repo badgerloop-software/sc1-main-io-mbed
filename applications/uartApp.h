@@ -1,4 +1,3 @@
-
         /*
          * This is an auto-generated file which is automatically generated whenever the target is built
          */
@@ -708,4 +707,5 @@ void cleardfdata();
 int runUart();
 
 #pragma pack(pop)
+
 #endif

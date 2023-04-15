@@ -13,27 +13,31 @@ int main()
     //     printf("UART application is not running\n");
     //     exit(1);
     // } 
-    canBus.frequency(20000);
     Can c(&canBus);
     
     MCC mcc(c);
     MPPT mppt(c);
     BMS bms(c);
 
-    int id = 0x200;
-    char data[8] = {1, 1, 1, 1, 1, 1, 1, 1};
-    CANMessage msg = CANMessage(id, data);
-    mppt.callback(msg);
-    mcc.callback(msg);
+    // int id = 0x200;
+    // char data[8] = {1, 1, 1, 1, 1, 1, 1, 1};
+    // CANMessage msg = CANMessage(id, data);
+    // mppt.callback(msg);
+    // mcc.callback(msg);
+
+    // for (;;) {
+    //     //printf("\e[1;1H\e[2J");
+    //     // printf("%f\n", mppt.getMaxCurrent());
+    //     printf("%f\n", mcc.getCurRPM());
+    //     printf("%hu\n", mcc.getCurGPIO());
+    //     printf("%f\n", mcc.getCurAcc());
+    //     printf("%f\n", mcc.getCurBrk());
+    //     printf("\n");
+    // BMS bms(c);
 
     for (;;) {
         //printf("\e[1;1H\e[2J");
-        // printf("%f\n", mppt.getMaxCurrent());
-        printf("%f\n", mcc.getCurRPM());
-        printf("%hu\n", mcc.getCurGPIO());
-        printf("%f\n", mcc.getCurAcc());
-        printf("%f\n", mcc.getCurBrk());
-        printf("\n");
+        printf("BMS Voltage: %f\n", bms.getPackStateOfCharge());
         wait_us(3000000);
     }
     

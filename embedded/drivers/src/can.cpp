@@ -5,6 +5,7 @@ Can::Can(CAN* canBus) : t(osPriorityHigh) {
     this->isInit = true;
 
     canBus->frequency(CAN_FREQ);
+    canBus->attach(callback(this, &Can::interrupt), CAN::RxIrq);
     t.start(callback(this, &Can::canThread));
 }
 
@@ -17,21 +18,25 @@ Can::~Can() {
 void Can::interrupt() { eventFlags.set(CAN_RX_INT_FLAG); }
 
 void Can::canThread() {
-  printf("in thread\n");
   CANMessage msg;
   while (isInit) {
     if (canBus->tderror() || canBus->rderror()) {
         reset();
     }
-    
+
     eventFlags.wait_any(CAN_RX_INT_FLAG | CAN_STOP);
-    printf("Here\n");
+    printf("Got it!\n");
     CANMessage msg;
     if (read(msg) < 0)
       break;
-    for (auto d : devices)
-      if (!d->callback(msg))
-        break;
+    printf("Sending out\n");
+    printf("%d\n", this->devices.size());
+    for (auto d : this->devices) {
+        printf("Calling device\n");
+        if (!d->callback(msg))
+            break;
+    }
+      
   }
 
 }
@@ -40,6 +45,7 @@ void Can::reset() {
     canBus->reset();
     wait_us(1000);
     canBus->attach(callback(this, &Can::interrupt), CAN::RxIrq);
+    canBus->frequency(CAN_FREQ);
 }
 
 int Can::read(CANMessage &msg) {
