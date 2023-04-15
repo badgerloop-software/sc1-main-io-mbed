@@ -83,7 +83,7 @@ int BMS::callback(CANMessage &msg) {
     break;
 
   case 0x105:
-    packResistance = (msg.data[0] | msg.data[1] << 8) / 1000; // default unit: 1 mOhm
+    packResistance = (float)(msg.data[0] | msg.data[1] << 8) / 1000; // default unit: 1 mOhm
     set_pack_resistance(packResistance);
     break;
 
