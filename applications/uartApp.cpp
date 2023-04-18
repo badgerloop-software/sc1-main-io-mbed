@@ -10,12 +10,14 @@
 #include "rtos.h"
 #include "uartApp.h"
 #define NUM_COMMAND_BYTES 1
-#define T_MESSAGE_US 1000000  // 1 second right now (should be around 1/15 of a second)
-#define HEARTBEAT 2         // error state if this # messages that aren't read
+#define T_MESSAGE_US \
+  1000000            // 1 second right now (should be around 1/15 of a second)
+#define HEARTBEAT 2  // error state if this # messages that aren't read
 
 Thread thread1;
 Thread thread2;
 Mutex uart_buffer;
+Mutex dfwrite_mutex;
 
 data_format dfwrite;
 data_format dfdata;
@@ -43,13 +45,16 @@ void read_command_thread() {
   int messages_not_received =
       0;  // number of consecutive messages DriverIO fails to send
   bool restart_enable_error = 0;  // check if restart_enable has been 1
+  int i = 0;
   while (true) {
     uart_buffer.lock();
     restart_enable = 0;
     // set mcu_hv_en to 0 (error state) if HEARTBEAT consecutive messages aren't
     // read
     if (readUart(&restart_enable, NUM_COMMAND_BYTES) == 0) {
-      if (++messages_not_received == HEARTBEAT) {
+      printf("message not received\n");
+      if (++messages_not_received >= HEARTBEAT) {
+        printf("message not received\n");
         set_mcu_hv_en(0);
       }
     } else {  // a message was read
@@ -63,6 +68,14 @@ void read_command_thread() {
         set_mcu_hv_en(1);
         restart_enable_error = false;
       }
+      // print statement (delete if not needed)
+      if (get_restart_enable()) {
+          printf("restart enable signal received and is 1\n");
+      }
+      if (!get_mcu_hv_en()) {
+          printf("mcu_hv_en is 0\n");
+      }
+      printf("loop %i======================================\n", i++);
     }
     uart_buffer.unlock();
     wait_us(T_MESSAGE_US);
@@ -175,6 +188,12 @@ Mutex mppt_current_out_mutex;
 Mutex string1_temp_mutex;
 Mutex string2_temp_mutex;
 Mutex string3_temp_mutex;
+Mutex string1_V_in_mutex;
+Mutex string2_V_in_mutex;
+Mutex string3_V_in_mutex;
+Mutex string1_I_in_mutex;
+Mutex string2_I_in_mutex;
+Mutex string3_I_in_mutex;
 Mutex pack_temp_mutex;
 Mutex pack_internal_temp_mutex;
 Mutex pack_current_mutex;
@@ -263,6 +282,7 @@ void copyDataStructToWriteStruct() {
   float i = get_pack_current();
   set_pack_power(i*v);
 
+  dfwrite_mutex.lock();
   dfwrite.speed = get_speed();
   dfwrite.driver_eStop = get_driver_eStop();
   dfwrite.external_eStop = get_external_eStop();
@@ -353,6 +373,12 @@ void copyDataStructToWriteStruct() {
   dfwrite.string1_temp = get_string1_temp();
   dfwrite.string2_temp = get_string2_temp();
   dfwrite.string3_temp = get_string3_temp();
+  dfwrite.string1_V_in = get_string1_V_in();
+  dfwrite.string2_V_in = get_string2_V_in();
+  dfwrite.string3_V_in = get_string3_V_in();
+  dfwrite.string1_I_in = get_string1_I_in();
+  dfwrite.string2_I_in = get_string2_I_in();
+  dfwrite.string3_I_in = get_string3_I_in();
   dfwrite.pack_temp = get_pack_temp();
   dfwrite.pack_internal_temp = get_pack_internal_temp();
   dfwrite.pack_current = get_pack_current();
@@ -434,6 +460,7 @@ void copyDataStructToWriteStruct() {
   dfwrite.bms_input_voltage = get_bms_input_voltage();
   dfwrite.charge_enable = get_charge_enable();
   dfwrite.discharge_enable = get_discharge_enable();
+  dfwrite_mutex.unlock();
 }
 
 float get_speed() {
@@ -1514,6 +1541,78 @@ void set_string3_temp(float val) {
   string3_temp_mutex.lock();
   dfdata.string3_temp = val;
   string3_temp_mutex.unlock();
+}
+
+float get_string1_V_in() {
+  string1_V_in_mutex.lock();
+  float val = dfdata.string1_V_in;
+  string1_V_in_mutex.unlock();
+  return val;
+}
+void set_string1_V_in(float val) {
+  string1_V_in_mutex.lock();
+  dfdata.string1_V_in = val;
+  string1_V_in_mutex.unlock();
+}
+
+float get_string2_V_in() {
+  string2_V_in_mutex.lock();
+  float val = dfdata.string2_V_in;
+  string2_V_in_mutex.unlock();
+  return val;
+}
+void set_string2_V_in(float val) {
+  string2_V_in_mutex.lock();
+  dfdata.string2_V_in = val;
+  string2_V_in_mutex.unlock();
+}
+
+float get_string3_V_in() {
+  string3_V_in_mutex.lock();
+  float val = dfdata.string3_V_in;
+  string3_V_in_mutex.unlock();
+  return val;
+}
+void set_string3_V_in(float val) {
+  string3_V_in_mutex.lock();
+  dfdata.string3_V_in = val;
+  string3_V_in_mutex.unlock();
+}
+
+float get_string1_I_in() {
+  string1_I_in_mutex.lock();
+  float val = dfdata.string1_I_in;
+  string1_I_in_mutex.unlock();
+  return val;
+}
+void set_string1_I_in(float val) {
+  string1_I_in_mutex.lock();
+  dfdata.string1_I_in = val;
+  string1_I_in_mutex.unlock();
+}
+
+float get_string2_I_in() {
+  string2_I_in_mutex.lock();
+  float val = dfdata.string2_I_in;
+  string2_I_in_mutex.unlock();
+  return val;
+}
+void set_string2_I_in(float val) {
+  string2_I_in_mutex.lock();
+  dfdata.string2_I_in = val;
+  string2_I_in_mutex.unlock();
+}
+
+float get_string3_I_in() {
+  string3_I_in_mutex.lock();
+  float val = dfdata.string3_I_in;
+  string3_I_in_mutex.unlock();
+  return val;
+}
+void set_string3_I_in(float val) {
+  string3_I_in_mutex.lock();
+  dfdata.string3_I_in = val;
+  string3_I_in_mutex.unlock();
 }
 
 float get_pack_temp() {
