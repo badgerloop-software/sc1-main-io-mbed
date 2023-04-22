@@ -1,14 +1,27 @@
 #include "bms.h"
+#include "Callback.h"
+
+#define BMS_BANK 1
+#define MPI_1 2
+#define MPI_2 3
+#define MPO_2 4
+#define BMS_CHRG_EN 5
+#define BMS_DSCHRG_EN 6
+
 
 /**
  * BMS CAN device
  *
  * Authors: Khiem Vu and Jonathan Wang
  */
+BMS::BMS(Can &c, TCA6416* tca, std::chrono::milliseconds gpio_update_interval) : device(c) {
+    this->tca = tca;
+    readGPIO.attach(mbed::callback(this, &BMS::updateGPIO), gpio_update_interval);
+}
+
 int BMS::callback(CANMessage &msg) {
   switch (msg.id) {
   case 0x100:
-
     failsafeStatuses = (msg.data[0] | msg.data[1] << 8);
     set_voltage_failsafe(failsafeStatuses & 0x01);
     set_current_failsafe(failsafeStatuses & 0x02);
@@ -43,10 +56,9 @@ int BMS::callback(CANMessage &msg) {
     set_high_voltage_isolation_fault(DTC1 & 0x2000);
     set_input_power_supply_fault(DTC1 & 0x4000);
     set_charge_limit_enforcement_fault(DTC1 & 0x8000);
-
     break;
 
-  case 0x101: {
+  case 0x101:
     packCurrent =
         (msg.data[1] | msg.data[0] << 8) / 10.0; // default unit: 0.1 A
     packVoltage =
@@ -60,8 +72,8 @@ int BMS::callback(CANMessage &msg) {
     packHealth = msg.data[5];
     set_soh(packHealth);
     break;
-  }
-  case 0x102: {
+  
+  case 0x102: 
     packAmpHours =
         (msg.data[0] | msg.data[1] << 8) / 10.0; // default unit: 0.1 Ahr
     set_tstamp_hr(packAmpHours);
@@ -73,9 +85,8 @@ int BMS::callback(CANMessage &msg) {
         (msg.data[3] | msg.data[4] << 8) / 10.0; // default unit: 0.1v
     set_bms_input_voltage(powerInputVoltage);
     break;
-  }
-
-  case 0x103: {
+  
+  case 0x103: 
     avgTemperature = msg.data[0];      // default unit: 1 C
     internalTemperature = msg.data[1]; // default unit: 1 C
     fanSpeed = msg.data[2];            // default units: 0-6 speed
@@ -83,9 +94,8 @@ int BMS::callback(CANMessage &msg) {
     set_pack_internal_temp(internalTemperature);
     set_fan_speed(fanSpeed);
     break;
-  }
-
-  case 0x104: {
+  
+  case 0x104: 
     packResistance =
         (float)(msg.data[0] | msg.data[1] << 8) / 1000; // default unit: 1 mOhm
     set_pack_resistance(packResistance);
@@ -96,22 +106,27 @@ int BMS::callback(CANMessage &msg) {
         (msg.data[4] | msg.data[5] << 8) / 10.0; // default unit: 0.1 Amp-hours
     set_adaptive_total_capacity(adaptiveTotalCapacity);
     break;
-  }
-
-  case 0x500: {
+  
+  case 0x500: 
     canID = (int)msg.data[0];
-    batteryVoltage[31];
     batteryVoltage[canID] = (msg.data[5] | msg.data[6] << 8);
     break;
-  }
-
-  default: {
+  
+  default: 
     return 1;
-    break;
-  }
   }
 
   return 0;
+}
+
+void BMS::updateGPIO() {
+    mpi_1 = tca->get_state(BMS_BANK, MPI_1);
+    mpi_2 = tca->get_state(BMS_BANK, MPI_2);
+    mpo_2 = tca->get_state(BMS_BANK, MPO_2);
+    chrg_en = tca->get_state(BMS_BANK, BMS_CHRG_EN);
+    set_charge_enable(chrg_en);
+    dschrg_en = tca->get_state(BMS_BANK, BMS_DSCHRG_EN);
+    set_charge_enable(dschrg_en);
 }
 
 float BMS::getPackStateOfCharge() { return packStateOfCharge; }

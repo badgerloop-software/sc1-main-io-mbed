@@ -25,6 +25,7 @@ class TCA6416 : public I2CDevice {
   TCA6416(I2C* bus, uint8_t addr);
   int clear_settings();
   /// First 8 for pins 0-7 bank 0, second 8 for bank 1
+  //  1 input, 0 output
   int begin(const uint8_t directions[16]);
   int set_dir(bool bank, int pin, uint8_t dir);
   int get_dir(bool bank, int pin);

@@ -6,6 +6,8 @@
 #include "stdio.h"
 #include "mbed.h"
 #include <cstdint>
+#include "tca6416.h"
+#include <chrono>
 
 /**
 * BMS CAN device
@@ -14,7 +16,7 @@
 */
 class BMS : Can::device {
 private:
-  // if not in format.json, assumed to be float type
+  // CAN signals, if not in format.json, assumed to be float type
   float packStateOfCharge;
   float packCurrent;
   float packVoltage;
@@ -33,10 +35,20 @@ private:
   int canID;
   float batteryVoltage[31];
 
+  // GPIO Signals
+  TCA6416* tca;
+  LowPowerTicker readGPIO;
+  bool mpi_1;
+  bool mpi_2;
+  bool mpo_2;
+  bool chrg_en;
+  bool dschrg_en;
+
 public:
-  BMS(Can &c) : device(c) {}
+  BMS(Can &c, TCA6416* tca, std::chrono::milliseconds gpio_update_interval);
 
   int callback(CANMessage &msg);
+  void updateGPIO();
 
   float getPackStateOfCharge();
   float getPackCurrent();

@@ -1,13 +1,11 @@
 #include "mbed.h"
 #include "uartApp.h"
-#include "mcc.h"
-#include "mppt.h"
 #include "bms.h"
-
-CAN canBus(PD_0, PD_1);
-
 #include "i2cdevice.h"
 #include "tca6416.h"
+
+CAN canBus(PD_0, PD_1);
+I2C i2cBus(PF_0, PF_1);
 
 int main(void){
 
@@ -18,10 +16,11 @@ int main(void){
     
 
     Can c(&canBus);
-    BMS bms(c);
-    MCC mcc(c);
-    MPPT mppt(c);
-
+    const uint8_t tca_dirs[16] = {1, 1, 1, 1, 1, 1, 1, 1, 
+                                    1, 0, 1, 1, 1, 1, 1, 1};
+    TCA6416 tca(&i2cBus, 0x21);
+    tca.begin(tca_dirs);
+    BMS bms(c, &tca, 10ms);
 
     for (;;) {
         printf("\e[1;1H\e[2J");
