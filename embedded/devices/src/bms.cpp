@@ -1,106 +1,114 @@
 #include "bms.h"
 
 /**
-* BMS CAN device
-*
-* Authors: Khiem Vu and Jonathan Wang
-*/
+ * BMS CAN device
+ *
+ * Authors: Khiem Vu and Jonathan Wang
+ */
 int BMS::callback(CANMessage &msg) {
   switch (msg.id) {
   case 0x100:
-    packStateOfCharge = (float)msg.data[0] / 2;
-    set_soc(packStateOfCharge);
+
+    failsafeStatuses = (msg.data[0] | msg.data[1] << 8);
+    set_voltage_failsafe(failsafeStatuses & 0x01);
+    set_current_failsafe(failsafeStatuses & 0x02);
+    set_relay_failsafe(failsafeStatuses & 0x04);
+    set_charge_interlock_failsafe(failsafeStatuses & 0x10);
+    set_input_power_supply_failsafe(failsafeStatuses & 0x40);
+
+    DTC1 = (msg.data[2] | msg.data[3] << 8);
+    set_discharge_limit_enforcement_fault(DTC1 & 0x01);
+    set_charger_safety_relay_fault(DTC1 & 0x02);
+    set_internal_hardware_fault(DTC1 & 0x04);
+    set_internal_heatsink_fault(DTC1 & 0x08);
+    set_internal_software_fault(DTC1 & 0x10);
+    set_highest_cell_voltage_too_high_fault(DTC1 & 0x20);
+    set_lowest_cell_voltage_too_low_fault(DTC1 & 0x40);
+    set_pack_too_hot_fault(DTC1 & 0x80);
+
+    DTC2 = (msg.data[4] | msg.data[5] << 8);
+    set_internal_communication_fault(DTC1 & 0x0001);
+    set_cell_balancing_stuck_off_fault(DTC1 & 0x0002);
+    set_weak_cell_fault(DTC1 & 0x0004);
+    set_low_cell_voltage_fault(DTC1 & 0x0008);
+    set_open_wiring_fault(DTC1 & 0x0010);
+    set_current_sensor_fault(DTC1 & 0x0020);
+    set_highest_cell_voltage_over_5V_fault(DTC1 & 0x0040);
+    set_cell_asic_fault(DTC1 & 0x0080);
+    set_weak_pack_fault(DTC1 & 0x0100);
+    set_fan_monitor_fault(DTC1 & 0x0200);
+    set_thermistor_fault(DTC1 & 0x0400);
+    set_external_communication_fault(DTC1 & 0x0800);
+    set_redundant_power_supply_fault(DTC1 & 0x1000);
+    set_high_voltage_isolation_fault(DTC1 & 0x2000);
+    set_input_power_supply_fault(DTC1 & 0x4000);
+    set_charge_limit_enforcement_fault(DTC1 & 0x8000);
+
     break;
 
-  case 0x101:
-    packCurrent = (msg.data[1] | msg.data[0] << 8) / 10.0; // default unit: 0.1 A
-    packVoltage = (msg.data[3] | msg.data[2] << 8) / 10.0; // default unit: 0.1 V
+  case 0x101: {
+    packCurrent =
+        (msg.data[1] | msg.data[0] << 8) / 10.0; // default unit: 0.1 A
+    packVoltage =
+        (msg.data[3] | msg.data[2] << 8) / 10.0; // default unit: 0.1 V
     set_pack_current(packCurrent);
     set_pack_voltage(packVoltage);
-    break;
 
-  case 0x102:
-    packAmpHours = (msg.data[0] | msg.data[1] << 8) / 10.0; // default unit: 0.1 Ahr
-    set_tstamp_hr(packAmpHours);
-    break;
+    packStateOfCharge = (float)msg.data[4] / 2;
+    set_soc(packStateOfCharge);
 
-//   case TODO: commented out only because case # not chosen
-//     failsafeStatuses = (bool) (*((int*) msg.data) & (0x3 << 6));
-    // failsafeStatuses = (msg.data[0] | msg.data[1] << 8);
-    // set_voltage_failsafe(failsafeStatuses & 0x01);
-    // set_current_failsafe(failsafeStatuses & 0x02);
-    // set_relay_failsafe(failsafeStatuses & 0x04);
-    // set_charge_interlock_failsafe(failsafeStatuses & 0x10);
-    // set_input_power_supply_failsafe(failsafeStatuses & 0x40);
-    // DTC1 = (bool) (*((int*) msg.data) & (0x3 << 4));
-    // DTC1 = (msg.data[2] | msg.data[3] << 8);
-    // set_discharge_limit_enforcement_fault(DTC1 & 0x01);
-    // set_charger_safety_relay_fault(DTC1 & 0x02);
-    // set_internal_hardware_fault(DTC1 & 0x04);
-    // set_internal_heatsink_fault(DTC1 & 0x08);
-    // set_internal_software_fault(DTC1 & 0x10);
-    // set_highest_cell_voltage_too_high_fault(DTC1 & 0x20);
-    // set_lowest_cell_voltage_too_low_fault(DTC1 & 0x40);
-    // set_pack_too_hot_fault(DTC1 & 0x80);
-//     DTC2 = (bool) (*((int*) msg.data) & (0x3 << 2));
-    // DTC2 = (msg.data[4] | msg.data[5] << 8);
-// set_internal_communication_fault(DTC1 & 0x0001);
-// set_cell_balancing_stuck_off_fault(DTC1 & 0x0002);
-// set_weak_cell_fault(DTC1 & 0x0004);
-// set_low_cell_voltage_fault(DTC1 & 0x0008);
-// set_open_wiring_fault(DTC1 & 0x0010);
-// set_current_sensor_fault(DTC1 & 0x0020);
-// set_highest_cell_voltage_over_5V_fault(DTC1 & 0x0040);
-// set_cell_asic_fault(DTC1 & 0x0080);
-// set_weak_pack_fault(DTC1 & 0x0100);
-// set_fan_monitor_fault(DTC1 & 0x0200);
-// set_thermistor_fault(DTC1 & 0x0400);
-// set_external_communication_fault(DTC1 & 0x0800);
-// set_redundant_power_supply_fault(DTC1 & 0x1000);
-// set_high_voltage_isolation_fault(DTC1 & 0x2000);
-// set_input_power_supply_fault(DTC1 & 0x4000);
-// set_charge_limit_enforcement_fault(DTC1 & 0x8000);
-    // break;
-
-  case 0x103:
-    packHealth = msg.data[0];
+    packHealth = msg.data[5];
     set_soh(packHealth);
     break;
+  }
+  case 0x102: {
+    packAmpHours =
+        (msg.data[0] | msg.data[1] << 8) / 10.0; // default unit: 0.1 Ahr
+    set_tstamp_hr(packAmpHours);
 
-//   case TODO: commented out only because case # not chosen
-//     powerInputVoltage = (float) (*((int*) msg.data) & (0x1 << 7));
-    // powerInputVoltage = msg.data[0] / 10.0; // default unit: 0.1v
-    // set_bms_input_voltage(powerInputVoltage);
-    // break;
+    populatedCells = msg.data[2];
+    set_populated_cells(populatedCells);
 
-  case 0x104:
-    avgTemperature = msg.data[0]; // default unit: 1 C
+    powerInputVoltage =
+        (msg.data[3] | msg.data[4] << 8) / 10.0; // default unit: 0.1v
+    set_bms_input_voltage(powerInputVoltage);
+    break;
+  }
+
+  case 0x103: {
+    avgTemperature = msg.data[0];      // default unit: 1 C
     internalTemperature = msg.data[1]; // default unit: 1 C
-    fanSpeed = msg.data[2]; // default units: 0-6 speed
+    fanSpeed = msg.data[2];            // default units: 0-6 speed
     set_pack_temp(avgTemperature);
     set_pack_internal_temp(internalTemperature);
     set_fan_speed(fanSpeed);
     break;
+  }
 
-  case 0x105:
-    packResistance = (float)(msg.data[0] | msg.data[1] << 8) / 1000; // default unit: 1 mOhm
+  case 0x104: {
+    packResistance =
+        (float)(msg.data[0] | msg.data[1] << 8) / 1000; // default unit: 1 mOhm
     set_pack_resistance(packResistance);
-    break;
 
-  case 0x106:
-    adaptiveTotalCapacity = (msg.data[0] | msg.data[1] << 8) / 10.0; // default unit: 0.1 Amp-hours
+    // TODO: average Cell internal resistnace byte 2 & byte 3
+
+    adaptiveTotalCapacity =
+        (msg.data[4] | msg.data[5] << 8) / 10.0; // default unit: 0.1 Amp-hours
     set_adaptive_total_capacity(adaptiveTotalCapacity);
     break;
+  }
 
-  case 0x107:
-    populatedCells = msg.data[0];
-    set_populated_cells(populatedCells);
+  case 0x500: {
+    canID = (int)msg.data[0];
+    batteryVoltage[31];
+    batteryVoltage[canID] = (msg.data[5] | msg.data[6] << 8);
     break;
+  }
 
-  default:
+  default: {
     return 1;
     break;
-    
+  }
   }
 
   return 0;

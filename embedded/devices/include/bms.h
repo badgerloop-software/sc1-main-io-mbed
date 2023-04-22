@@ -30,6 +30,8 @@ private:
   float packResistance;
   float adaptiveTotalCapacity;
   uint16_t populatedCells;
+  int canID;
+  float batteryVoltage[31];
 
 public:
   BMS(Can &c) : device(c) {}
