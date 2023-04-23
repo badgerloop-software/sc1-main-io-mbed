@@ -1,7 +1,10 @@
+
         /*
          * This is an auto-generated file which is automatically generated whenever the target is built
          */
 
+
+        
 #ifndef __uartApp__h__
 #define __uartApp__h__
 
