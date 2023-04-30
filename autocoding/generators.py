@@ -1,4 +1,5 @@
 import util
+import re
 
 # EXAMPLE DATA_H GENERATOR
 #
@@ -85,19 +86,22 @@ def uartApp_h_generator(json_file):
     # key is the name
     for key in json_file.keys():
         valueType = json_file[key][data_type_column]
-        # if the type is uint8 and uint16, use the correct types in c++
-        if valueType == "uint8" or valueType == "uint16":
-            outputStruct += "  " + valueType + "_t" + " " + key + ";\n"
-            getterSetterMethods += valueType + "_t get_" + key + "();\n"
-            getterSetterMethods += (
-                "void set_" + key + "(" + valueType + "_t " + "val);\n\n"
-            )
-        else:
+        if "cell_group" in key:
             outputStruct += "  " + valueType + " " + key + ";\n"
-            getterSetterMethods += valueType + " get_" + key + "();\n"
-            getterSetterMethods += (
-                "void set_" + key + "(" + valueType + " " + "val);\n\n"
-            )
+        else: 
+            # if the type is uint8 and uint16, use the correct types in c++
+            if valueType == "uint8" or valueType == "uint16":
+                outputStruct += "  " + valueType + "_t" + " " + key + ";\n"
+                getterSetterMethods += valueType + "_t get_" + key + "();\n"
+                getterSetterMethods += (
+                    "void set_" + key + "(" + valueType + "_t " + "val);\n\n"
+                )
+            else:
+                outputStruct += "  " + valueType + " " + key + ";\n"
+                getterSetterMethods += valueType + " get_" + key + "();\n"
+                getterSetterMethods += (
+                    "void set_" + key + "(" + valueType + " " + "val);\n\n"
+                )
         # get the number of bytes of this variable and add it to totalBytes
         totalBytes += json_file[key][num_bytes_column]
 
@@ -105,6 +109,8 @@ def uartApp_h_generator(json_file):
     outputStruct += "} data_format;\n\n"
     # at the top, add a macro for total number of bytes of this struct
     outputStruct = "#define TOTAL_BYTES " + str(totalBytes) + "\n\n" + outputStruct
+    # add cell group voltage getter and setter
+    getterSetterMethods += "float get_cell_group_voltage(int cell_group_num);\nvoid set_cell_group_voltage(float voltage, int cell_group_num)\n"
     return "\n" + outputStruct + "\n" + getterSetterMethods
 
 
@@ -112,8 +118,10 @@ def uartApp_cpp_generator(json_file):
     # define macros for readability
     data_type_column = 1
 
-    mutexes = ""
+    mutexes = "Mutex cell_group_voltage_mutex;\n"
     getterSetterMethods = ""
+    cell_group_getter = "float get_cell_group_voltage(int cell_group_num) {\n  float ret_voltage = -1;\n  cell_group_voltage_mutex.lock();\n  switch(cell_group_num) {\n"
+    cell_group_setter = "void set_cell_group_voltage(float voltage, int cell_group_num) {\n  cell_group_voltage_mutex.lock();\n  switch(cell_group_num) {\n"
     # add a short preface to set the pack power by multiplying pack voltage and current.
     copyStructMethod = "void copyDataStructToWriteStruct() {\n  // set pack power\n  float v = get_pack_voltage();\n  float i = get_pack_current();\n  set_pack_power(i*v);\n\n  dfwrite_mutex.lock();\n"
 
@@ -121,72 +129,83 @@ def uartApp_cpp_generator(json_file):
     # key is the name
     for key in json_file.keys():
         valueType = json_file[key][data_type_column]
-        mutexName = key + "_mutex"
-        # create a mutex for the variable
-        mutexes += "Mutex " + mutexName + ";\n"
-        # add to the copy struct method
-        copyStructMethod += "  dfwrite." + key + " = get_" + key + "();\n"
-        # if the type is uint8 and uint16, use the correct types in c++
-        if valueType == "uint8" or valueType == "uint16":
-            getterSetterMethods += (
-                valueType
-                + "_t get_"
-                + key
-                + "() {\n  "
-                + mutexName
-                + ".lock();\n  "
-                + valueType
-                + "_t val = dfdata."
-                + key
-                + ";\n  "
-                + mutexName
-                + ".unlock();\n  return val;\n}\n"
-            )
-            getterSetterMethods += (
-                "void set_"
-                + key
-                + "("
-                + valueType
-                + "_t "
-                + "val) {\n  "
-                + mutexName
-                + ".lock();\n  dfdata."
-                + key
-                + " = val;\n  "
-                + mutexName
-                + ".unlock();\n}\n\n"
-            )
-        else:
-            getterSetterMethods += (
-                valueType
-                + " get_"
-                + key
-                + "() {\n  "
-                + mutexName
-                + ".lock();\n  "
-                + valueType
-                + " val = dfdata."
-                + key
-                + ";\n  "
-                + mutexName
-                + ".unlock();\n  return val;\n}\n"
-            )
-            getterSetterMethods += (
-                "void set_"
-                + key
-                + "("
-                + valueType
-                + " val) {\n  "
-                + mutexName
-                + ".lock();\n  dfdata."
-                + key
-                + " = val;\n  "
-                + mutexName
-                + ".unlock();\n}\n\n"
-            )
+        # check if cell group voltage
+        if "cell_group" in key:
+            # get the cell_group_number
+            cg_num = int(re.search(r'\d+', key).group())
+            cell_group_getter += "    case " + str(cg_num) + ":\n      ret_voltage = df_data." + key + ";\n      break;\n"
+            cell_group_setter += "    case " + str(cg_num) + ":\n      df_data." + key + " = voltage;\n      break;\n"
+            # add to the copy struct method
+            copyStructMethod += "  dfwrite." + key + " = get_cell_group_voltage(" + str(cg_num) + ");\n"
+        else: 
+            mutexName = key + "_mutex" # this is used later 
+            # create a mutex for the variable
+            mutexes += "Mutex " + mutexName + ";\n"
+            # add to the copy struct method
+            copyStructMethod += "  dfwrite." + key + " = get_" + key + "();\n"
+            # if the type is uint8 and uint16, use the correct types in c++
+            if valueType == "uint8" or valueType == "uint16":
+                getterSetterMethods += (
+                    valueType
+                    + "_t get_"
+                    + key
+                    + "() {\n  "
+                    + mutexName
+                    + ".lock();\n  "
+                    + valueType
+                    + "_t val = dfdata."
+                    + key
+                    + ";\n  "
+                    + mutexName
+                    + ".unlock();\n  return val;\n}\n"
+                )
+                getterSetterMethods += (
+                    "void set_"
+                    + key
+                    + "("
+                    + valueType
+                    + "_t "
+                    + "val) {\n  "
+                    + mutexName
+                    + ".lock();\n  dfdata."
+                    + key
+                    + " = val;\n  "
+                    + mutexName
+                    + ".unlock();\n}\n\n"
+                )
+            else:
+                getterSetterMethods += (
+                    valueType
+                    + " get_"
+                    + key
+                    + "() {\n  "
+                    + mutexName
+                    + ".lock();\n  "
+                    + valueType
+                    + " val = dfdata."
+                    + key
+                    + ";\n  "
+                    + mutexName
+                    + ".unlock();\n  return val;\n}\n"
+                )
+                getterSetterMethods += (
+                    "void set_"
+                    + key
+                    + "("
+                    + valueType
+                    + " val) {\n  "
+                    + mutexName
+                    + ".lock();\n  dfdata."
+                    + key
+                    + " = val;\n  "
+                    + mutexName
+                    + ".unlock();\n}\n\n"
+                )
 
-    # add closing brace to copy struct method
+    # add closing braces
     copyStructMethod += "  dfwrite_mutex.unlock();\n}\n"
+    cell_group_getter += "  }\n  cell_group_voltage_mutex.unlock();\n  return ret_voltage;\n}\n"
+    cell_group_setter += "  }\n  cell_group_voltage_mutex.unlock();\n}\n"
 
     return (
         "\n"
@@ -195,4 +214,7 @@ def uartApp_cpp_generator(json_file):
         + copyStructMethod
         + "\n"
         + getterSetterMethods
+        + "\n"
+        + cell_group_getter
+        + cell_group_setter
     )

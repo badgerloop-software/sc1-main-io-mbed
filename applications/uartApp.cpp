@@ -102,6 +102,7 @@ bool get_restart_enable() {
   return val;
 }
 
+Mutex cell_group_voltage_mutex;
 Mutex speed_mutex;
 Mutex driver_eStop_mutex;
 Mutex external_eStop_mutex;
@@ -204,37 +205,6 @@ Mutex pack_current_mutex;
 Mutex pack_voltage_mutex;
 Mutex pack_power_mutex;
 Mutex supplemental_voltage_mutex;
-Mutex cell_group1_voltage_mutex;
-Mutex cell_group2_voltage_mutex;
-Mutex cell_group3_voltage_mutex;
-Mutex cell_group4_voltage_mutex;
-Mutex cell_group5_voltage_mutex;
-Mutex cell_group6_voltage_mutex;
-Mutex cell_group7_voltage_mutex;
-Mutex cell_group8_voltage_mutex;
-Mutex cell_group9_voltage_mutex;
-Mutex cell_group10_voltage_mutex;
-Mutex cell_group11_voltage_mutex;
-Mutex cell_group12_voltage_mutex;
-Mutex cell_group13_voltage_mutex;
-Mutex cell_group14_voltage_mutex;
-Mutex cell_group15_voltage_mutex;
-Mutex cell_group16_voltage_mutex;
-Mutex cell_group17_voltage_mutex;
-Mutex cell_group18_voltage_mutex;
-Mutex cell_group19_voltage_mutex;
-Mutex cell_group20_voltage_mutex;
-Mutex cell_group21_voltage_mutex;
-Mutex cell_group22_voltage_mutex;
-Mutex cell_group23_voltage_mutex;
-Mutex cell_group24_voltage_mutex;
-Mutex cell_group25_voltage_mutex;
-Mutex cell_group26_voltage_mutex;
-Mutex cell_group27_voltage_mutex;
-Mutex cell_group28_voltage_mutex;
-Mutex cell_group29_voltage_mutex;
-Mutex cell_group30_voltage_mutex;
-Mutex cell_group31_voltage_mutex;
 Mutex populated_cells_mutex;
 Mutex soc_mutex;
 Mutex est_supplemental_soc_mutex;
@@ -389,37 +359,37 @@ void copyDataStructToWriteStruct() {
   dfwrite.pack_voltage = get_pack_voltage();
   dfwrite.pack_power = get_pack_power();
   dfwrite.supplemental_voltage = get_supplemental_voltage();
-  dfwrite.cell_group1_voltage = get_cell_group1_voltage();
-  dfwrite.cell_group2_voltage = get_cell_group2_voltage();
-  dfwrite.cell_group3_voltage = get_cell_group3_voltage();
-  dfwrite.cell_group4_voltage = get_cell_group4_voltage();
-  dfwrite.cell_group5_voltage = get_cell_group5_voltage();
-  dfwrite.cell_group6_voltage = get_cell_group6_voltage();
-  dfwrite.cell_group7_voltage = get_cell_group7_voltage();
-  dfwrite.cell_group8_voltage = get_cell_group8_voltage();
-  dfwrite.cell_group9_voltage = get_cell_group9_voltage();
-  dfwrite.cell_group10_voltage = get_cell_group10_voltage();
-  dfwrite.cell_group11_voltage = get_cell_group11_voltage();
-  dfwrite.cell_group12_voltage = get_cell_group12_voltage();
-  dfwrite.cell_group13_voltage = get_cell_group13_voltage();
-  dfwrite.cell_group14_voltage = get_cell_group14_voltage();
-  dfwrite.cell_group15_voltage = get_cell_group15_voltage();
-  dfwrite.cell_group16_voltage = get_cell_group16_voltage();
-  dfwrite.cell_group17_voltage = get_cell_group17_voltage();
-  dfwrite.cell_group18_voltage = get_cell_group18_voltage();
-  dfwrite.cell_group19_voltage = get_cell_group19_voltage();
-  dfwrite.cell_group20_voltage = get_cell_group20_voltage();
-  dfwrite.cell_group21_voltage = get_cell_group21_voltage();
-  dfwrite.cell_group22_voltage = get_cell_group22_voltage();
-  dfwrite.cell_group23_voltage = get_cell_group23_voltage();
-  dfwrite.cell_group24_voltage = get_cell_group24_voltage();
-  dfwrite.cell_group25_voltage = get_cell_group25_voltage();
-  dfwrite.cell_group26_voltage = get_cell_group26_voltage();
-  dfwrite.cell_group27_voltage = get_cell_group27_voltage();
-  dfwrite.cell_group28_voltage = get_cell_group28_voltage();
-  dfwrite.cell_group29_voltage = get_cell_group29_voltage();
-  dfwrite.cell_group30_voltage = get_cell_group30_voltage();
-  dfwrite.cell_group31_voltage = get_cell_group31_voltage();
+  dfwrite.cell_group1_voltage = get_cell_group_voltage(1);
+  dfwrite.cell_group2_voltage = get_cell_group_voltage(2);
+  dfwrite.cell_group3_voltage = get_cell_group_voltage(3);
+  dfwrite.cell_group4_voltage = get_cell_group_voltage(4);
+  dfwrite.cell_group5_voltage = get_cell_group_voltage(5);
+  dfwrite.cell_group6_voltage = get_cell_group_voltage(6);
+  dfwrite.cell_group7_voltage = get_cell_group_voltage(7);
+  dfwrite.cell_group8_voltage = get_cell_group_voltage(8);
+  dfwrite.cell_group9_voltage = get_cell_group_voltage(9);
+  dfwrite.cell_group10_voltage = get_cell_group_voltage(10);
+  dfwrite.cell_group11_voltage = get_cell_group_voltage(11);
+  dfwrite.cell_group12_voltage = get_cell_group_voltage(12);
+  dfwrite.cell_group13_voltage = get_cell_group_voltage(13);
+  dfwrite.cell_group14_voltage = get_cell_group_voltage(14);
+  dfwrite.cell_group15_voltage = get_cell_group_voltage(15);
+  dfwrite.cell_group16_voltage = get_cell_group_voltage(16);
+  dfwrite.cell_group17_voltage = get_cell_group_voltage(17);
+  dfwrite.cell_group18_voltage = get_cell_group_voltage(18);
+  dfwrite.cell_group19_voltage = get_cell_group_voltage(19);
+  dfwrite.cell_group20_voltage = get_cell_group_voltage(20);
+  dfwrite.cell_group21_voltage = get_cell_group_voltage(21);
+  dfwrite.cell_group22_voltage = get_cell_group_voltage(22);
+  dfwrite.cell_group23_voltage = get_cell_group_voltage(23);
+  dfwrite.cell_group24_voltage = get_cell_group_voltage(24);
+  dfwrite.cell_group25_voltage = get_cell_group_voltage(25);
+  dfwrite.cell_group26_voltage = get_cell_group_voltage(26);
+  dfwrite.cell_group27_voltage = get_cell_group_voltage(27);
+  dfwrite.cell_group28_voltage = get_cell_group_voltage(28);
+  dfwrite.cell_group29_voltage = get_cell_group_voltage(29);
+  dfwrite.cell_group30_voltage = get_cell_group_voltage(30);
+  dfwrite.cell_group31_voltage = get_cell_group_voltage(31);
   dfwrite.populated_cells = get_populated_cells();
   dfwrite.soc = get_soc();
   dfwrite.est_supplemental_soc = get_est_supplemental_soc();
@@ -1691,378 +1661,6 @@ void set_supplemental_voltage(float val) {
   supplemental_voltage_mutex.unlock();
 }
 
-float get_cell_group1_voltage() {
-  cell_group1_voltage_mutex.lock();
-  float val = dfdata.cell_group1_voltage;
-  cell_group1_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group1_voltage(float val) {
-  cell_group1_voltage_mutex.lock();
-  dfdata.cell_group1_voltage = val;
-  cell_group1_voltage_mutex.unlock();
-}
-
-float get_cell_group2_voltage() {
-  cell_group2_voltage_mutex.lock();
-  float val = dfdata.cell_group2_voltage;
-  cell_group2_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group2_voltage(float val) {
-  cell_group2_voltage_mutex.lock();
-  dfdata.cell_group2_voltage = val;
-  cell_group2_voltage_mutex.unlock();
-}
-
-float get_cell_group3_voltage() {
-  cell_group3_voltage_mutex.lock();
-  float val = dfdata.cell_group3_voltage;
-  cell_group3_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group3_voltage(float val) {
-  cell_group3_voltage_mutex.lock();
-  dfdata.cell_group3_voltage = val;
-  cell_group3_voltage_mutex.unlock();
-}
-
-float get_cell_group4_voltage() {
-  cell_group4_voltage_mutex.lock();
-  float val = dfdata.cell_group4_voltage;
-  cell_group4_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group4_voltage(float val) {
-  cell_group4_voltage_mutex.lock();
-  dfdata.cell_group4_voltage = val;
-  cell_group4_voltage_mutex.unlock();
-}
-
-float get_cell_group5_voltage() {
-  cell_group5_voltage_mutex.lock();
-  float val = dfdata.cell_group5_voltage;
-  cell_group5_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group5_voltage(float val) {
-  cell_group5_voltage_mutex.lock();
-  dfdata.cell_group5_voltage = val;
-  cell_group5_voltage_mutex.unlock();
-}
-
-float get_cell_group6_voltage() {
-  cell_group6_voltage_mutex.lock();
-  float val = dfdata.cell_group6_voltage;
-  cell_group6_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group6_voltage(float val) {
-  cell_group6_voltage_mutex.lock();
-  dfdata.cell_group6_voltage = val;
-  cell_group6_voltage_mutex.unlock();
-}
-
-float get_cell_group7_voltage() {
-  cell_group7_voltage_mutex.lock();
-  float val = dfdata.cell_group7_voltage;
-  cell_group7_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group7_voltage(float val) {
-  cell_group7_voltage_mutex.lock();
-  dfdata.cell_group7_voltage = val;
-  cell_group7_voltage_mutex.unlock();
-}
-
-float get_cell_group8_voltage() {
-  cell_group8_voltage_mutex.lock();
-  float val = dfdata.cell_group8_voltage;
-  cell_group8_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group8_voltage(float val) {
-  cell_group8_voltage_mutex.lock();
-  dfdata.cell_group8_voltage = val;
-  cell_group8_voltage_mutex.unlock();
-}
-
-float get_cell_group9_voltage() {
-  cell_group9_voltage_mutex.lock();
-  float val = dfdata.cell_group9_voltage;
-  cell_group9_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group9_voltage(float val) {
-  cell_group9_voltage_mutex.lock();
-  dfdata.cell_group9_voltage = val;
-  cell_group9_voltage_mutex.unlock();
-}
-
-float get_cell_group10_voltage() {
-  cell_group10_voltage_mutex.lock();
-  float val = dfdata.cell_group10_voltage;
-  cell_group10_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group10_voltage(float val) {
-  cell_group10_voltage_mutex.lock();
-  dfdata.cell_group10_voltage = val;
-  cell_group10_voltage_mutex.unlock();
-}
-
-float get_cell_group11_voltage() {
-  cell_group11_voltage_mutex.lock();
-  float val = dfdata.cell_group11_voltage;
-  cell_group11_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group11_voltage(float val) {
-  cell_group11_voltage_mutex.lock();
-  dfdata.cell_group11_voltage = val;
-  cell_group11_voltage_mutex.unlock();
-}
-
-float get_cell_group12_voltage() {
-  cell_group12_voltage_mutex.lock();
-  float val = dfdata.cell_group12_voltage;
-  cell_group12_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group12_voltage(float val) {
-  cell_group12_voltage_mutex.lock();
-  dfdata.cell_group12_voltage = val;
-  cell_group12_voltage_mutex.unlock();
-}
-
-float get_cell_group13_voltage() {
-  cell_group13_voltage_mutex.lock();
-  float val = dfdata.cell_group13_voltage;
-  cell_group13_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group13_voltage(float val) {
-  cell_group13_voltage_mutex.lock();
-  dfdata.cell_group13_voltage = val;
-  cell_group13_voltage_mutex.unlock();
-}
-
-float get_cell_group14_voltage() {
-  cell_group14_voltage_mutex.lock();
-  float val = dfdata.cell_group14_voltage;
-  cell_group14_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group14_voltage(float val) {
-  cell_group14_voltage_mutex.lock();
-  dfdata.cell_group14_voltage = val;
-  cell_group14_voltage_mutex.unlock();
-}
-
-float get_cell_group15_voltage() {
-  cell_group15_voltage_mutex.lock();
-  float val = dfdata.cell_group15_voltage;
-  cell_group15_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group15_voltage(float val) {
-  cell_group15_voltage_mutex.lock();
-  dfdata.cell_group15_voltage = val;
-  cell_group15_voltage_mutex.unlock();
-}
-
-float get_cell_group16_voltage() {
-  cell_group16_voltage_mutex.lock();
-  float val = dfdata.cell_group16_voltage;
-  cell_group16_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group16_voltage(float val) {
-  cell_group16_voltage_mutex.lock();
-  dfdata.cell_group16_voltage = val;
-  cell_group16_voltage_mutex.unlock();
-}
-
-float get_cell_group17_voltage() {
-  cell_group17_voltage_mutex.lock();
-  float val = dfdata.cell_group17_voltage;
-  cell_group17_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group17_voltage(float val) {
-  cell_group17_voltage_mutex.lock();
-  dfdata.cell_group17_voltage = val;
-  cell_group17_voltage_mutex.unlock();
-}
-
-float get_cell_group18_voltage() {
-  cell_group18_voltage_mutex.lock();
-  float val = dfdata.cell_group18_voltage;
-  cell_group18_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group18_voltage(float val) {
-  cell_group18_voltage_mutex.lock();
-  dfdata.cell_group18_voltage = val;
-  cell_group18_voltage_mutex.unlock();
-}
-
-float get_cell_group19_voltage() {
-  cell_group19_voltage_mutex.lock();
-  float val = dfdata.cell_group19_voltage;
-  cell_group19_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group19_voltage(float val) {
-  cell_group19_voltage_mutex.lock();
-  dfdata.cell_group19_voltage = val;
-  cell_group19_voltage_mutex.unlock();
-}
-
-float get_cell_group20_voltage() {
-  cell_group20_voltage_mutex.lock();
-  float val = dfdata.cell_group20_voltage;
-  cell_group20_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group20_voltage(float val) {
-  cell_group20_voltage_mutex.lock();
-  dfdata.cell_group20_voltage = val;
-  cell_group20_voltage_mutex.unlock();
-}
-
-float get_cell_group21_voltage() {
-  cell_group21_voltage_mutex.lock();
-  float val = dfdata.cell_group21_voltage;
-  cell_group21_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group21_voltage(float val) {
-  cell_group21_voltage_mutex.lock();
-  dfdata.cell_group21_voltage = val;
-  cell_group21_voltage_mutex.unlock();
-}
-
-float get_cell_group22_voltage() {
-  cell_group22_voltage_mutex.lock();
-  float val = dfdata.cell_group22_voltage;
-  cell_group22_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group22_voltage(float val) {
-  cell_group22_voltage_mutex.lock();
-  dfdata.cell_group22_voltage = val;
-  cell_group22_voltage_mutex.unlock();
-}
-
-float get_cell_group23_voltage() {
-  cell_group23_voltage_mutex.lock();
-  float val = dfdata.cell_group23_voltage;
-  cell_group23_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group23_voltage(float val) {
-  cell_group23_voltage_mutex.lock();
-  dfdata.cell_group23_voltage = val;
-  cell_group23_voltage_mutex.unlock();
-}
-
-float get_cell_group24_voltage() {
-  cell_group24_voltage_mutex.lock();
-  float val = dfdata.cell_group24_voltage;
-  cell_group24_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group24_voltage(float val) {
-  cell_group24_voltage_mutex.lock();
-  dfdata.cell_group24_voltage = val;
-  cell_group24_voltage_mutex.unlock();
-}
-
-float get_cell_group25_voltage() {
-  cell_group25_voltage_mutex.lock();
-  float val = dfdata.cell_group25_voltage;
-  cell_group25_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group25_voltage(float val) {
-  cell_group25_voltage_mutex.lock();
-  dfdata.cell_group25_voltage = val;
-  cell_group25_voltage_mutex.unlock();
-}
-
-float get_cell_group26_voltage() {
-  cell_group26_voltage_mutex.lock();
-  float val = dfdata.cell_group26_voltage;
-  cell_group26_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group26_voltage(float val) {
-  cell_group26_voltage_mutex.lock();
-  dfdata.cell_group26_voltage = val;
-  cell_group26_voltage_mutex.unlock();
-}
-
-float get_cell_group27_voltage() {
-  cell_group27_voltage_mutex.lock();
-  float val = dfdata.cell_group27_voltage;
-  cell_group27_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group27_voltage(float val) {
-  cell_group27_voltage_mutex.lock();
-  dfdata.cell_group27_voltage = val;
-  cell_group27_voltage_mutex.unlock();
-}
-
-float get_cell_group28_voltage() {
-  cell_group28_voltage_mutex.lock();
-  float val = dfdata.cell_group28_voltage;
-  cell_group28_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group28_voltage(float val) {
-  cell_group28_voltage_mutex.lock();
-  dfdata.cell_group28_voltage = val;
-  cell_group28_voltage_mutex.unlock();
-}
-
-float get_cell_group29_voltage() {
-  cell_group29_voltage_mutex.lock();
-  float val = dfdata.cell_group29_voltage;
-  cell_group29_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group29_voltage(float val) {
-  cell_group29_voltage_mutex.lock();
-  dfdata.cell_group29_voltage = val;
-  cell_group29_voltage_mutex.unlock();
-}
-
-float get_cell_group30_voltage() {
-  cell_group30_voltage_mutex.lock();
-  float val = dfdata.cell_group30_voltage;
-  cell_group30_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group30_voltage(float val) {
-  cell_group30_voltage_mutex.lock();
-  dfdata.cell_group30_voltage = val;
-  cell_group30_voltage_mutex.unlock();
-}
-
-float get_cell_group31_voltage() {
-  cell_group31_voltage_mutex.lock();
-  float val = dfdata.cell_group31_voltage;
-  cell_group31_voltage_mutex.unlock();
-  return val;
-}
-void set_cell_group31_voltage(float val) {
-  cell_group31_voltage_mutex.lock();
-  dfdata.cell_group31_voltage = val;
-  cell_group31_voltage_mutex.unlock();
-}
-
 uint16_t get_populated_cells() {
   populated_cells_mutex.lock();
   uint16_t val = dfdata.populated_cells;
@@ -2589,6 +2187,208 @@ void set_discharge_enable(bool val) {
   discharge_enable_mutex.lock();
   dfdata.discharge_enable = val;
   discharge_enable_mutex.unlock();
+}
+
+
+float get_cell_group_voltage(int cell_group_num) {
+  float ret_voltage = -1;
+  cell_group_voltage_mutex.lock();
+  switch(cell_group_num) {
+    case 1:
+      ret_voltage = df_data.cell_group1_voltage;
+      break;
+    case 2:
+      ret_voltage = df_data.cell_group2_voltage;
+      break;
+    case 3:
+      ret_voltage = df_data.cell_group3_voltage;
+      break;
+    case 4:
+      ret_voltage = df_data.cell_group4_voltage;
+      break;
+    case 5:
+      ret_voltage = df_data.cell_group5_voltage;
+      break;
+    case 6:
+      ret_voltage = df_data.cell_group6_voltage;
+      break;
+    case 7:
+      ret_voltage = df_data.cell_group7_voltage;
+      break;
+    case 8:
+      ret_voltage = df_data.cell_group8_voltage;
+      break;
+    case 9:
+      ret_voltage = df_data.cell_group9_voltage;
+      break;
+    case 10:
+      ret_voltage = df_data.cell_group10_voltage;
+      break;
+    case 11:
+      ret_voltage = df_data.cell_group11_voltage;
+      break;
+    case 12:
+      ret_voltage = df_data.cell_group12_voltage;
+      break;
+    case 13:
+      ret_voltage = df_data.cell_group13_voltage;
+      break;
+    case 14:
+      ret_voltage = df_data.cell_group14_voltage;
+      break;
+    case 15:
+      ret_voltage = df_data.cell_group15_voltage;
+      break;
+    case 16:
+      ret_voltage = df_data.cell_group16_voltage;
+      break;
+    case 17:
+      ret_voltage = df_data.cell_group17_voltage;
+      break;
+    case 18:
+      ret_voltage = df_data.cell_group18_voltage;
+      break;
+    case 19:
+      ret_voltage = df_data.cell_group19_voltage;
+      break;
+    case 20:
+      ret_voltage = df_data.cell_group20_voltage;
+      break;
+    case 21:
+      ret_voltage = df_data.cell_group21_voltage;
+      break;
+    case 22:
+      ret_voltage = df_data.cell_group22_voltage;
+      break;
+    case 23:
+      ret_voltage = df_data.cell_group23_voltage;
+      break;
+    case 24:
+      ret_voltage = df_data.cell_group24_voltage;
+      break;
+    case 25:
+      ret_voltage = df_data.cell_group25_voltage;
+      break;
+    case 26:
+      ret_voltage = df_data.cell_group26_voltage;
+      break;
+    case 27:
+      ret_voltage = df_data.cell_group27_voltage;
+      break;
+    case 28:
+      ret_voltage = df_data.cell_group28_voltage;
+      break;
+    case 29:
+      ret_voltage = df_data.cell_group29_voltage;
+      break;
+    case 30:
+      ret_voltage = df_data.cell_group30_voltage;
+      break;
+    case 31:
+      ret_voltage = df_data.cell_group31_voltage;
+      break;
+  }
+  cell_group_voltage_mutex.unlock();
+  return ret_voltage;
+}
+void set_cell_group_voltage(float voltage, int cell_group_num) {
+  cell_group_voltage_mutex.lock();
+  switch(cell_group_num) {
+    case 1:
+      df_data.cell_group1_voltage = voltage;
+      break;
+    case 2:
+      df_data.cell_group2_voltage = voltage;
+      break;
+    case 3:
+      df_data.cell_group3_voltage = voltage;
+      break;
+    case 4:
+      df_data.cell_group4_voltage = voltage;
+      break;
+    case 5:
+      df_data.cell_group5_voltage = voltage;
+      break;
+    case 6:
+      df_data.cell_group6_voltage = voltage;
+      break;
+    case 7:
+      df_data.cell_group7_voltage = voltage;
+      break;
+    case 8:
+      df_data.cell_group8_voltage = voltage;
+      break;
+    case 9:
+      df_data.cell_group9_voltage = voltage;
+      break;
+    case 10:
+      df_data.cell_group10_voltage = voltage;
+      break;
+    case 11:
+      df_data.cell_group11_voltage = voltage;
+      break;
+    case 12:
+      df_data.cell_group12_voltage = voltage;
+      break;
+    case 13:
+      df_data.cell_group13_voltage = voltage;
+      break;
+    case 14:
+      df_data.cell_group14_voltage = voltage;
+      break;
+    case 15:
+      df_data.cell_group15_voltage = voltage;
+      break;
+    case 16:
+      df_data.cell_group16_voltage = voltage;
+      break;
+    case 17:
+      df_data.cell_group17_voltage = voltage;
+      break;
+    case 18:
+      df_data.cell_group18_voltage = voltage;
+      break;
+    case 19:
+      df_data.cell_group19_voltage = voltage;
+      break;
+    case 20:
+      df_data.cell_group20_voltage = voltage;
+      break;
+    case 21:
+      df_data.cell_group21_voltage = voltage;
+      break;
+    case 22:
+      df_data.cell_group22_voltage = voltage;
+      break;
+    case 23:
+      df_data.cell_group23_voltage = voltage;
+      break;
+    case 24:
+      df_data.cell_group24_voltage = voltage;
+      break;
+    case 25:
+      df_data.cell_group25_voltage = voltage;
+      break;
+    case 26:
+      df_data.cell_group26_voltage = voltage;
+      break;
+    case 27:
+      df_data.cell_group27_voltage = voltage;
+      break;
+    case 28:
+      df_data.cell_group28_voltage = voltage;
+      break;
+    case 29:
+      df_data.cell_group29_voltage = voltage;
+      break;
+    case 30:
+      df_data.cell_group30_voltage = voltage;
+      break;
+    case 31:
+      df_data.cell_group31_voltage = voltage;
+      break;
+  }
+  cell_group_voltage_mutex.unlock();
 }
  /* Autogenerated Code Ends */
 
