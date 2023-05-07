@@ -110,7 +110,7 @@ def uartApp_h_generator(json_file):
     # at the top, add a macro for total number of bytes of this struct
     outputStruct = "#define TOTAL_BYTES " + str(totalBytes) + "\n\n" + outputStruct
     # add cell group voltage getter and setter
-    getterSetterMethods += "float get_cell_group_voltage(int cell_group_num);\nvoid set_cell_group_voltage(float voltage, int cell_group_num)\n"
+    getterSetterMethods += "float get_cell_group_voltage(int cell_group_num);\nvoid set_cell_group_voltage(float voltage, int cell_group_num);\n"
     return "\n" + outputStruct + "\n" + getterSetterMethods
 
 
@@ -133,8 +133,8 @@ def uartApp_cpp_generator(json_file):
         if "cell_group" in key:
             # get the cell_group_number
             cg_num = int(re.search(r'\d+', key).group())
-            cell_group_getter += "    case " + str(cg_num) + ":\n      ret_voltage = df_data." + key + ";\n      break;\n"
-            cell_group_setter += "    case " + str(cg_num) + ":\n      df_data." + key + " = voltage;\n      break;\n"
+            cell_group_getter += "    case " + str(cg_num) + ":\n      ret_voltage = dfdata." + key + ";\n      break;\n"
+            cell_group_setter += "    case " + str(cg_num) + ":\n      dfdata." + key + " = voltage;\n      break;\n"
             # add to the copy struct method
             copyStructMethod += "  dfwrite." + key + " = get_cell_group_voltage(" + str(cg_num) + ");\n"
         else: 

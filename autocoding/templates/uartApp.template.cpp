@@ -21,6 +21,7 @@ bool restart_enable;
 void clearDataFormatRead() { dfdata = emptyStruct; }
 
 void check_shutdown_errors();
+void check_mcu_check();
 void copyDataStructToWriteStruct();
 
 void send_message_thread() {

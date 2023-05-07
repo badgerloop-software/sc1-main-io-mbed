@@ -28,6 +28,7 @@ bool restart_enable;
 void clearDataFormatRead() { dfdata = emptyStruct; }
 
 void check_shutdown_errors();
+void check_mcu_check();
 void copyDataStructToWriteStruct();
 
 void send_message_thread() {
@@ -2195,97 +2196,97 @@ float get_cell_group_voltage(int cell_group_num) {
   cell_group_voltage_mutex.lock();
   switch(cell_group_num) {
     case 1:
-      ret_voltage = df_data.cell_group1_voltage;
+      ret_voltage = dfdata.cell_group1_voltage;
       break;
     case 2:
-      ret_voltage = df_data.cell_group2_voltage;
+      ret_voltage = dfdata.cell_group2_voltage;
       break;
     case 3:
-      ret_voltage = df_data.cell_group3_voltage;
+      ret_voltage = dfdata.cell_group3_voltage;
       break;
     case 4:
-      ret_voltage = df_data.cell_group4_voltage;
+      ret_voltage = dfdata.cell_group4_voltage;
       break;
     case 5:
-      ret_voltage = df_data.cell_group5_voltage;
+      ret_voltage = dfdata.cell_group5_voltage;
       break;
     case 6:
-      ret_voltage = df_data.cell_group6_voltage;
+      ret_voltage = dfdata.cell_group6_voltage;
       break;
     case 7:
-      ret_voltage = df_data.cell_group7_voltage;
+      ret_voltage = dfdata.cell_group7_voltage;
       break;
     case 8:
-      ret_voltage = df_data.cell_group8_voltage;
+      ret_voltage = dfdata.cell_group8_voltage;
       break;
     case 9:
-      ret_voltage = df_data.cell_group9_voltage;
+      ret_voltage = dfdata.cell_group9_voltage;
       break;
     case 10:
-      ret_voltage = df_data.cell_group10_voltage;
+      ret_voltage = dfdata.cell_group10_voltage;
       break;
     case 11:
-      ret_voltage = df_data.cell_group11_voltage;
+      ret_voltage = dfdata.cell_group11_voltage;
       break;
     case 12:
-      ret_voltage = df_data.cell_group12_voltage;
+      ret_voltage = dfdata.cell_group12_voltage;
       break;
     case 13:
-      ret_voltage = df_data.cell_group13_voltage;
+      ret_voltage = dfdata.cell_group13_voltage;
       break;
     case 14:
-      ret_voltage = df_data.cell_group14_voltage;
+      ret_voltage = dfdata.cell_group14_voltage;
       break;
     case 15:
-      ret_voltage = df_data.cell_group15_voltage;
+      ret_voltage = dfdata.cell_group15_voltage;
       break;
     case 16:
-      ret_voltage = df_data.cell_group16_voltage;
+      ret_voltage = dfdata.cell_group16_voltage;
       break;
     case 17:
-      ret_voltage = df_data.cell_group17_voltage;
+      ret_voltage = dfdata.cell_group17_voltage;
       break;
     case 18:
-      ret_voltage = df_data.cell_group18_voltage;
+      ret_voltage = dfdata.cell_group18_voltage;
       break;
     case 19:
-      ret_voltage = df_data.cell_group19_voltage;
+      ret_voltage = dfdata.cell_group19_voltage;
       break;
     case 20:
-      ret_voltage = df_data.cell_group20_voltage;
+      ret_voltage = dfdata.cell_group20_voltage;
       break;
     case 21:
-      ret_voltage = df_data.cell_group21_voltage;
+      ret_voltage = dfdata.cell_group21_voltage;
       break;
     case 22:
-      ret_voltage = df_data.cell_group22_voltage;
+      ret_voltage = dfdata.cell_group22_voltage;
       break;
     case 23:
-      ret_voltage = df_data.cell_group23_voltage;
+      ret_voltage = dfdata.cell_group23_voltage;
       break;
     case 24:
-      ret_voltage = df_data.cell_group24_voltage;
+      ret_voltage = dfdata.cell_group24_voltage;
       break;
     case 25:
-      ret_voltage = df_data.cell_group25_voltage;
+      ret_voltage = dfdata.cell_group25_voltage;
       break;
     case 26:
-      ret_voltage = df_data.cell_group26_voltage;
+      ret_voltage = dfdata.cell_group26_voltage;
       break;
     case 27:
-      ret_voltage = df_data.cell_group27_voltage;
+      ret_voltage = dfdata.cell_group27_voltage;
       break;
     case 28:
-      ret_voltage = df_data.cell_group28_voltage;
+      ret_voltage = dfdata.cell_group28_voltage;
       break;
     case 29:
-      ret_voltage = df_data.cell_group29_voltage;
+      ret_voltage = dfdata.cell_group29_voltage;
       break;
     case 30:
-      ret_voltage = df_data.cell_group30_voltage;
+      ret_voltage = dfdata.cell_group30_voltage;
       break;
     case 31:
-      ret_voltage = df_data.cell_group31_voltage;
+      ret_voltage = dfdata.cell_group31_voltage;
       break;
   }
   cell_group_voltage_mutex.unlock();
@@ -2295,97 +2296,97 @@ void set_cell_group_voltage(float voltage, int cell_group_num) {
   cell_group_voltage_mutex.lock();
   switch(cell_group_num) {
     case 1:
-      df_data.cell_group1_voltage = voltage;
+      dfdata.cell_group1_voltage = voltage;
       break;
     case 2:
-      df_data.cell_group2_voltage = voltage;
+      dfdata.cell_group2_voltage = voltage;
       break;
     case 3:
-      df_data.cell_group3_voltage = voltage;
+      dfdata.cell_group3_voltage = voltage;
       break;
     case 4:
-      df_data.cell_group4_voltage = voltage;
+      dfdata.cell_group4_voltage = voltage;
       break;
     case 5:
-      df_data.cell_group5_voltage = voltage;
+      dfdata.cell_group5_voltage = voltage;
       break;
     case 6:
-      df_data.cell_group6_voltage = voltage;
+      dfdata.cell_group6_voltage = voltage;
       break;
     case 7:
-      df_data.cell_group7_voltage = voltage;
+      dfdata.cell_group7_voltage = voltage;
       break;
     case 8:
-      df_data.cell_group8_voltage = voltage;
+      dfdata.cell_group8_voltage = voltage;
       break;
     case 9:
-      df_data.cell_group9_voltage = voltage;
+      dfdata.cell_group9_voltage = voltage;
       break;
     case 10:
-      df_data.cell_group10_voltage = voltage;
+      dfdata.cell_group10_voltage = voltage;
       break;
     case 11:
-      df_data.cell_group11_voltage = voltage;
+      dfdata.cell_group11_voltage = voltage;
       break;
     case 12:
-      df_data.cell_group12_voltage = voltage;
+      dfdata.cell_group12_voltage = voltage;
       break;
     case 13:
-      df_data.cell_group13_voltage = voltage;
+      dfdata.cell_group13_voltage = voltage;
       break;
     case 14:
-      df_data.cell_group14_voltage = voltage;
+      dfdata.cell_group14_voltage = voltage;
       break;
     case 15:
-      df_data.cell_group15_voltage = voltage;
+      dfdata.cell_group15_voltage = voltage;
       break;
     case 16:
-      df_data.cell_group16_voltage = voltage;
+      dfdata.cell_group16_voltage = voltage;
       break;
     case 17:
-      df_data.cell_group17_voltage = voltage;
+      dfdata.cell_group17_voltage = voltage;
       break;
     case 18:
-      df_data.cell_group18_voltage = voltage;
+      dfdata.cell_group18_voltage = voltage;
       break;
     case 19:
-      df_data.cell_group19_voltage = voltage;
+      dfdata.cell_group19_voltage = voltage;
       break;
     case 20:
-      df_data.cell_group20_voltage = voltage;
+      dfdata.cell_group20_voltage = voltage;
       break;
     case 21:
-      df_data.cell_group21_voltage = voltage;
+      dfdata.cell_group21_voltage = voltage;
       break;
     case 22:
-      df_data.cell_group22_voltage = voltage;
+      dfdata.cell_group22_voltage = voltage;
       break;
     case 23:
-      df_data.cell_group23_voltage = voltage;
+      dfdata.cell_group23_voltage = voltage;
       break;
     case 24:
-      df_data.cell_group24_voltage = voltage;
+      dfdata.cell_group24_voltage = voltage;
       break;
     case 25:
-      df_data.cell_group25_voltage = voltage;
+      dfdata.cell_group25_voltage = voltage;
       break;
     case 26:
-      df_data.cell_group26_voltage = voltage;
+      dfdata.cell_group26_voltage = voltage;
       break;
     case 27:
-      df_data.cell_group27_voltage = voltage;
+      dfdata.cell_group27_voltage = voltage;
       break;
     case 28:
-      df_data.cell_group28_voltage = voltage;
+      dfdata.cell_group28_voltage = voltage;
       break;
     case 29:
-      df_data.cell_group29_voltage = voltage;
+      dfdata.cell_group29_voltage = voltage;
       break;
     case 30:
-      df_data.cell_group30_voltage = voltage;
+      dfdata.cell_group30_voltage = voltage;
       break;
     case 31:
-      df_data.cell_group31_voltage = voltage;
+      dfdata.cell_group31_voltage = voltage;
       break;
   }
   cell_group_voltage_mutex.unlock();
