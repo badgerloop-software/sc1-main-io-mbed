@@ -17,6 +17,7 @@ int I2CDevice::readI2CWrapper(uint8_t reg, char buffer[], int numBytes) {
     if (this->i2cBus->write(this->addr, writeBuffer, 1) != 0) {
         return 1; 
     }
+    // the read() function sets bit 0 of addr to 1 for a read 
     if (this->i2cBus->read(this->addr, buffer, numBytes) != 0) {
         return 1; 
     }
@@ -33,9 +34,6 @@ int I2CDevice::writeI2CWrapper(uint8_t reg, char data[], int numBytes) {
     // create a new buffer which is just the input buffer with the register offset prepended.
     char newBuffer[numBytes + 1];
     newBuffer[0] = reg;
-    // for (int i = 1; i <= numBytes; i++) {
-    //     newBuffer[i] = buffer[i-1];
-    // }
     memcpy(newBuffer+1, data, numBytes);
     // check if the I2C write throws an error 
     if(this->i2cBus->write(this->addr, newBuffer, numBytes + 1)) {
