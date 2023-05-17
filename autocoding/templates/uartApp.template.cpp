@@ -2,7 +2,7 @@
 
 #include "rtos.h"
 #include "uartApp.h"
-#define NUM_COMMAND_BYTES 1
+#define NUM_COMMAND_BYTES 2
 #define T_MESSAGE_US \
   1000000            // 1 second right now (should actually be 1/15 of a second)
 #define HEARTBEAT 2  // error state if this # messages that aren't read
@@ -17,6 +17,7 @@ data_format dfdata;
 data_format emptyStruct;
 
 bool restart_enable;
+bool parking_brake; 
 
 void clearDataFormatRead() { dfdata = emptyStruct; }
 
@@ -44,10 +45,10 @@ void read_command_thread() {
   int i = 0;
   while (true) {
     uart_buffer.lock();
-    restart_enable = 0;
+    char read_array[NUM_COMMAND_BYTES]; 
     // set mcu_hv_en to 0 (error state) if HEARTBEAT consecutive messages aren't
     // read
-    if (readUart(&restart_enable, NUM_COMMAND_BYTES) == 0) {
+    if (readUart(read_array, NUM_COMMAND_BYTES) == 0) {
       printf("message not received\n");
       if (++messages_not_received >= HEARTBEAT) {
         printf("heartbeat lost\n");
@@ -57,6 +58,13 @@ void read_command_thread() {
     } else {  // a message was read
       messages_not_received = 0;
       set_mainIO_heartbeat(1);
+
+      // set restart_enable and parking_brake based on read_array
+      restart_enable = read_array[0];
+      parking_brake = read_array[1];
+      // printout parking brake
+      printf("parking brake: %d\n", parking_brake);
+
       // check that we've received at least one restart_enable == 1 before we
       // set mcu_hv_en high again
       if (restart_enable) {
