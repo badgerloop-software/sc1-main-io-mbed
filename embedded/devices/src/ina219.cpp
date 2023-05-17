@@ -9,7 +9,7 @@
 #define CURRENT_REG 0x4
 #define CALIBRATION_REG 0x5
 
-#define CONFIG_REG_DEFAULT 0x399F
+#define CONFIG_REG_DEFAULT 0x399F // default value of the configuration register
 
 #define SHUNT_VOLTAGE_UNITS 1/100000 // 10 micro volts
 #define BUS_VOLTAGE_UNITS 0.004 // 4 mV
@@ -19,15 +19,15 @@
 uint16_t INA219::read_from_reg(uint8_t reg) {
     char data[2];
     readI2CWrapper(reg, data, 2);
-    return (data[0] << 8) + data[1]; // convert char array to uint16_t
+    return (data[1] << 8) + data[0]; // convert char array to uint16_t
 }
 
 /* Write 2 bytes to a register. Can only write to the configuration and calibration registers.
  */
 void INA219::write_to_reg(uint8_t reg, uint16_t val) {
     char data[2];
-    data[0] = val >> 8; // get the most significant byte
-    data[1] = val & 0xFF; // get the least significant byte
+    data[0] = val & 0xFF; // get the least significant byte
+    data[1] = val >> 8; // get the most significant byte
     writeI2CWrapper(reg, data, 2);
 }
 
@@ -41,7 +41,7 @@ INA219::INA219(I2C *bus, uint8_t addr, float r_shunt, float max_current) : I2CDe
  * Returns 0 on success, 1 if an error occurred
  */
 int INA219::begin() {
-    // check value of configuration register
+    // check value of configuration register to make sure this is the right device. 
     if (read_from_reg(CONFIGURATION_REG) != CONFIG_REG_DEFAULT) {
         printf("Error reading from configuration register.");
         return 1;
@@ -53,7 +53,7 @@ int INA219::begin() {
     uint16_t cal = (int) (0.04096 / (current_lsb * r_shunt));
     write_to_reg(CALIBRATION_REG, cal);
 
-
+    return 0;
 }
 
 /* Returns the shunt voltage in volts. 
@@ -72,25 +72,37 @@ float INA219::get_bus_voltage() {
     return (float)bus_voltage * BUS_VOLTAGE_UNITS; // value in register is in units of 4 mV
 }
 
+/* Returns power in watts.
+ * If the value in the power register is meaningless, an error message is printed out. The function
+ * still returns the power value, however. 
+ */
 float INA219::get_power() {
+    uint16_t register_value = read_from_reg(POWER_REG);
+    float power = register_value * power_lsb;
     if (check_overflow_flag()) {
-        
+        printf("power value: %f might be invalid", power);
     }
+    return power;
 }
 
+/* Returns current in amps.
+ * If the value in the current register is meaningless, an error message is printed out. The function
+ * still returns the current value, however. 
+ */
 float INA219::get_current() {
-    int16_t current = read_from_reg(CURRENT_REG);
+    int16_t register_value = read_from_reg(CURRENT_REG);
+    float current = register_value * current_lsb;
     if (check_overflow_flag()) {
-        
+        printf("current value: %f might be invalid", current);
     }
-
+    return current;
 }
 
 /* Returns the value of the overflow flag.
  * The overflow flag is 1 when power and current calculations are out of range 
  * (data in current and power registers are meaningless)
  */
-bool check_overflow_flag() {
+bool INA219::check_overflow_flag() {
     uint16_t bus_voltage = read_from_reg(BUS_VOLTAGE_REG);
     return (bool) (bus_voltage & 0x1); // bit 0 of the bus voltage is the overflow flag
 }
