@@ -1,9 +1,11 @@
-#include "mbed.h"
-#include "uartApp.h"
 #include "bms.h"
 #include "i2cdevice.h"
-#include "tca6416.h"
+#include "ina219.h"
+#include "mbed.h"
 #include "rtos.h"
+#include "tca6416.h"
+#include "uartApp.h"
+
 
 //CAN canBus(PD_0, PD_1);
 I2C i2cBus(PF_0, PF_1); // (sda, scl)
@@ -19,6 +21,12 @@ int main(void){
     tca.i2cdetect();
     tca.begin(tca_dirs);
 	//Mutex tcaMutex;
+
+    // the following are the 3 INAs on MainIO. Only leave one uncommented when running
+    INA219* ina = new INA219(&i2cBus, 0x40, 0.005, 2.0);
+    //INA219* ina = new INA219(&i2cBus, 0x44, 0.005, 2.0); 
+    //INA219* ina = new INA219(&i2cBus, 0x41, 0.005, 1.0);
+    ina->begin();
 
     //BMS bms(c, &tca, 10ms);
     
@@ -64,5 +72,4 @@ int main(void){
     printf("Hello, Mbed!\n");
     return 0;
 }
-
 

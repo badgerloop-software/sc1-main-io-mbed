@@ -19,15 +19,15 @@
 uint16_t INA219::read_from_reg(uint8_t reg) {
     char data[2];
     readI2CWrapper(reg, data, 2);
-    return (data[1] << 8) + data[0]; // convert char array to uint16_t
+    return (data[0] << 8) + data[1]; // convert char array to uint16_t
 }
 
 /* Write 2 bytes to a register. Can only write to the configuration and calibration registers.
  */
 void INA219::write_to_reg(uint8_t reg, uint16_t val) {
     char data[2];
-    data[0] = val & 0xFF; // get the least significant byte
-    data[1] = val >> 8; // get the most significant byte
+    data[1] = val & 0xFF; // get the least significant byte
+    data[0] = val >> 8; // get the most significant byte
     writeI2CWrapper(reg, data, 2);
 }
 
@@ -43,7 +43,7 @@ INA219::INA219(I2C *bus, uint8_t addr, float r_shunt, float max_current) : I2CDe
 int INA219::begin() {
     // check value of configuration register to make sure this is the right device. 
     if (read_from_reg(CONFIGURATION_REG) != CONFIG_REG_DEFAULT) {
-        printf("Error reading from configuration register.");
+        printf("Error reading from configuration register.\n");
         return 1;
     }
 
@@ -80,7 +80,7 @@ float INA219::get_power() {
     uint16_t register_value = read_from_reg(POWER_REG);
     float power = register_value * power_lsb;
     if (check_overflow_flag()) {
-        printf("power value: %f might be invalid", power);
+        printf("power value: %f might be invalid\n", power);
     }
     return power;
 }
@@ -93,7 +93,7 @@ float INA219::get_current() {
     int16_t register_value = read_from_reg(CURRENT_REG);
     float current = register_value * current_lsb;
     if (check_overflow_flag()) {
-        printf("current value: %f might be invalid", current);
+        printf("current value: %f might be invalid\n", current);
     }
     return current;
 }
