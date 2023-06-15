@@ -7,7 +7,7 @@ static const int BAUD = 115200;
 static const int BUFF_SIZE = 512;
 static int isInit = 0;
 
-static UnbufferedSerial uart(PD_5, PD_6, BAUD);
+static UnbufferedSerial uart(PG_14, PG_9, BAUD); // (tx, rx)
 static CircularBuffer<char, BUFF_SIZE, unsigned int> rxBuff;
 
 void callback() {

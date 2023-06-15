@@ -1,6 +1,7 @@
 #include "tca6416.h"
 
-
+// Pins to read: 1
+// Pins to write: 0
 TCA6416::TCA6416(I2C *bus, uint8_t addr) : I2CDevice(bus, addr) {
 
 }

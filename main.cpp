@@ -5,26 +5,26 @@
 #include "tca6416.h"
 
 CAN canBus(PD_0, PD_1);
-I2C i2cBus(PF_0, PF_1);
+I2C i2cBus(PB_11, PB_10); // (sda, scl)
 
 int main(void){
+    Can c(&canBus);
+	// TODO Check directions and set pins to read to 1 and pins to write to 0
+    const uint8_t tca_dirs[16] = {1, 1, 1, 1, 1, 1, 1, 1, 
+                                    1, 0, 1, 1, 1, 1, 1, 1};
+    TCA6416 tca(&i2cBus, 0x20);
+    tca.begin(tca_dirs);
+	Mutex tcaMutex;
 
-	if(!runUart()) {
+    BMS bms(c, &tca, 10ms);
+    
+    if(!runUart(&tca, &tcaMutex)) {
         printf("the UART application is running\n");
     } else {
         printf("NOT RUNNING\n");
         exit(1);
     }
-
     
-
-    Can c(&canBus);
-    const uint8_t tca_dirs[16] = {1, 1, 1, 1, 1, 1, 1, 1, 
-                                    1, 0, 1, 1, 1, 1, 1, 1};
-    TCA6416 tca(&i2cBus, 0x21);
-    tca.begin(tca_dirs);
-    BMS bms(c, &tca, 10ms);
-
     for (;;) {
         printf("\e[1;1H\e[2J");
         printf("Charge: %f\n", bms.getPackStateOfCharge());
