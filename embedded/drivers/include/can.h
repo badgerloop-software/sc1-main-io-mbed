@@ -8,7 +8,7 @@
 #define CAN_TD (PD_1)
 #define CAN_RX_INT_FLAG (1UL << 0)
 #define CAN_STOP (1UL << 1)
-#define CAN_FREQ (125000)
+#define CAN_FREQ (500000)
 
 
 class Can {
