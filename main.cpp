@@ -6,8 +6,10 @@
 #include "tca6416.h"
 #include "uartApp.h"
 
-
+CAN canBus(PD_0, PD_1, 500000);
 I2C i2cBus(PF_0, PF_1); // (sda, scl)
+DigitalOut pin(PA_7, 1); // this is for the small nucleo so that CAN works.
+Can c(&canBus);
 
 int main(void){
     printf("hey\n");
@@ -24,6 +26,7 @@ int main(void){
     //INA219* ina = new INA219(&i2cBus, 0x41, 0.005, 1.0);
     ina->begin();
 
+    BMS bms(c, NULL, 10ms);
     
     if(!runUart(&tca)) {
         printf("the UART application is running\n");
@@ -65,8 +68,3 @@ int main(void){
     printf("Hello, Mbed!\n");
     return 0;
 }
-
-CAN canBus(PD_0, PD_1, 500000);
-DigitalOut pin(PA_7, 1); // this is for the small nucleo so that CAN works.
-Can c(&canBus);
-    BMS bms(c, NULL, 10ms);
