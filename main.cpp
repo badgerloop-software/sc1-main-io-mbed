@@ -7,20 +7,16 @@
 #include "uartApp.h"
 
 
-//CAN canBus(PD_0, PD_1);
 I2C i2cBus(PF_0, PF_1); // (sda, scl)
-//DigitalOut pin(PA_7, 1); // this is for the small nucleo so that CAN works.
 
 int main(void){
     printf("hey\n");
-    //Can c(&canBus);
 	// TODO Check directions and set pins to read to 1 and pins to write to 0
     const uint8_t tca_dirs[16] = {0, 1, 1, 1, 1, 1, 1, 1, 
                                     1, 1, 1, 1, 1, 1, 1, 1};
     TCA6416 tca(&i2cBus, 0x20);
     tca.i2cdetect();
     tca.begin(tca_dirs);
-	//Mutex tcaMutex;
 
     // the following are the 3 INAs on MainIO. Only leave one uncommented when running
     INA219* ina = new INA219(&i2cBus, 0x40, 0.005, 2.0);
@@ -28,7 +24,6 @@ int main(void){
     //INA219* ina = new INA219(&i2cBus, 0x41, 0.005, 1.0);
     ina->begin();
 
-    //BMS bms(c, &tca, 10ms);
     
     if(!runUart(&tca)) {
         printf("the UART application is running\n");
@@ -39,7 +34,6 @@ int main(void){
     int toggle = 0;
     for (;;) {
         //printf("\e[1;1H\e[2J");
-        lock_tca_mutex();
         printf("MCU_Stat_fdbk: %d\n", tca.get_state(0, 1));
         //printf("mcu_hv_en: %d\n", get_mcu_hv_en());
         // printf("IMD_fdbk: %d\n", tca.get_state(0, 2));
@@ -53,7 +47,6 @@ int main(void){
             toggle = 0;
         }
         //tca.set_state(0, 0, toggle);
-        unlock_tca_mutex();
         // printf("Charge: %f\n", bms.getPackStateOfCharge());
         // printf("Voltage: %f\n", bms.getPackVoltage());
         // printf("Current: %f\n", bms.getPackCurrent());
@@ -73,3 +66,7 @@ int main(void){
     return 0;
 }
 
+CAN canBus(PD_0, PD_1, 500000);
+DigitalOut pin(PA_7, 1); // this is for the small nucleo so that CAN works.
+Can c(&canBus);
+    BMS bms(c, NULL, 10ms);

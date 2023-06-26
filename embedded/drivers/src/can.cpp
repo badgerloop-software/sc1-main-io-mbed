@@ -4,7 +4,6 @@ Can::Can(CAN* canBus) : t(osPriorityHigh) {
     this->canBus = canBus;
     this->isInit = true;
 
-    canBus->frequency(CAN_FREQ);
     canBus->attach(callback(this, &Can::interrupt), CAN::RxIrq);
     t.start(callback(this, &Can::canThread));
 }
