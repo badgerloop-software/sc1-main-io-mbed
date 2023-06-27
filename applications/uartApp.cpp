@@ -25,6 +25,8 @@ data_format dfwrite;
 data_format dfdata;
 data_format emptyStruct;
 
+int ack;
+
 bool restart_enable;
 bool parking_brake; 
 
@@ -40,9 +42,13 @@ void send_message_thread() {
     check_shutdown_errors();  // check if mcu_hv_en needs to be set to 0
 
     copyDataStructToWriteStruct();
-    uart_buffer.lock();
-    writeUart(&dfwrite, TOTAL_BYTES);
-    uart_buffer.unlock();
+    if (ack == NUM_COMMAND_BYTES) { // TODO Verify this. I believe ack != 0 was being used when the UART synchronization was initially fixed)
+      uart_buffer.lock();
+      writeUart(&dfwrite, TOTAL_BYTES);
+      // Reset UART read ack to be sure that write can't run again until a new message has been read
+      ack = 0;
+      uart_buffer.unlock(); 
+    }
     wait_us(T_MESSAGE_US);
   }
 }
@@ -57,7 +63,9 @@ void read_command_thread() {
     char read_array[NUM_COMMAND_BYTES]; 
     // set mcu_hv_en to 0 (error state) if HEARTBEAT consecutive messages aren't
     // read
-    if (readUart(read_array, NUM_COMMAND_BYTES) == 0) {
+    ack = readUart(read_array, NUM_COMMAND_BYTES);
+
+    if (ack == 0) {
       printf("message not received\n");
       if (++messages_not_received >= HEARTBEAT) {
         printf("heartbeat lost\n");
