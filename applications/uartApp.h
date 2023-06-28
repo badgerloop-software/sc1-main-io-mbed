@@ -14,7 +14,7 @@
 #include "rtos.h"
 #pragma pack(push, 1)
 
-#define TOTAL_BYTES 431
+#define TOTAL_BYTES 441
 
 typedef struct {
   float speed;
@@ -118,6 +118,10 @@ typedef struct {
   float pack_current;
   float pack_voltage;
   float pack_power;
+  float highest_cell_group_voltage;
+  uint8_t highest_cell_group_voltage_idx;
+  float lowest_cell_group_voltage;
+  uint8_t lowest_cell_group_voltage_idx;
   float supplemental_voltage;
   float cell_group1_voltage;
   float cell_group2_voltage;
@@ -499,6 +503,18 @@ void set_pack_voltage(float val);
 
 float get_pack_power();
 void set_pack_power(float val);
+
+float get_highest_cell_group_voltage();
+void set_highest_cell_group_voltage(float val);
+
+uint8_t get_highest_cell_group_voltage_idx();
+void set_highest_cell_group_voltage_idx(uint8_t val);
+
+float get_lowest_cell_group_voltage();
+void set_lowest_cell_group_voltage(float val);
+
+uint8_t get_lowest_cell_group_voltage_idx();
+void set_lowest_cell_group_voltage_idx(uint8_t val);
 
 float get_supplemental_voltage();
 void set_supplemental_voltage(float val);

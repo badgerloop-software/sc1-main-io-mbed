@@ -135,6 +135,7 @@ bool get_restart_enable() {
   return val;
 }
 
+
 Mutex cell_group_voltage_mutex;
 Mutex speed_mutex;
 Mutex driver_eStop_mutex;
@@ -237,6 +238,10 @@ Mutex pack_internal_temp_mutex;
 Mutex pack_current_mutex;
 Mutex pack_voltage_mutex;
 Mutex pack_power_mutex;
+Mutex highest_cell_group_voltage_mutex;
+Mutex highest_cell_group_voltage_idx_mutex;
+Mutex lowest_cell_group_voltage_mutex;
+Mutex lowest_cell_group_voltage_idx_mutex;
 Mutex supplemental_voltage_mutex;
 Mutex populated_cells_mutex;
 Mutex soc_mutex;
@@ -391,6 +396,10 @@ void copyDataStructToWriteStruct() {
   dfwrite.pack_current = get_pack_current();
   dfwrite.pack_voltage = get_pack_voltage();
   dfwrite.pack_power = get_pack_power();
+  dfwrite.highest_cell_group_voltage = get_highest_cell_group_voltage();
+  dfwrite.highest_cell_group_voltage_idx = get_highest_cell_group_voltage_idx();
+  dfwrite.lowest_cell_group_voltage = get_lowest_cell_group_voltage();
+  dfwrite.lowest_cell_group_voltage_idx = get_lowest_cell_group_voltage_idx();
   dfwrite.supplemental_voltage = get_supplemental_voltage();
   dfwrite.cell_group1_voltage = get_cell_group_voltage(1);
   dfwrite.cell_group2_voltage = get_cell_group_voltage(2);
@@ -1680,6 +1689,54 @@ void set_pack_power(float val) {
   pack_power_mutex.lock();
   dfdata.pack_power = val;
   pack_power_mutex.unlock();
+}
+
+float get_highest_cell_group_voltage() {
+  highest_cell_group_voltage_mutex.lock();
+  float val = dfdata.highest_cell_group_voltage;
+  highest_cell_group_voltage_mutex.unlock();
+  return val;
+}
+void set_highest_cell_group_voltage(float val) {
+  highest_cell_group_voltage_mutex.lock();
+  dfdata.highest_cell_group_voltage = val;
+  highest_cell_group_voltage_mutex.unlock();
+}
+
+uint8_t get_highest_cell_group_voltage_idx() {
+  highest_cell_group_voltage_idx_mutex.lock();
+  uint8_t val = dfdata.highest_cell_group_voltage_idx;
+  highest_cell_group_voltage_idx_mutex.unlock();
+  return val;
+}
+void set_highest_cell_group_voltage_idx(uint8_t val) {
+  highest_cell_group_voltage_idx_mutex.lock();
+  dfdata.highest_cell_group_voltage_idx = val;
+  highest_cell_group_voltage_idx_mutex.unlock();
+}
+
+float get_lowest_cell_group_voltage() {
+  lowest_cell_group_voltage_mutex.lock();
+  float val = dfdata.lowest_cell_group_voltage;
+  lowest_cell_group_voltage_mutex.unlock();
+  return val;
+}
+void set_lowest_cell_group_voltage(float val) {
+  lowest_cell_group_voltage_mutex.lock();
+  dfdata.lowest_cell_group_voltage = val;
+  lowest_cell_group_voltage_mutex.unlock();
+}
+
+uint8_t get_lowest_cell_group_voltage_idx() {
+  lowest_cell_group_voltage_idx_mutex.lock();
+  uint8_t val = dfdata.lowest_cell_group_voltage_idx;
+  lowest_cell_group_voltage_idx_mutex.unlock();
+  return val;
+}
+void set_lowest_cell_group_voltage_idx(uint8_t val) {
+  lowest_cell_group_voltage_idx_mutex.lock();
+  dfdata.lowest_cell_group_voltage_idx = val;
+  lowest_cell_group_voltage_idx_mutex.unlock();
 }
 
 float get_supplemental_voltage() {
