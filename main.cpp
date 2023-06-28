@@ -55,26 +55,28 @@ int main(void){
     int toggle = 0;
     for (;;) {
         printf("\e[1;1H\e[2J");
-        printf("MCU_Stat_fdbk: %d\n", tca.get_state(0, 1));
-        //printf("mcu_hv_en: %d\n", get_mcu_hv_en());
-        // printf("IMD_fdbk: %d\n", tca.get_state(0, 2));
-        // printf("Lim_fdbk: %d\n", tca.get_state(0, 3));
-        // printf("Inertia_fdbk: %d\n", tca.get_state(1, 7));
-        // printf("Ext_Estop_fdbk: %d\n", tca.get_state(1, 5));
-        // printf("Driver_Estop_fdbk: %d\n", tca.get_state(1, 4));
+        printf("MCU_Stat_fdbk: %d\n", !tca.get_state(0, 1));
+        printf("mcu_hv_en: %d\n", get_mcu_hv_en());
+        printf("IMD_fdbk: %d\n", !tca.get_state(0, 2));
+        printf("Lim_fdbk: %d\n", !tca.get_state(0, 3));
+        printf("Inertia_fdbk: %d\n", !tca.get_state(1, 7));
+        printf("Ext_Estop_fdbk: %d\n", !tca.get_state(1, 5));
+        printf("Driver_Estop_fdbk: %d\n", !tca.get_state(1, 4));
+        printf("Charge Enable: %d\n", tca_bms.get_state(1, 5));
+        printf("Discharge Enable: %d\n", tca_bms.get_state(1, 6));
         if (toggle == 0) {
             toggle = 1;
         } else {
             toggle = 0;
         }
         //tca.set_state(0, 0, toggle);
-        // printf("Charge: %f\n", bms.getPackStateOfCharge());
-        // printf("Voltage: %f\n", bms.getPackVoltage());
-        // printf("Current: %f\n", bms.getPackCurrent());
-        // printf("Avg Temp: %f\n", bms.getAvgTemperature());
-        // printf("Internal Temp:%f\n", bms.getInternalTemperature());
-        // printf("Fan Speed: %d\n", bms.getFanSpeed());
-        wait_us(9000000);
+        printf("Charge: %f\n", bms.getPackStateOfCharge());
+        printf("Voltage: %f\n", bms.getPackVoltage());
+        printf("Current: %f\n", bms.getPackCurrent());
+        printf("Avg Temp: %f\n", bms.getAvgTemperature());
+        printf("Internal Temp:%f\n", bms.getInternalTemperature());
+        printf("Fan Speed: %d\n", bms.getFanSpeed());
+        //wait_us(1000000);
         // modify the byte array and put printouts here
 
         // this has to be set to 1 for the UART app to not get stuck at the fault screen. 
@@ -86,11 +88,17 @@ int main(void){
         mpi_1 = tca_bms.get_state(1, 2); // BMS_MPI1
         mpi_2 = tca_bms.get_state(1, 3); // BMS_MPI2
         mpo_2 = tca_bms.get_state(1, 4); // BMS_MPO2
-        set_imd_status(mpo_2);
+        set_imd_status(!tca.get_state(0, 2));
         set_charge_enable(tca_bms.get_state(1, 5)); // BMS_CHRG_EN
         set_discharge_enable(tca_bms.get_state(1, 6)); // BMS_DSCHRG_EN
         // update external_eStop
-        set_external_eStop(tca.get_state(1, 5)); // Ext_Estop_Fdbk
+        set_external_eStop(!tca.get_state(1, 5)); // Ext_Estop_Fdbk
+        set_driver_eStop(!tca.get_state(1, 4));
+        set_crash(!tca.get_state(1, 7));
+        set_door(!tca.get_state(0, 3));
+        set_mcu_stat_fdbk(!tca.get_state(0, 1));
+
+        wait_us(1000000);
     }
     
     printf("Hello, Mbed!\n");
