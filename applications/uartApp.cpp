@@ -2505,10 +2505,10 @@ void check_mcu_check() {
   // TODO figure out what signals are needed here
   // spreadsheet, MainIO row 13
   if (!get_mainIO_heartbeat() ||
-      get_voltage_failsafe() || get_pack_voltage() < 2.5 || get_pack_voltage() > 3.65 || // Pack voltage TODO reinstate this
+      get_voltage_failsafe() || get_lowest_cell_group_voltage() < 2.5 || get_highest_cell_group_voltage() > 3.65 || // Pack voltage TODO reinstate this
       get_pack_current() < -24.4 || get_pack_current() > 48.8 || 
       get_pack_temp() > 55 ||
-      get_imd_status() || get_discharge_enable() || get_external_eStop() || get_bps_fault()
+      get_imd_status() || get_discharge_enable() || get_charge_enable() || get_external_eStop() || get_bps_fault()
       ) {
     set_mcu_check(1); // error state
   }
