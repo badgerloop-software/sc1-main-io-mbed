@@ -9,6 +9,8 @@
 CAN canBus(PD_0, PD_1, 500000);
 I2C i2cBus(PF_0, PF_1); // (sda, scl)
 DigitalOut pin(PA_7, 1); // this is for the small nucleo so that CAN works.
+DigitalOut GPIO1_RST(PG_0, 0);
+DigitalOut GPIO2_RST(PG_1, 0);
 Can c(&canBus);
 
 // bms gpio signals
@@ -20,17 +22,27 @@ int main(void){
     printf("hey\n");
     // TODO Check directions and set pins to read to 1 and pins to write to 0
     const uint8_t tca_dirs[16] = {0, 1, 1, 1, 1, 1, 1, 1, 
-                                    1, 1, 1, 1, 1, 1, 1, 1};
+                                    1, 1, 1, 0, 1, 1, 1, 1};
     TCA6416 tca(&i2cBus, 0x20);
     TCA6416 tca_bms(&i2cBus, 0x21);
     tca.i2cdetect();
     tca.begin(tca_dirs);
 
+    tca.set_state(1, 3, 0);
+    printf("MCU_Latch: %d\n", tca.get_state(1, 3));
+    wait_us(1000000);
+    tca.set_state(1, 3, 1);
+    printf("MCU_Latch: %d\n", tca.get_state(1, 3));
+    wait_us(1000000);
+    tca.set_state(1, 3, 0);
+    printf("MCU_Latch: %d\n", tca.get_state(1, 3));
+
+
     // the following are the 3 INAs on MainIO. Only leave one uncommented when running
-    INA219* ina = new INA219(&i2cBus, 0x40, 0.005, 2.0);
+    //INA219* ina = new INA219(&i2cBus, 0x40, 0.005, 2.0);
     //INA219* ina = new INA219(&i2cBus, 0x44, 0.005, 2.0); 
     //INA219* ina = new INA219(&i2cBus, 0x41, 0.005, 1.0);
-    ina->begin();
+    //ina.begin();
 
     BMS bms(c, NULL, 10ms);
     
@@ -42,7 +54,7 @@ int main(void){
     }
     int toggle = 0;
     for (;;) {
-        //printf("\e[1;1H\e[2J");
+        printf("\e[1;1H\e[2J");
         printf("MCU_Stat_fdbk: %d\n", tca.get_state(0, 1));
         //printf("mcu_hv_en: %d\n", get_mcu_hv_en());
         // printf("IMD_fdbk: %d\n", tca.get_state(0, 2));
@@ -71,14 +83,14 @@ int main(void){
         // TODO set_door(toggle);
 
         // bms updateGPIO method
-        mpi_1 = tca_bms->get_state(1, 2); // BMS_MPI1
-        mpi_2 = tca_bms->get_state(1, 3); // BMS_MPI2
-        mpo_2 = tca_bms->get_state(1, 4); // BMS_MPO2
+        mpi_1 = tca_bms.get_state(1, 2); // BMS_MPI1
+        mpi_2 = tca_bms.get_state(1, 3); // BMS_MPI2
+        mpo_2 = tca_bms.get_state(1, 4); // BMS_MPO2
         set_imd_status(mpo_2);
-        set_charge_enable(tca_bms->get_state(1, 5); // BMS_CHRG_EN
-        set_discharge_enable(tca_bms->get_state(1, 6); // BMS_DSCHRG_EN
+        set_charge_enable(tca_bms.get_state(1, 5)); // BMS_CHRG_EN
+        set_discharge_enable(tca_bms.get_state(1, 6)); // BMS_DSCHRG_EN
         // update external_eStop
-        set_external_eStop(tca->get_state(1, 5)); // Ext_Estop_Fdbk
+        set_external_eStop(tca.get_state(1, 5)); // Ext_Estop_Fdbk
     }
     
     printf("Hello, Mbed!\n");
