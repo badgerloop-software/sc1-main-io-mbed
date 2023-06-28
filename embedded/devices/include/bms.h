@@ -45,10 +45,9 @@ private:
   bool dschrg_en;
 
 public:
-  BMS(Can &c, TCA6416* tca, std::chrono::milliseconds gpio_update_interval);
+  BMS(Can &c);
 
   int callback(CANMessage &msg);
-  void updateGPIO();
 
   float getPackStateOfCharge();
   float getPackCurrent();

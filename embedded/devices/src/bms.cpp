@@ -14,9 +14,7 @@
  *
  * Authors: Khiem Vu and Jonathan Wang
  */
-BMS::BMS(Can &c, TCA6416* tca, std::chrono::milliseconds gpio_update_interval) : device(c) {
-    //this->tca = tca;
-    readGPIO.attach(mbed::callback(this, &BMS::updateGPIO), gpio_update_interval);
+BMS::BMS(Can &c) : device(c) {
 }
 
 int BMS::callback(CANMessage &msg) {
@@ -117,16 +115,6 @@ int BMS::callback(CANMessage &msg) {
   }
 
   return 0;
-}
-
-void BMS::updateGPIO() {
-    mpi_1 = tca->get_state(BMS_BANK, MPI_1);
-    mpi_2 = tca->get_state(BMS_BANK, MPI_2);
-    mpo_2 = tca->get_state(BMS_BANK, MPO_2);
-    chrg_en = tca->get_state(BMS_BANK, BMS_CHRG_EN);
-    set_charge_enable(chrg_en);
-    dschrg_en = tca->get_state(BMS_BANK, BMS_DSCHRG_EN);
-    set_discharge_enable(dschrg_en);
 }
 
 float BMS::getPackStateOfCharge() { return packStateOfCharge; }

@@ -44,7 +44,7 @@ int main(void){
     //INA219* ina = new INA219(&i2cBus, 0x41, 0.005, 1.0);
     //ina.begin();
 
-    BMS bms(c, NULL, 10ms);
+    BMS bms(c);
     
     if(!runUart(&tca)) {
         printf("the UART application is running\n");
