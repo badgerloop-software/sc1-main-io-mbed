@@ -8,6 +8,10 @@
 #define BMS_CHRG_EN 5
 #define BMS_DSCHRG_EN 6
 
+// union CurrentUnion {
+//     float f;
+//     char c[4];
+// };
 
 /**
  * BMS CAN device
@@ -18,6 +22,7 @@ BMS::BMS(Can &c) : device(c) {
 }
 
 int BMS::callback(CANMessage &msg) {
+    // unsigned char c_temp[4];
   switch (msg.id) {
   case 0x100:
     failsafeStatuses = (msg.data[0] | msg.data[1] << 8);
@@ -57,8 +62,18 @@ int BMS::callback(CANMessage &msg) {
     break;
 
   case 0x101:
-    packCurrent =
-        (msg.data[1] | msg.data[0] << 8) / 10.0; // default unit: 0.1 A
+    // c_temp[0] = msg.data[0];
+    // c_temp[1] = msg.data[1];
+    // c_temp[2] = 0;
+    // c_temp[3] = 0;
+    // packCurrent = *((float*)c_temp) / 10;
+    // CurrentUnion temp_union;
+    // temp_union.c[0] = msg.data[0];
+    // temp_union.c[1] = msg.data[1];
+    // packCurrent = temp_union.f /10.0;
+    //printf("Current msg.data[1]: %x | msg.data[0]: %x\n", msg.data[1], msg.data[0]);
+    packCurrent = (msg.data[1] | msg.data[0] << 8) / 10.0;
+    printf("Pack Current (BMS): %f\n", packCurrent);
     packVoltage =
         (msg.data[3] | msg.data[2] << 8) / 10.0; // default unit: 0.1 V
     set_pack_current(packCurrent);

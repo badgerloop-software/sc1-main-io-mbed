@@ -58,6 +58,7 @@ int main(void){
         printf("MCU_Stat_fdbk: %d\n", !tca.get_state(0, 1));
         printf("mcu_hv_en (main): %d\n", get_mcu_hv_en());
         printf("IMD_fdbk: %d\n", !tca.get_state(0, 2));
+        printf("MPO 2: %d\n", mpo_2);
         printf("Lim_fdbk: %d\n", !tca.get_state(0, 3));
         printf("Inertia_fdbk: %d\n", !tca.get_state(1, 7));
         printf("Ext_Estop_fdbk: %d\n", !tca.get_state(1, 5));
@@ -72,7 +73,7 @@ int main(void){
         //tca.set_state(0, 0, toggle);
         printf("Charge: %f\n", bms.getPackStateOfCharge());
         printf("Voltage: %f\n", bms.getPackVoltage());
-        printf("Current: %f\n", bms.getPackCurrent());
+        printf("Current (Main): %f\n", bms.getPackCurrent());
         printf("Avg Temp: %f\n", bms.getAvgTemperature());
         printf("Internal Temp:%f\n", bms.getInternalTemperature());
         printf("Fan Speed: %d\n", bms.getFanSpeed());
@@ -89,6 +90,7 @@ int main(void){
         mpi_2 = tca_bms.get_state(1, 3); // BMS_MPI2
         mpo_2 = tca_bms.get_state(1, 4); // BMS_MPO2
         set_imd_status(!tca.get_state(0, 2));
+        //set_imd_status(mpo_2);
         set_charge_enable(tca_bms.get_state(1, 5)); // BMS_CHRG_EN
         set_discharge_enable(tca_bms.get_state(1, 6)); // BMS_DSCHRG_EN
         // update external_eStop
