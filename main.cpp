@@ -56,7 +56,7 @@ int main(void){
     for (;;) {
         printf("\e[1;1H\e[2J");
         printf("MCU_Stat_fdbk: %d\n", !tca.get_state(0, 1));
-        printf("mcu_hv_en: %d\n", get_mcu_hv_en());
+        printf("mcu_hv_en (main): %d\n", get_mcu_hv_en());
         printf("IMD_fdbk: %d\n", !tca.get_state(0, 2));
         printf("Lim_fdbk: %d\n", !tca.get_state(0, 3));
         printf("Inertia_fdbk: %d\n", !tca.get_state(1, 7));

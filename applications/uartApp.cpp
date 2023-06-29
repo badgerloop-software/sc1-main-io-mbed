@@ -2491,9 +2491,11 @@ void unlock_tca_mutex() {
 
 // Checks shutdown error values
 void check_shutdown_errors() {
-  if (get_driver_eStop() || get_external_eStop() || get_crash() || get_door() || get_imd_status() || get_door_lim_out() || get_mcu_check()) {
+  if (get_driver_eStop() || get_external_eStop() || get_crash() || get_door() || get_imd_status() || get_door_lim_out() || 
+        !get_mainIO_heartbeat() || get_charge_enable() || get_discharge_enable()) {
     //printf("check_shutdown_errors() ran\n");
     set_mcu_hv_en(0); // error state
+    printf("MCU_HV_EN (UART): %d \n", get_mcu_hv_en());
     // Write MCU_HV_EN = 0 to stop the car
     tcaMutex.lock();
     tca->set_state(0, 0, 0);
@@ -2502,15 +2504,15 @@ void check_shutdown_errors() {
 }
 
 void check_mcu_check() {
-  // TODO figure out what signals are needed here
-  // spreadsheet, MainIO row 13
-  if (!get_mainIO_heartbeat() ||
-      get_voltage_failsafe() || //get_lowest_cell_group_voltage() < 2.5 || get_highest_cell_group_voltage() > 3.65 || // Pack voltage TODO reinstate this
-      get_pack_current() < -24.4 || get_pack_current() > 48.8 || 
-      get_pack_temp() > 55 ||
-      get_imd_status() || get_discharge_enable() || get_charge_enable() || get_external_eStop() || get_bps_fault()
-      ) {
-    set_mcu_check(1); // error state
-  }
-  set_mcu_check(0);
+//   // TODO figure out what signals are needed here
+//   // spreadsheet, MainIO row 13
+//   if (
+//       //get_voltage_failsafe() || //get_lowest_cell_group_voltage() < 2.5 || get_highest_cell_group_voltage() > 3.65 || // Pack voltage TODO reinstate this
+//       //get_pack_current() < -24.4 || get_pack_current() > 48.8 || 
+//       //get_pack_temp() > 55 ||
+//       //get_imd_status() || get_discharge_enable() || get_charge_enable() || get_external_eStop() || get_bps_fault()
+//       ) {
+//     set_mcu_check(1); // error state
+//   }
+//   set_mcu_check(0);
 }
