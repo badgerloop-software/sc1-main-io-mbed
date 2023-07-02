@@ -89,8 +89,8 @@ int main(void){
         mpi_1 = tca_bms.get_state(1, 2); // BMS_MPI1
         mpi_2 = tca_bms.get_state(1, 3); // BMS_MPI2
         mpo_2 = tca_bms.get_state(1, 4); // BMS_MPO2
-        set_imd_status(!tca.get_state(0, 2));
-        //set_imd_status(mpo_2);
+        //set_imd_status(!tca.get_state(0, 2));
+        set_imd_status(mpo_2);
         set_charge_enable(tca_bms.get_state(1, 5)); // BMS_CHRG_EN
         set_discharge_enable(tca_bms.get_state(1, 6)); // BMS_DSCHRG_EN
         // update external_eStop
