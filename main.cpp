@@ -1,132 +1,196 @@
 #include "mbed.h"
+#include "NetworkInterface.h"
+ 
+#define BUFFSIZE 50
+#define SERVERIP         "192.168.1.16"   //Here place your static IP of Mbed Server
+ 
+//#define ROUTER // commented = Static IP uncomented = address assigned by router
+#ifndef ROUTER
+    #define IP          "192.168.1.15"   //Here place your static IP of Mbed
+    #define GATEWAY     "0.0.0.0"
+    #define MASK        "255.255.255.0"
+#endif
+#define PORT            4005
+ 
+DigitalOut led(LED1);
+ 
+NetworkInterface *net = NetworkInterface::get_default_instance();
+TCPSocket client;
+SocketAddress clientAddress;
+ SocketAddress serverAddress(SERVERIP, PORT);
+ 
+int main (void){
+    printf("TCP Client starting...\n");
+    int net_stat;
+#ifndef ROUTER
+    net->disconnect();
+    net_stat = net->set_network((SocketAddress)IP,(SocketAddress)MASK,(SocketAddress)GATEWAY);
+    printf("set IP status: %i\n",net_stat);
+#endif
+    net_stat = net->connect();
+    printf("connect status: %i\n",net_stat);
+ 
+    SocketAddress ip; 
+    net->get_ip_address(&ip);
+    const char *p_ip = ip.get_ip_address();
+    printf("IP address: %s and Port: %d\n", p_ip ? p_ip : "None" , PORT );
+    SocketAddress mask;
+    net->get_netmask(&mask);
+    const char *p_mask = mask.get_ip_address();
+    printf("Netmask: %s\n", p_mask ? p_mask : "None");
+    SocketAddress gateway;
+    net->get_gateway(&gateway);
+    const char *p_gateway = gateway.get_ip_address();
+    printf("Gateway: %s\n", p_gateway ? p_gateway : "None");
+    
+    int scount = 0;
+    int rcount = 0;
+    int dummy = 0;
+    char sbuffer[100];
+    char rbuffer[100];
+    
+    while (1) {
+        if(client.open(net)== NSAPI_ERROR_OK ){
+            if (client.connect(serverAddress) < 0) {
+                printf("Failed to connect with server\n\r");
+    
+            }else{
+                printf("Connected to server\n");
+                int n = sprintf(sbuffer,"Test String with a dummy number - %d", dummy++);
+                scount = client.send(sbuffer, n);
+                printf("sent [%s] - %d bytes\n", sbuffer, scount);
+                rcount = client.recv(rbuffer, sizeof rbuffer);
+                printf("recv [%s] - %d bytes\n", rbuffer, rcount);
+                client.close();
+            }
+        }else{
+            printf("No Server\n");
+            net->disconnect();
+            printf("Program end\n");
+            break;
+        }
+        led = !led;
+        thread_sleep_for(5000);
+    }
+}
+
+
+
+/*#include "mbed.h"
 #include "EthernetInterface.h"
+#include "TCPSocket.h"
 
 // Network interface
 EthernetInterface eth;
 
-#define LOCALIP         "192.168.1.20"
-#define REMOTEIP         "192.168.1.16"
+// TODO #define LOCALIP         "192.168.1.20"
+#define LOCALIP         "192.168.1.15"
+#define REMOTEIP        "192.168.1.16"
 #define MASK       "255.255.255.0"
-#define GATEWAY    "192.168.1.255"
+// TODO #define GATEWAY    "192.168.0.1"
+#define GATEWAY    "0.0.0.0"
 
 
 int main() {
     printf("ethernet test\n");
-    SocketAddress gateway;
-    // gateway.set_ip_address(GATEWAY);
+    SocketAddress gateway = SocketAddress(GATEWAY);
+    // TODO sgateway.set_ip_address(GATEWAY);
     // gateway.set_port(4003);
-    SocketAddress localip;
-    localip.set_ip_address(LOCALIP);
-    localip.set_port(4003);
-    SocketAddress mask;
-    mask.set_ip_address(MASK);
+    SocketAddress localip = SocketAddress(LOCALIP);
+    // TODO localip.set_ip_address(LOCALIP);
+    // TODO localip.set_port(4003);
+    SocketAddress mask = SocketAddress(MASK);
+    // TODO mask.set_ip_address(MASK);
     //mask.set_port(4003);
     nsapi_error_t status = eth.set_network(localip,mask,gateway);
-    switch(status) {
-        case NSAPI_ERROR_OK:
-            printf("NSAPI_ERROR_OK (it's working)\n");
-            break;
-        case NSAPI_ERROR_BUSY:
-            printf("NSAPI_ERROR_BUSY\n");
-            break;
-        case NSAPI_ERROR_IS_CONNECTED:
-            printf("NSAPI_ERROR_IS_CONNECTED\n");
-            break;
-        case NSAPI_ERROR_NO_CONNECTION:
-            printf("NSAPI_ERROR_NO_CONNECTION\n");
-            break;
-        case NSAPI_ERROR_DHCP_FAILURE:
-            printf("NSAPI_ERROR_DHCP_FAILURE\n");
-            break;
-        case NSAPI_ERROR_UNSUPPORTED:
-            printf("NSAPI_ERROR_UNSUPPORTED\n");
-            break;
-        default: 
-            printf("error\n");
-    }
-    
+    if (status != NSAPI_ERROR_OK)
+        printf("Uh oh setting network: %d\n", status);
+    else
+        printf("Set network successfully\n");
+
     status = eth.connect();
-    switch(status) {
-        case NSAPI_ERROR_OK:
-            printf("NSAPI_ERROR_OK (it's working, eth connect)\n");
-            break;
-        case NSAPI_ERROR_BUSY:
-            printf("NSAPI_ERROR_BUSY\n");
-            break;
-        case NSAPI_ERROR_IS_CONNECTED:
-            printf("NSAPI_ERROR_IS_CONNECTED\n");
-            break;
-        case NSAPI_ERROR_NO_CONNECTION:
-            printf("NSAPI_ERROR_NO_CONNECTION\n");
-            break;
-        case NSAPI_ERROR_DHCP_FAILURE:
-            printf("NSAPI_ERROR_DHCP_FAILURE\n");
-            break;
-        default: 
-            printf("error\n");
-    }
-    while (1) {
-        printf("%d\n", eth.get_connection_status());
+    if (status != NSAPI_ERROR_OK)
+        printf("Uh oh connecting ethernet: %d\n", status);
+    else
+        printf("Connected ethernet successfully\n");
+    
+    while (eth.get_connection_status() != 1) {
+        printf("Connection status: %d\n", eth.get_connection_status());
         wait_us(1000000);
     }
-    // // Open a TCP socket
-    // TCPSocket socket;
-    // socket.set_blocking(false);
-    // status = socket.open(&eth);
-    // switch(status) {
-    //     case NSAPI_ERROR_OK:
-    //         printf("NSAPI_ERROR_OK (it's working socket)\n");
-    //         break;
-    //     case NSAPI_ERROR_BUSY:
-    //         printf("NSAPI_ERROR_BUSY\n");
-    //         break;
-    //     case NSAPI_ERROR_IS_CONNECTED:
-    //         printf("NSAPI_ERROR_IS_CONNECTED\n");
-    //         break;
-    //     case NSAPI_ERROR_NO_CONNECTION:
-    //         printf("NSAPI_ERROR_NO_CONNECTION\n");
-    //         break;
-    //     case NSAPI_ERROR_DHCP_FAILURE:
-    //         printf("NSAPI_ERROR_DHCP_FAILURE\n");
-    //         break;
-    //     case NSAPI_ERROR_UNSUPPORTED:
-    //         printf("NSAPI_ERROR_UNSUPPORTED\n");
-    //         break;
-    //     case NSAPI_ERROR_PARAMETER: 
-    //         printf("NSAPI_ERROR_PARAMETER\n");
-    //         break;
-    //     default: 
-    //         printf("error\n");
-    // }
-    // SocketAddress ad;
-    // ad.set_ip_address(REMOTEIP);
-    // ad.set_port(4003);
-    // status = socket.connect(ad);
-    // switch(status) {
-    //     case NSAPI_ERROR_OK:
-    //         printf("NSAPI_ERROR_OK (it's working SocketAddress)\n");
-    //         break;
-    //     case NSAPI_ERROR_BUSY:
-    //         printf("NSAPI_ERROR_BUSY\n");
-    //         break;
-    //     case NSAPI_ERROR_IS_CONNECTED:
-    //         printf("NSAPI_ERROR_IS_CONNECTED\n");
-    //         break;
-    //     case NSAPI_ERROR_NO_CONNECTION:
-    //         printf("NSAPI_ERROR_NO_CONNECTION\n");
-    //         break;
-    //     case NSAPI_ERROR_DHCP_FAILURE:
-    //         printf("NSAPI_ERROR_DHCP_FAILURE\n");
-    //         break;
-    //     case NSAPI_ERROR_UNSUPPORTED:
-    //         printf("NSAPI_ERROR_UNSUPPORTED\n");
-    //         break;
-    //     case NSAPI_ERROR_PARAMETER: 
-    //         printf("NSAPI_ERROR_PARAMETER\n");
-    //         break;
-    //     default: 
-    //         printf("error\n");
-    // }
+
+    SocketAddress ip;
+    status = eth.get_ip_address(&ip);
+    if (status != NSAPI_ERROR_OK)
+        printf("Uh oh getting local ip: %d\n", status);
+    else
+        printf("Got local IP successfully\n");
+    printf("Local IP address %s\n", ip.get_ip_address() ? ip.get_ip_address() : "None");
+
+    // Open a TCP socket
+    TCPSocket socket;
+    // TODO socket.set_blocking(false);
+    status = socket.open(&eth);
+    if (status != NSAPI_ERROR_OK)
+        printf("Uh oh opening socket: %d\n", status);
+    else
+        printf("Opened socket successfully\n");
+    
+
+// TODO New stuff between here and hte next todo
+    ip.set_port(4003);
+    socket.bind(ip);
+
+    status = socket.listen(1);
+    if (status != NSAPI_ERROR_OK)
+        printf("Uh oh listening: %d\n", status);
+    else
+        printf("Listening successfully\n");
+    TCPSocket *endSocket = socket.accept();
+
+    if(endSocket == NULL)
+        printf("Uh oh accepting connection\n");
+    else
+        printf("Successfully accepted connection\n");
+
+    const char *d = "hi";
+    status = endSocket->send(d, 2);
+    if (status != NSAPI_ERROR_OK)
+        printf("Uh oh sending packet: %d\n", status);
+    else
+        printf("Sent packet successfully\n");
+    
+    endSocket->close();
+    eth.disconnect();
+    return 0;
+// TODO Picked up down here
+
+
+
+    SocketAddress ad;
+    ad.set_ip_address(REMOTEIP);
+    ad.set_port(4003);
+    status = socket.connect(ad);
+    if (status != NSAPI_ERROR_OK) {
+        printf("Uh oh connecting socket: %d\n", status);
+        socket.close();
+        status = socket.open(&eth);
+        if (status != NSAPI_ERROR_OK)
+            printf("Uh oh opening socket: %d\n", status);
+        else
+            printf("Opened socket again successfully\n");
+        
+        //socket.bind(localip);
+        socket.bind(4003);
+        status = socket.connect(ad);
+        if (status != NSAPI_ERROR_OK)
+            printf("Uh oh connecting socket again: %d\n", status);
+
+    }
+
+    socket.close();
+    eth.disconnect();
+    
     // for(int i = 0; i < 30; i++) {
     //     // char data[10] = "message";
     //     // printf("send: %d\n", socket.send(&data, 10));
@@ -135,7 +199,7 @@ int main() {
     //     // printf("recv %d [%.*s]\n", rcount, strstr(rbuffer, "\r\n") - rbuffer, rbuffer);
     //     wait_us(1000000);
     // }
-}
+}*/
 
 // // Socket demo
 // int main()
