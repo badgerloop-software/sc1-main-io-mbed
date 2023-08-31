@@ -30,19 +30,30 @@ set(SRC_FILES
     applications/uartApp.cpp
 )
 
+# Example of defining binary preprocessor
+OPTION(DEF_BLINK_RATE_250 "Blinking rate optionally specified on command line" OFF)
+IF(DEF_BLINK_RATE_250)
+    ADD_DEFINITIONS(-DBLINK_RATE_250)
+ENDIF(DEF_BLINK_RATE_250)
+
+# Example of specifying/defining variable preprocessor
+IF(BLINK_RATE)
+    ADD_DEFINITIONS(-DBLINK_RATE=${BLINK_RATE}ms)
+ENDIF(BLINK_RATE)
+
 include(${MBED_PATH}/tools/cmake/app.cmake)
 
 project(${APP_TARGET})
 
 add_subdirectory(${MBED_PATH})
 
-add_executable(${APP_TARGET} main.cpp ${SRC_FILES} ${HEADER_FILES})
+add_executable(${APP_TARGET} main.cpp) # ${SRC_FILES} ${HEADER_FILES})
 
-target_include_directories(${APP_TARGET} PRIVATE
-    ${DRV_INCLUDE_DIR} ${DRV_SRC_DIR}
-    ${DEV_INCLUDE_DIR} ${DEV_SRC_DIR}
-    applications
-)
+#target_include_directories(${APP_TARGET} PRIVATE
+#    ${DRV_INCLUDE_DIR} ${DRV_SRC_DIR}
+#    ${DEV_INCLUDE_DIR} ${DEV_SRC_DIR}
+#    applications
+#)
 
 target_sources(${APP_TARGET}
     PRIVATE
