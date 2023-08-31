@@ -6,7 +6,7 @@
 #include "tca6416.h"
 #include "uartApp.h"
 
-CAN canBus(PD_0, PD_1, 500000);
+/*CAN canBus(PD_0, PD_1, 500000);
 I2C i2cBus(PF_0, PF_1); // (sda, scl)
 DigitalOut pin(PA_7, 1); // this is for the small nucleo so that CAN works.
 DigitalOut GPIO1_RST(PG_0, 0);
@@ -103,6 +103,36 @@ int main(void){
         wait_us(1000000);
     }
     
+    printf("Hello, Mbed!\n");
+    return 0;
+}*/
+
+#define BLINKING_RATE     2000ms
+// Main code. Should initialize devices and then transform into the CAN loop
+
+int main()
+{
+    int iteration = 0;
+
+#ifdef LED1
+    DigitalOut led(LED1);
+#else
+    bool led;
+#endif
+
+    while(1)
+    {
+        // LED blink
+        led = !led;
+        printf("Blink num %d\n", iteration);
+
+        if(iteration >= 10)
+            printf("Done\n");
+        iteration ++;
+
+        ThisThread::sleep_for(BLINKING_RATE);
+    }
+
     printf("Hello, Mbed!\n");
     return 0;
 }
