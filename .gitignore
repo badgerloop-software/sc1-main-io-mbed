@@ -3,7 +3,6 @@
 projectfiles
 mbed-os
 BUILD
-embedded
 
 # Python
 .env
