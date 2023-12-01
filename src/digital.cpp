@@ -4,7 +4,6 @@
 Ticker readDigitalDelay;
 
 // Digital input pins
-
 DigitalIn brake_status1(PF_0);
 DigitalIn brake_status2(PF_1);
 

@@ -1,7 +1,25 @@
+
 #include "mbed.h"
 #include "analog.h"
+#include "candecoder.h"
 #include "digital.h"
 #include "telemetry.h"
+
+#define BIG_NUCLEO 1
+
+#if BIG_NUCLEO
+
+#define CAN_RX PD_0
+#define CAN_TX PD_1
+
+#else 
+
+#define CAN_RX PA_11
+#define CAN_TX PA_12
+
+#endif
+
+#define MSG_LEN 8
 
 #define SAMPLE_INTERVAL 50ms
 #define DEBUG_PRINT 0
@@ -43,10 +61,51 @@ int main()
     initDigital(SAMPLE_INTERVAL);
     initAnalog(SAMPLE_INTERVAL);
 
+
+    //code needed for both
+    PinName can_rx = CAN_RX;
+    PinName can_tx = CAN_TX;
+    CANDecoder test(can_rx, can_tx, DEFAULT_CAN_FREQ);
+
+    CAN::Mode mode(CAN::Normal);
+
+    unsigned int messageID = 0x101;
+
+
     while (true) {
 #if DEBUG_PRINT
         printDebug();
 #endif
+        
+        //loop through all messag IDs
+        messageID++;
+        if (messageID > 0x104) {
+            messageID = 0x100;
+        }
+
+#if BIG_NUCLEO
+        printf(".");
+        CANMessage msg;
+        
+        //get message
+        test.runQueue(10ms);
+        
+#else
+        unsigned char raw[] = {
+            0b10111111,
+            0b10111111,
+            0b10111111,
+            0b10111111,
+            0b11111111,
+            0b11111111,
+            0b11111111,
+            0b11111111,
+        };
+        
+        test.sendMessage(messageID, raw, MSG_LEN, 100);
+        printf("sent message!\n");
+#endif
+
         wait_us(1000000);
     }
 }
