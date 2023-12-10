@@ -8,8 +8,6 @@
 
 // Bit field to store digital IO
 struct Digital_Data {
-    bool brake1 : 1;
-    bool brake2 : 1;
     bool BRK_LED_EN : 1;
     bool BRK_STATUS : 1;
     bool BRK_STATUS2 : 1;
@@ -32,9 +30,12 @@ extern volatile float motor_controller_temperature;
 extern volatile float motor_temperature;
 extern volatile float road_temperature;
 
-// bus voltages. Found in analog.cpp
+// bus voltages and currents Found in analog.cpp
 extern volatile float bus_12v;
 extern volatile float bus_24v;
 extern volatile float bus_5v;
+extern volatile float input_current_12v;
+extern volatile float output_current_5v;
+extern volatile float output_current_24v;
 
 #endif

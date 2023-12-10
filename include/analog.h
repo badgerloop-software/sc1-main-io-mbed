@@ -4,6 +4,7 @@
 #include "telemetry.h"
 #include "mutexless_analog.h"
 #include "thermistor.h"
+#include "INA281.h"
 
 // read all the analog inputs
 void readAnalog();
