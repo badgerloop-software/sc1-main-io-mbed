@@ -22,7 +22,7 @@ volatile float motor_controller_temperature = 0.0;
 volatile float motor_temperature = 0.0;
 volatile float road_temperature = 0.0;
 
-// voltage rails
+// rail voltages
 AnalogInMutexless LV_12V_TELEM(PF_6);
 AnalogInMutexless LV_24V_TELEM(PC_3);
 AnalogInMutexless LV_5V_TELEM(PC_2);
@@ -30,6 +30,15 @@ AnalogInMutexless LV_5V_TELEM(PC_2);
 volatile float bus_12v = 0.0;
 volatile float bus_24v = 0.0;
 volatile float bus_5v = 0.0;
+
+// rail currents
+INA281Driver I_OUT_5V(A2, 0.005);
+INA281Driver I_IN_12V(PA_0, 0.005);
+INA281Driver I_OUT_24V(A4, 0.005);
+
+volatile float input_current_12v = 0.0;
+volatile float output_current_5v = 0.0;
+volatile float output_current_24v = 0.0;
 
 void read_temperatures() {
     air_temperature = air_therm.get_temperature();
@@ -48,10 +57,18 @@ void read_bus_voltages() {
     bus_5v = LV_5V_TELEM.read() * 3.3 * 15.1/5.1;
 }
 
+// reads bus currents
+void read_bus_currents() {
+    input_current_12v = I_IN_12V.readCurrent();
+    output_current_24v = I_OUT_24V.readCurrent();
+    output_current_5v = I_OUT_5V.readCurrent();
+}
+
 // read all analog input
 void readAnalog() {
     read_temperatures();
     read_bus_voltages();
+    read_bus_currents();
 }
 
 // Set up polling of analog IO at specified rate

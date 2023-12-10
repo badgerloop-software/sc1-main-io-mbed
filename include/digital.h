@@ -3,12 +3,11 @@
 
 #include "mbed.h"
 #include "telemetry.h"
-#include <chrono>
 
 // read input from the digital pins
 void readDigital();
 
 // automatically read brake pins at a set interval
-void initBrake(std::chrono::milliseconds readSignalPeriod);
+void initDigital(std::chrono::milliseconds readSignalPeriod);
 
 #endif
