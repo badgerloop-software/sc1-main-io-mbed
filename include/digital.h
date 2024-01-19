@@ -10,4 +10,7 @@ void readDigital();
 // automatically read brake pins at a set interval
 void initDigital(std::chrono::milliseconds readSignalPeriod);
 
+// control brake light
+void setBrakeLED(int value);
+
 #endif

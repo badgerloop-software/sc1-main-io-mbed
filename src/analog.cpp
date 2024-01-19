@@ -4,8 +4,6 @@
 Ticker readAnalogDelay;
 
 // thermistor initializations
-// TODO: put actual values in the initialization. These are currently dummy values. Also delete this comment when done.
-// NOTE: the pins are correct.
 Thermistor air_therm(NCP21XM472J03RA_Constants, PF_4, 4700, 3.3);
 Thermistor brk_therm(NCP21XM472J03RA_Constants, PC_2, 4700, 3.3);
 Thermistor dcdc_therm(NCP21XM472J03RA_Constants, PB_1, 4700, 3.3);
@@ -25,14 +23,14 @@ volatile float road_temperature = 0.0;
 // rail voltages
 AnalogInMutexless LV_12V_TELEM(PF_6);
 AnalogInMutexless LV_24V_TELEM(PC_3);
-AnalogInMutexless LV_5V_TELEM(PC_2);
+AnalogInMutexless LV_5V_TELEM(PF_8);
 
 volatile float bus_12v = 0.0;
 volatile float bus_24v = 0.0;
 volatile float bus_5v = 0.0;
 
 // rail currents
-INA281Driver I_OUT_5V(A2, 0.005);
+INA281Driver I_OUT_5V(PA_4, 0.005);
 INA281Driver I_IN_12V(PA_0, 0.005);
 INA281Driver I_OUT_24V(A4, 0.005);
 
