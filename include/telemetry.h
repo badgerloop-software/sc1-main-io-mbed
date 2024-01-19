@@ -3,12 +3,13 @@
 
 #include "mbed.h"
 
-// uncomment below to disable lights
+// ************************************************
+// UNCOMMENT BELOW TO DISABLE LIGHTS
+// ************************************************
 // #define LIGHTS_DISABLED
 
 // Bit field to store digital IO
 struct Digital_Data {
-    bool BRK_LED_EN : 1;
     bool BRK_STATUS : 1;
     bool BRK_STATUS2 : 1;
 
@@ -20,6 +21,8 @@ struct Digital_Data {
     bool R_BLINK_TELEM : 1;
     #endif
 };
+
+extern volatile Digital_Data digital_data;
 
 // thermistor temperatures. Found in analog.cpp
 extern volatile float air_temperature;
