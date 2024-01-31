@@ -220,3 +220,8 @@ void CANDecoder::readHandler(int messageID, SharedPtr<unsigned char> data, int l
     printf("---------------------------------------------------------------------------------\n\n");
 }
 
+void CANDecoder::send_mainio_data() {
+    // parking brakes
+    bool parking_brake = brakeInputs.brake2;
+    this->sendMessage(0x40, (void*)&parking_brake, 1, 1ms);
+}
