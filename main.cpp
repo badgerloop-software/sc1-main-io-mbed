@@ -61,51 +61,18 @@ int main()
     initDigital(SAMPLE_INTERVAL);
     initAnalog(SAMPLE_INTERVAL);
 
-
     //code needed for both
     PinName can_rx = CAN_RX;
     PinName can_tx = CAN_TX;
-    CANDecoder test(can_rx, can_tx, DEFAULT_CAN_FREQ);
-
-    CAN::Mode mode(CAN::Normal);
-
-    unsigned int messageID = 0x101;
-
+    CANDecoder mainio_can(can_rx, can_tx, DEFAULT_CAN_FREQ);
 
     while (true) {
 #if DEBUG_PRINT
         printDebug();
 #endif
-        
-        //loop through all messag IDs
-        messageID++;
-        if (messageID > 0x104) {
-            messageID = 0x100;
-        }
 
-#if BIG_NUCLEO
-        printf(".");
-        CANMessage msg;
-        
-        //get message
-        test.runQueue(10ms);
-        
-#else
-        unsigned char raw[] = {
-            0b10111111,
-            0b10111111,
-            0b10111111,
-            0b10111111,
-            0b11111111,
-            0b11111111,
-            0b11111111,
-            0b11111111,
-        };
-        
-        test.sendMessage(messageID, raw, MSG_LEN, 100);
-        printf("sent message!\n");
-#endif
-
-        wait_us(1000000);
+        //send stuff through the CAN pin
+        mainio_can.send_mainio_data();
+        mainio_can.runQueue(10ms);
     }
 }

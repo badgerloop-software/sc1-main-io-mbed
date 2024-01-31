@@ -3,6 +3,7 @@
 
 #include "canmanager.h"
 #include "dataFormat.h"
+#include "digital.h"
 
 class CANDecoder : public CANManager {
     private:
@@ -23,6 +24,7 @@ class CANDecoder : public CANManager {
         CANDecoder(PinName rd, PinName td, int frequency): CANManager(rd, td, frequency) {};
         
         void readHandler(int messageID, SharedPtr<unsigned char> data, int length);
+        void send_mainio_data();
 };
 
 #endif
