@@ -1,28 +1,14 @@
-
 #include "mbed.h"
 #include "analog.h"
 #include "candecoder.h"
 #include "digital.h"
 #include "telemetry.h"
 
-#define BIG_NUCLEO 1
-
-#if BIG_NUCLEO
+#define SAMPLE_INTERVAL 50ms
+#define DEBUG_PRINT 0
 
 #define CAN_RX PD_0
 #define CAN_TX PD_1
-
-#else 
-
-#define CAN_RX PA_11
-#define CAN_TX PA_12
-
-#endif
-
-#define MSG_LEN 8
-
-#define SAMPLE_INTERVAL 50ms
-#define DEBUG_PRINT 0
 
 #if DEBUG_PRINT
 void printDebug() {
@@ -61,18 +47,15 @@ int main()
     initDigital(SAMPLE_INTERVAL);
     initAnalog(SAMPLE_INTERVAL);
 
-    //code needed for both
-    PinName can_rx = CAN_RX;
-    PinName can_tx = CAN_TX;
-    CANDecoder mainio_can(can_rx, can_tx, DEFAULT_CAN_FREQ);
+    // Initialize bus
+    CANDecoder canBus(CAN_RX, CAN_TX);
 
     while (true) {
 #if DEBUG_PRINT
-        printDebug();
+        debugPrint();
 #endif
-
-        //send stuff through the CAN pin
-        mainio_can.send_mainio_data();
-        mainio_can.runQueue(10ms);
+        // Process inbound messages 
+        canBus.send_mainio_data();
+        canBus.runQueue(1000ms);
     }
 }

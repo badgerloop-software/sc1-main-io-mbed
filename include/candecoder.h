@@ -5,23 +5,27 @@
 #include "dataFormat.h"
 #include "digital.h"
 
+#define BOARD_ID_MASK 0x700
+
+
 class CANDecoder : public CANManager {
     private:
-        // position for how far from the start of the screen the on/off string should be when printFlags is called
-        const int flagTextPosition = 50;
-
         int getValueFrom2Bytes(unsigned char bigByte, unsigned char smallByte);
 
-        void printFlags(const char *const flagsType, unsigned char flags, const char *const flagMessages[]);
+        // Helper functions for compacted messages
+        void decode100(unsigned char *data);
+        void decode101(unsigned char *data);
+        void decode102(unsigned char *data);
+        void decode200(unsigned char *data);
 
-        void printDecodedx100(unsigned char *data);
-        void printDecodedx101(unsigned char *data);
-        void printDecodedx102(unsigned char *data);
-        void printDecodedx103(unsigned char *data);
-        void printDecodedx104(unsigned char *data);
+        // Helper functions to process data from each board
+        void decodeBMS(int messageID, SharedPtr<unsigned char> data, int length);
+        void decodeMCC(int messageID, SharedPtr<unsigned char> data, int length);
+        void decodeHV(int messageID, SharedPtr<unsigned char> data, int length);
+        void decodeMPPT(int messageID, SharedPtr<unsigned char> data, int length);
 
     public:
-        CANDecoder(PinName rd, PinName td, int frequency): CANManager(rd, td, frequency) {};
+        CANDecoder(PinName rd, PinName td, int frequency = DEFAULT_CAN_FREQ) : CANManager(rd, td, frequency) {};
         
         void readHandler(int messageID, SharedPtr<unsigned char> data, int length);
         void send_mainio_data();
