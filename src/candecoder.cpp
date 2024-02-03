@@ -99,7 +99,7 @@ void CANDecoder::decode101(unsigned char *data) {
 void CANDecoder::decode102(unsigned char *data) {
 
     float packAmphours = getValueFrom2Bytes(data[0], data[1]) * 0.1;
-    set_pack_capacity(packAmphours);
+    set_pack_amphours(packAmphours);
 
     set_populated_cells(data[2]);
 
@@ -116,6 +116,128 @@ void CANDecoder::decode102(unsigned char *data) {
     set_fan_speed(data[7]);
 }
 
+/*
+    setsCellVoltage using the setter function.
+    - 
+    index: index 0-31 of the cell group number
+    value: float value of of that cell voltage
+    
+*/
+void CANDecoder::setCellVoltage(int index, float value) {
+    switch (index) {
+        case 0:
+            set_cell_group1_voltage(value);
+            break;
+        case 1:
+            set_cell_group2_voltage(value);
+            break;
+        case 2:
+            set_cell_group3_voltage(value);
+            break;
+        case 3:
+            set_cell_group4_voltage(value);
+            break;
+        case 4:
+            set_cell_group5_voltage(value);
+            break;
+        case 5:
+            set_cell_group6_voltage(value);
+            break;
+        case 6:
+            set_cell_group7_voltage(value);
+            break;
+        case 7:
+            set_cell_group8_voltage(value);
+            break;
+        case 8:
+            set_cell_group9_voltage(value);
+            break;
+        case 9:
+            set_cell_group10_voltage(value);
+            break;
+        case 10:
+            set_cell_group11_voltage(value);
+            break;
+        case 11:
+            set_cell_group12_voltage(value);
+            break;
+        case 12:
+            set_cell_group13_voltage(value);
+            break;
+        case 13:
+            set_cell_group14_voltage(value);
+            break;
+        case 14:
+            set_cell_group15_voltage(value);
+            break;
+        case 15:
+            set_cell_group16_voltage(value);
+            break;
+        case 16:
+            set_cell_group17_voltage(value);
+            break;
+        case 36:
+            set_cell_group18_voltage(value);
+            break;
+        case 37:
+            set_cell_group19_voltage(value);
+            break;
+        case 38:
+            set_cell_group20_voltage(value);
+            break;
+        case 39:
+            set_cell_group21_voltage(value);
+            break;
+        case 40:
+            set_cell_group22_voltage(value);
+            break;
+        case 41:
+            set_cell_group23_voltage(value);
+            break;
+        case 42:
+            set_cell_group24_voltage(value);
+            break;
+        case 43:
+            set_cell_group25_voltage(value);
+            break;
+        case 48:
+            set_cell_group26_voltage(value);
+            break;
+        case 49:
+            set_cell_group27_voltage(value);
+            break;
+        case 50:
+            set_cell_group28_voltage(value);
+            break;
+        case 51:
+            set_cell_group29_voltage(value);
+            break;
+        case 52:
+            set_cell_group30_voltage(value);
+            break;
+        case 53:
+            set_cell_group31_voltage(value);
+            break;
+        default:
+            break;
+    }    
+}
+
+//TODO: verify this
+/*
+    decodes the data from ID = x103. 
+    8B cellId cellVoltages
+    - 
+    data: the pointer to the data byte
+    
+*/
+void CANDecoder::decode103(unsigned char *data) {
+
+    uint8_t cellId = data[0];
+    float value = getValueFrom2Bytes(data[1], data[2]) * 0.0001;
+
+    setCellVoltage(cellId, value);
+}
 
 /*
     Decode BMS messages
@@ -130,6 +252,9 @@ void CANDecoder::decodeBMS(int messageID, SharedPtr<unsigned char> data, int len
             break;
         case 0x102:
             CANDecoder::decode102(data.get());
+            break;
+        case 0x103:
+            CANDecoder::decode103(data.get());
             break;
         default:
             break;
@@ -154,10 +279,10 @@ void CANDecoder::decodeMCC(int messageID, SharedPtr<unsigned char> data, int len
             set_crz_pwr_mode(*data & 0x2);
             break;
         case 0x202:
-            set_state(*data);
+            //set_state(*data);
             break;
         case 0x203:
-            set_accelerator(*(float*)data.get());
+            //set_accelerator(*(float*)data.get());
             break;
         case 0x204:
             //set_regen_braking(*(float*)data.get());
@@ -173,6 +298,68 @@ void CANDecoder::decodeMCC(int messageID, SharedPtr<unsigned char> data, int len
     }
 }
 
+//TODO: verify this
+/*
+    decodes the data from ID = x300. 
+    15B struct from HV's values
+    - 
+    data: the pointer to the data byte
+    
+*/
+void CANDecoder::decode300(unsigned char *data) {
+    struct HV_Digital_Data *formattedData = (HV_Digital_Data*)data;
+    //start decoding all the flags
+    set_driver_eStop(formattedData->driver_EStop);
+    set_external_eStop(formattedData->external_EStop);
+    //needs to be set
+    //set_start_shutdown_status(formattedData->start_shutdown_status);
+    set_isolation(formattedData->isolation_status);
+    set_discharge_enabled(formattedData->battery_discharge_enabled);
+    set_discharge_enable(formattedData->battery_discharge_enable);
+    set_charge_enabled(formattedData->battery_charge_enabled);
+    set_charge_enable(formattedData->battery_charge_enable);
+    set_bms_mpio1(formattedData->BMS_MPO1);
+    set_low_contactor(formattedData->lv_contactor);
+    set_motor_controller_contactor(formattedData->mc_contactor);
+    set_mppt_contactor(formattedData->mppt_contactor);
+    set_crash(formattedData->crash_sensor);
+    set_use_supp(formattedData->use_supp);
+    set_use_dcdc(formattedData->use_dcdc);
+}
+
+//TODO: needs to be verified
+/*
+    Decode HV messages (0x300 offset)
+*/
+void CANDecoder::decodeHV(int messageID, SharedPtr<unsigned char> data, int length) {
+    switch(messageID) {
+        case 0x300:
+            decode300(data.get());
+            break;
+        case 0x301:
+            set_dcdc_current(*(float*)(data.get()));
+            break;
+        case 0x302:
+            set_supplemental_current(*(float*)(data.get()));
+            break;
+        case 0x303:
+            set_supplemental_voltage(*(float*)(data.get()));
+            break;
+        default:
+            break;
+    }
+}
+
+//TODO: needs to be implemented
+void CANDecoder::decodeMPPT(int messageID, SharedPtr<unsigned char> data, int length) {
+    switch(messageID) {
+        case 0x400:
+            
+            break;
+        default:
+            break;
+    }
+}
 
 void CANDecoder::readHandler(int messageID, SharedPtr<unsigned char> data, int length) {
     // IDs are 11 bits, first 3 are used to ID the board, rest for message
@@ -184,16 +371,12 @@ void CANDecoder::readHandler(int messageID, SharedPtr<unsigned char> data, int l
             decodeMCC(messageID, data, length);
             break;
         case 0x300:
+            decodeHV(messageID, data, length);
             break;
         case 0x400:
+            decodeMPPT(messageID, data, length);
             break;
         default:
             break;
     }
-}
-
-void CANDecoder::send_mainio_data() {
-    // parking brakes
-    bool parking_brake = digital_data.BRK_STATUS2;
-    this->sendMessage(0x40, (void*)&parking_brake, 1, 1ms);
 }

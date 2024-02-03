@@ -55,7 +55,6 @@ int main()
         debugPrint();
 #endif
         // Process inbound messages 
-        canBus.send_mainio_data();
         canBus.runQueue(1000ms);
     }
 }
