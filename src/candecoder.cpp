@@ -1,4 +1,5 @@
 #include "candecoder.h"
+#include "dataFormat.h"
 
 /*
     gets value from 2 bytes.
@@ -350,12 +351,41 @@ void CANDecoder::decodeHV(int messageID, SharedPtr<unsigned char> data, int leng
     }
 }
 
-//TODO: needs to be implemented
 void CANDecoder::decodeMPPT(int messageID, SharedPtr<unsigned char> data, int length) {
     switch(messageID) {
-        case 0x400:
-            
+        // array 1
+        case 0x401: // array 1 voltage
+            set_string1_V_in(*(float*)(data.get()));
             break;
+        case 0x402: // array 1 current
+            set_string1_I_in(*(float*)(data.get()));
+            break;
+        case 0x403: // array 1 temp
+            set_string1_temp(*(float*)(data.get()));
+            break;
+
+        // array 2
+        case 0x404: // array 2 voltage
+            set_string2_V_in(*(float*)(data.get()));
+            break;
+        case 0x405: // array 2 current
+            set_string2_I_in(*(float*)(data.get()));
+            break;
+        case 0x406: // array 2 temp
+            set_string2_temp(*(float*)(data.get()));
+            break;
+
+        // array 3
+        case 0x407: // array 3 voltage
+            set_string3_V_in(*(float*)(data.get()));
+            break;
+        case 0x408: // array 3 current
+            set_string3_I_in(*(float*)(data.get()));
+            break;
+        case 0x409: // array 3 temp
+            set_string3_temp(*(float*)(data.get()));
+            break;
+            
         default:
             break;
     }
@@ -379,4 +409,13 @@ void CANDecoder::readHandler(int messageID, SharedPtr<unsigned char> data, int l
         default:
             break;
     }
+}
+
+
+void CANDecoder::send_mainio_data() {
+    // parking brakes
+#if SEND_PARKING_BRAKE
+    bool parking_brake = brakeInputs.brake2;
+    this->sendMessage(0x40, (void*)&parking_brake, 1, 1ms);
+#endif
 }
