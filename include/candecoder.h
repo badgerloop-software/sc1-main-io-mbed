@@ -48,6 +48,7 @@ class CANDecoder : public CANManager {
             bool crash_sensor : 1;
             bool use_supp : 1;
             bool use_dcdc : 1;
+            bool mcu_hv_en : 1;
         };
 
     public:
@@ -56,5 +57,8 @@ class CANDecoder : public CANManager {
         void readHandler(int messageID, SharedPtr<unsigned char> data, int length);
         void send_mainio_data();
 };
+
+void set_startup_signal(bool value);
+bool get_startup_signal();
 
 #endif

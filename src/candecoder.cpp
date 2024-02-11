@@ -263,6 +263,20 @@ void CANDecoder::decodeBMS(int messageID, SharedPtr<unsigned char> data, int len
 }
 
 void CANDecoder::decode200(unsigned char *data) {
+    // Struct from MCC that is sent at 200
+    struct Digital_Data {
+        bool cruiseEnabled : 1;
+        bool motorPower : 1;
+        bool forwardAndReverse : 1;
+        bool ecoMode : 1;
+        bool brakeStatus : 1;
+    };
+    struct Digital_Data parsedData = *(Digital_Data*)data;
+
+    set_main_telem(parsedData.motorPower);
+    set_fr_telem(parsedData.forwardAndReverse);
+    set_eco(parsedData.ecoMode);
+    set_foot_brake(parsedData.brakeStatus);
 
 }
 
@@ -280,13 +294,13 @@ void CANDecoder::decodeMCC(int messageID, SharedPtr<unsigned char> data, int len
             set_crz_pwr_mode(*data & 0x2);
             break;
         case 0x202:
-            //set_state(*data);
+            set_mcc_state(*data);
             break;
         case 0x203:
-            //set_accelerator(*(float*)data.get());
+            set_accelerator_pedal(*(float*)data.get());
             break;
         case 0x204:
-            //set_regen_braking(*(float*)data.get());
+            set_regen_brake(*(float*)data.get());
             break;
         case 0x205:
             set_crz_spd_setpt(*(float*)data.get());
@@ -312,8 +326,7 @@ void CANDecoder::decode300(unsigned char *data) {
     //start decoding all the flags
     set_driver_eStop(formattedData->driver_EStop);
     set_external_eStop(formattedData->external_EStop);
-    //needs to be set
-    //set_start_shutdown_status(formattedData->start_shutdown_status);
+    set_mcu_stat_fdbk(formattedData->start_shutdown_status);
     set_isolation(formattedData->isolation_status);
     set_discharge_enabled(formattedData->battery_discharge_enabled);
     set_discharge_enable(formattedData->battery_discharge_enable);
@@ -326,6 +339,7 @@ void CANDecoder::decode300(unsigned char *data) {
     set_crash(formattedData->crash_sensor);
     set_use_supp(formattedData->use_supp);
     set_use_dcdc(formattedData->use_dcdc);
+    set_mcu_hv_en(formattedData->mcu_hv_en);
 }
 
 //TODO: needs to be verified
@@ -411,11 +425,9 @@ void CANDecoder::readHandler(int messageID, SharedPtr<unsigned char> data, int l
     }
 }
 
+bool manual_startup_signal = 0;
 
 void CANDecoder::send_mainio_data() {
-    // parking brakes
-#if SEND_PARKING_BRAKE
-    bool parking_brake = brakeInputs.brake2;
-    this->sendMessage(0x40, (void*)&parking_brake, 1, 1ms);
-#endif
+    // MCU_HV_EN from software
+    this->sendMessage(0x025, (void*)&manual_startup_signal, 1);
 }
