@@ -10,6 +10,14 @@
 #define CAN_RX PD_0
 #define CAN_TX PD_1
 
+
+void dataSender(int *size, int **data){
+    *size = sizeof(struct data_format);
+    copyDataStructToWriteStruct();
+    *data = &dfwrite;
+}
+
+
 #if DEBUG_PRINT
 void printDebug(char* boardSelect) {
     printf("\e[1;1H\e[2J");
@@ -124,6 +132,8 @@ int main()
 
     // Initialize bus
     CANDecoder canBus(CAN_RX, CAN_TX);
+    EthernetClient es("192.168.1.16", 4005, null, dataSender);
+    es.run();
 
     while (true) {
 #if DEBUG_PRINT
