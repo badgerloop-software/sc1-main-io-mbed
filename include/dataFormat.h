@@ -9,7 +9,7 @@
 #pragma pack(push, 1)
 
 #define BYTE_ARRAY_SIZE 404
-#define ACQUIRE_TIME_MS 0ms
+
 
 // Restart enable managment
 bool get_restart_enable();
@@ -192,6 +192,11 @@ typedef struct data_format {
   float lon;
   float elev;
 } data_format;
+
+
+// Data storage structs
+extern data_format dfwrite;
+extern data_format dfdata;
 
 
 float get_accelerator_pedal();
