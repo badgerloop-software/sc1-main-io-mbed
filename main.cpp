@@ -3,6 +3,7 @@
 #include "candecoder.h"
 #include "dataFormat.h"
 #include "digital.h"
+#include "ethernet.h"
 
 #define SAMPLE_INTERVAL 50ms
 #define DEBUG_PRINT 1
@@ -11,8 +12,8 @@
 #define CAN_TX PD_1
 
 
-void dataSender(int *size, int **data){
-    *size = sizeof(struct data_format);
+void dataSender(int *size, void **data){
+    *size = BYTE_ARRAY_SIZE;
     copyDataStructToWriteStruct();
     *data = &dfwrite;
 }
@@ -132,7 +133,7 @@ int main()
 
     // Initialize bus
     CANDecoder canBus(CAN_RX, CAN_TX);
-    EthernetClient es("192.168.1.16", 4005, null, dataSender);
+    EthernetClient es("192.168.1.16", 4005, NULL, dataSender);
     es.run();
 
     while (true) {
