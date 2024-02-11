@@ -1,4 +1,4 @@
 [submodule "embedded"]
 	path = embedded
-	url = git@github.com:badgerloop-software/embedded-mbed.git
+	url = https://github.com/badgerloop-software/embedded-mbed.git
 	branch = main

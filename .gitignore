@@ -8,3 +8,5 @@ BUILD
 .env
 __pycache__/
 
+
+embedded/
