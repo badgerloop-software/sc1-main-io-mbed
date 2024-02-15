@@ -1,95 +1,20 @@
-
-        /*
-         * This is an auto-generated file which is automatically generated whenever the target is built
-         */
-
-
-        
-#include "rtos.h"
+/*
+ * This is an auto-generated file which is automatically generated whenever the target is built
+ */
+     
 #include "dataFormat.h"
-#define NUM_COMMAND_BYTES 1
-#define T_MESSAGE_US \
-  1000000            // 1 second right now (should actually be 1/15 of a second)
-#define HEARTBEAT 2  // error state if this # messages that aren't read
 
-Thread thread1;
-Thread thread2;
-Mutex uart_buffer;
+// Two structs
+// dfdata is continuously updated struct
+// dfdata is periodically frozen in dfwrite for software transmission
 Mutex dfwrite_mutex;
-
 data_format dfwrite;
 data_format dfdata;
-data_format emptyStruct;
 
-bool restart_enable;
 
-void clearDataFormatRead() { dfdata = emptyStruct; }
-
-void check_shutdown_errors();
-void copyDataStructToWriteStruct();
-
-void send_message_thread() {
-  while (true) {
-    // check_mcu_check();        // set mcu_check based on other values
-    // check_shutdown_errors();  // check if mcu_hv_en needs to be set to 0
-
-    // copyDataStructToWriteStruct();
-    // uart_buffer.lock();
-    // writeUart(&dfwrite, TOTAL_BYTES);
-    // uart_buffer.unlock();
-    // wait_us(T_MESSAGE_US);
-  }
-}
-
-void read_command_thread() {
-  int messages_not_received =
-      0;  // number of consecutive messages DriverIO fails to send
-  bool restart_enable_error = 0;  // check if restart_enable has been 1
-  int i = 0;
-  while (true) {
-    // uart_buffer.lock();
-    // restart_enable = 0;
-    // // set mcu_hv_en to 0 (error state) if HEARTBEAT consecutive messages aren't
-    // // read
-    // if (readUart(&restart_enable, NUM_COMMAND_BYTES) == 0) {
-    //   printf("message not received\n");
-    //   if (++messages_not_received >= HEARTBEAT) {
-    //     printf("message not received\n");
-    //     set_mcu_hv_en(0);
-    //     set_mainIO_heartbeat(0);
-    //   }
-    // } else {  // a message was read
-    //   messages_not_received = 0;
-    //   // check that we've received at least one restart_enable == 1 before we
-    //   // set mcu_hv_en high again
-    //   if (restart_enable) {
-    //     restart_enable_error = true;
-    //   }
-    //   if (restart_enable == 0 && get_mcu_hv_en() == 0 && restart_enable_error) {
-    //     set_mcu_hv_en(1);
-    //     restart_enable_error = false;
-    //   }
-    //   // print statement (delete if not needed)
-    //   if (get_restart_enable()) {
-    //     printf("restart enable signal received and is 1\n");
-    //   }
-    //   if (!get_mcu_hv_en()) {
-    //     printf("mcu_hv_en is 0\n");
-    //   }
-    //   printf("loop %i======================================\n", i++);
-    // }
-    // uart_buffer.unlock();
-    // wait_us(T_MESSAGE_US);
-  }
-}
-
-int runDataFormat() {
-  thread1.start(read_command_thread);
-  thread2.start(send_message_thread);
-  return 0;
-}
-
+// Restart enable variable and manageent
 Mutex restart_enable_mutex;
+bool restart_enable;
 
 bool get_restart_enable() {
   restart_enable_mutex.lock();
@@ -97,6 +22,174 @@ bool get_restart_enable() {
   restart_enable_mutex.unlock();
   return val;
 }
+
+void set_restart_enable(bool val) {
+  restart_enable_mutex.lock();
+  restart_enable = val;
+  restart_enable_mutex.unlock();
+}
+
+// Clears dfdata
+void cleardfdata() {
+    memset(&dfdata, 0, BYTE_ARRAY_SIZE);
+}
+
+
+void copyDataStructToWriteStruct() {
+  dfwrite_mutex.lock();
+  dfwrite.accelerator_pedal = get_accelerator_pedal();
+  dfwrite.speed = get_speed();
+  dfwrite.mcc_state = get_mcc_state();
+  dfwrite.fr_telem = get_fr_telem();
+  dfwrite.crz_pwr_mode = get_crz_pwr_mode();
+  dfwrite.crz_spd_mode = get_crz_spd_mode();
+  dfwrite.crz_pwr_setpt = get_crz_pwr_setpt();
+  dfwrite.crz_spd_setpt = get_crz_spd_setpt();
+  dfwrite.eco = get_eco();
+  dfwrite.main_telem = get_main_telem();
+  dfwrite.foot_brake = get_foot_brake();
+  dfwrite.regen_brake = get_regen_brake();
+  dfwrite.motor_current = get_motor_current();
+  dfwrite.motor_power = get_motor_power();
+  dfwrite.mc_status = get_mc_status();
+  dfwrite.driver_eStop = get_driver_eStop();
+  dfwrite.external_eStop = get_external_eStop();
+  dfwrite.crash = get_crash();
+  dfwrite.discharge_enable = get_discharge_enable();
+  dfwrite.discharge_enabled = get_discharge_enabled();
+  dfwrite.charge_enable = get_charge_enable();
+  dfwrite.charge_enabled = get_charge_enabled();
+  dfwrite.isolation = get_isolation();
+  dfwrite.mcu_hv_en = get_mcu_hv_en();
+  dfwrite.mcu_stat_fdbk = get_mcu_stat_fdbk();
+  dfwrite.mppt_contactor = get_mppt_contactor();
+  dfwrite.motor_controller_contactor = get_motor_controller_contactor();
+  dfwrite.low_contactor = get_low_contactor();
+  dfwrite.dcdc_current = get_dcdc_current();
+  dfwrite.dcdc_deg = get_dcdc_deg();
+  dfwrite.use_dcdc = get_use_dcdc();
+  dfwrite.supplemental_current = get_supplemental_current();
+  dfwrite.supplemental_voltage = get_supplemental_voltage();
+  dfwrite.supplemental_deg = get_supplemental_deg();
+  dfwrite.use_supp = get_use_supp();
+  dfwrite.est_supplemental_soc = get_est_supplemental_soc();
+  dfwrite.bms_mpio1 = get_bms_mpio1();
+  dfwrite.park_brake = get_park_brake();
+  dfwrite.air_temp = get_air_temp();
+  dfwrite.brake_temp = get_brake_temp();
+  dfwrite.dcdc_temp = get_dcdc_temp();
+  dfwrite.mainIO_temp = get_mainIO_temp();
+  dfwrite.motor_controller_temp = get_motor_controller_temp();
+  dfwrite.motor_temp = get_motor_temp();
+  dfwrite.road_temp = get_road_temp();
+  dfwrite.l_turn_led_en = get_l_turn_led_en();
+  dfwrite.r_turn_led_en = get_r_turn_led_en();
+  dfwrite.brake_led_en = get_brake_led_en();
+  dfwrite.headlights_led_en = get_headlights_led_en();
+  dfwrite.hazards = get_hazards();
+  dfwrite.main_5V_bus = get_main_5V_bus();
+  dfwrite.main_12V_bus = get_main_12V_bus();
+  dfwrite.main_24V_bus = get_main_24V_bus();
+  dfwrite.main_5V_current = get_main_5V_current();
+  dfwrite.main_12V_current = get_main_12V_current();
+  dfwrite.main_24V_current = get_main_24V_current();
+  dfwrite.bms_can_heartbeat = get_bms_can_heartbeat();
+  dfwrite.mainIO_heartbeat = get_mainIO_heartbeat();
+  dfwrite.mcc_can_heartbeat = get_mcc_can_heartbeat();
+  dfwrite.mppt_can_heartbeat = get_mppt_can_heartbeat();
+  dfwrite.mppt_mode = get_mppt_mode();
+  dfwrite.mppt_current_out = get_mppt_current_out();
+  dfwrite.string1_temp = get_string1_temp();
+  dfwrite.string2_temp = get_string2_temp();
+  dfwrite.string3_temp = get_string3_temp();
+  dfwrite.string1_V_in = get_string1_V_in();
+  dfwrite.string2_V_in = get_string2_V_in();
+  dfwrite.string3_V_in = get_string3_V_in();
+  dfwrite.string1_I_in = get_string1_I_in();
+  dfwrite.string2_I_in = get_string2_I_in();
+  dfwrite.string3_I_in = get_string3_I_in();
+  dfwrite.pack_temp = get_pack_temp();
+  dfwrite.pack_internal_temp = get_pack_internal_temp();
+  dfwrite.pack_current = get_pack_current();
+  dfwrite.pack_voltage = get_pack_voltage();
+  dfwrite.pack_power = get_pack_power();
+  dfwrite.populated_cells = get_populated_cells();
+  dfwrite.soc = get_soc();
+  dfwrite.soh = get_soh();
+  dfwrite.pack_amphours = get_pack_amphours();
+  dfwrite.adaptive_total_capacity = get_adaptive_total_capacity();
+  dfwrite.fan_speed = get_fan_speed();
+  dfwrite.pack_resistance = get_pack_resistance();
+  dfwrite.bms_input_voltage = get_bms_input_voltage();
+  dfwrite.bps_fault = get_bps_fault();
+  dfwrite.voltage_failsafe = get_voltage_failsafe();
+  dfwrite.current_failsafe = get_current_failsafe();
+  dfwrite.relay_failsafe = get_relay_failsafe();
+  dfwrite.cell_balancing_active = get_cell_balancing_active();
+  dfwrite.charge_interlock_failsafe = get_charge_interlock_failsafe();
+  dfwrite.thermistor_b_value_table_invalid = get_thermistor_b_value_table_invalid();
+  dfwrite.input_power_supply_failsafe = get_input_power_supply_failsafe();
+  dfwrite.discharge_limit_enforcement_fault = get_discharge_limit_enforcement_fault();
+  dfwrite.charger_safety_relay_fault = get_charger_safety_relay_fault();
+  dfwrite.internal_hardware_fault = get_internal_hardware_fault();
+  dfwrite.internal_heatsink_fault = get_internal_heatsink_fault();
+  dfwrite.internal_software_fault = get_internal_software_fault();
+  dfwrite.highest_cell_voltage_too_high_fault = get_highest_cell_voltage_too_high_fault();
+  dfwrite.lowest_cell_voltage_too_low_fault = get_lowest_cell_voltage_too_low_fault();
+  dfwrite.pack_too_hot_fault = get_pack_too_hot_fault();
+  dfwrite.high_voltage_interlock_signal_fault = get_high_voltage_interlock_signal_fault();
+  dfwrite.precharge_circuit_malfunction = get_precharge_circuit_malfunction();
+  dfwrite.abnormal_state_of_charge_behavior = get_abnormal_state_of_charge_behavior();
+  dfwrite.internal_communication_fault = get_internal_communication_fault();
+  dfwrite.cell_balancing_stuck_off_fault = get_cell_balancing_stuck_off_fault();
+  dfwrite.weak_cell_fault = get_weak_cell_fault();
+  dfwrite.low_cell_voltage_fault = get_low_cell_voltage_fault();
+  dfwrite.open_wiring_fault = get_open_wiring_fault();
+  dfwrite.current_sensor_fault = get_current_sensor_fault();
+  dfwrite.highest_cell_voltage_over_5V_fault = get_highest_cell_voltage_over_5V_fault();
+  dfwrite.cell_asic_fault = get_cell_asic_fault();
+  dfwrite.weak_pack_fault = get_weak_pack_fault();
+  dfwrite.fan_monitor_fault = get_fan_monitor_fault();
+  dfwrite.thermistor_fault = get_thermistor_fault();
+  dfwrite.external_communication_fault = get_external_communication_fault();
+  dfwrite.redundant_power_supply_fault = get_redundant_power_supply_fault();
+  dfwrite.high_voltage_isolation_fault = get_high_voltage_isolation_fault();
+  dfwrite.input_power_supply_fault = get_input_power_supply_fault();
+  dfwrite.charge_limit_enforcement_fault = get_charge_limit_enforcement_fault();
+  dfwrite.cell_group1_voltage = get_cell_group1_voltage();
+  dfwrite.cell_group2_voltage = get_cell_group2_voltage();
+  dfwrite.cell_group3_voltage = get_cell_group3_voltage();
+  dfwrite.cell_group4_voltage = get_cell_group4_voltage();
+  dfwrite.cell_group5_voltage = get_cell_group5_voltage();
+  dfwrite.cell_group6_voltage = get_cell_group6_voltage();
+  dfwrite.cell_group7_voltage = get_cell_group7_voltage();
+  dfwrite.cell_group8_voltage = get_cell_group8_voltage();
+  dfwrite.cell_group9_voltage = get_cell_group9_voltage();
+  dfwrite.cell_group10_voltage = get_cell_group10_voltage();
+  dfwrite.cell_group11_voltage = get_cell_group11_voltage();
+  dfwrite.cell_group12_voltage = get_cell_group12_voltage();
+  dfwrite.cell_group13_voltage = get_cell_group13_voltage();
+  dfwrite.cell_group14_voltage = get_cell_group14_voltage();
+  dfwrite.cell_group15_voltage = get_cell_group15_voltage();
+  dfwrite.cell_group16_voltage = get_cell_group16_voltage();
+  dfwrite.cell_group17_voltage = get_cell_group17_voltage();
+  dfwrite.cell_group18_voltage = get_cell_group18_voltage();
+  dfwrite.cell_group19_voltage = get_cell_group19_voltage();
+  dfwrite.cell_group20_voltage = get_cell_group20_voltage();
+  dfwrite.cell_group21_voltage = get_cell_group21_voltage();
+  dfwrite.cell_group22_voltage = get_cell_group22_voltage();
+  dfwrite.cell_group23_voltage = get_cell_group23_voltage();
+  dfwrite.cell_group24_voltage = get_cell_group24_voltage();
+  dfwrite.cell_group25_voltage = get_cell_group25_voltage();
+  dfwrite.cell_group26_voltage = get_cell_group26_voltage();
+  dfwrite.cell_group27_voltage = get_cell_group27_voltage();
+  dfwrite.cell_group28_voltage = get_cell_group28_voltage();
+  dfwrite.cell_group29_voltage = get_cell_group29_voltage();
+  dfwrite.cell_group30_voltage = get_cell_group30_voltage();
+  dfwrite.cell_group31_voltage = get_cell_group31_voltage();
+  dfwrite_mutex.unlock();
+}
+
 
 Mutex accelerator_pedal_mutex;
 Mutex speed_mutex;
@@ -257,173 +350,6 @@ Mutex lat_mutex;
 Mutex lon_mutex;
 Mutex elev_mutex;
 
-void copyDataStructToWriteStruct() {
-  // set pack power
-  float v = get_pack_voltage();
-  float i = get_pack_current();
-  set_pack_power(i*v);
-
-  dfwrite_mutex.lock();
-  dfwrite.accelerator_pedal = get_accelerator_pedal();
-  dfwrite.speed = get_speed();
-  dfwrite.mcc_state = get_mcc_state();
-  dfwrite.fr_telem = get_fr_telem();
-  dfwrite.crz_pwr_mode = get_crz_pwr_mode();
-  dfwrite.crz_spd_mode = get_crz_spd_mode();
-  dfwrite.crz_pwr_setpt = get_crz_pwr_setpt();
-  dfwrite.crz_spd_setpt = get_crz_spd_setpt();
-  dfwrite.eco = get_eco();
-  dfwrite.main_telem = get_main_telem();
-  dfwrite.foot_brake = get_foot_brake();
-  dfwrite.regen_brake = get_regen_brake();
-  dfwrite.motor_current = get_motor_current();
-  dfwrite.motor_power = get_motor_power();
-  dfwrite.mc_status = get_mc_status();
-  dfwrite.driver_eStop = get_driver_eStop();
-  dfwrite.external_eStop = get_external_eStop();
-  dfwrite.crash = get_crash();
-  dfwrite.discharge_enable = get_discharge_enable();
-  dfwrite.discharge_enabled = get_discharge_enabled();
-  dfwrite.charge_enable = get_charge_enable();
-  dfwrite.charge_enabled = get_charge_enabled();
-  dfwrite.isolation = get_isolation();
-  dfwrite.mcu_hv_en = get_mcu_hv_en();
-  dfwrite.mcu_stat_fdbk = get_mcu_stat_fdbk();
-  dfwrite.mppt_contactor = get_mppt_contactor();
-  dfwrite.motor_controller_contactor = get_motor_controller_contactor();
-  dfwrite.low_contactor = get_low_contactor();
-  dfwrite.dcdc_current = get_dcdc_current();
-  dfwrite.dcdc_deg = get_dcdc_deg();
-  dfwrite.use_dcdc = get_use_dcdc();
-  dfwrite.supplemental_current = get_supplemental_current();
-  dfwrite.supplemental_voltage = get_supplemental_voltage();
-  dfwrite.supplemental_deg = get_supplemental_deg();
-  dfwrite.use_supp = get_use_supp();
-  dfwrite.est_supplemental_soc = get_est_supplemental_soc();
-  dfwrite.bms_mpio1 = get_bms_mpio1();
-  dfwrite.park_brake = get_park_brake();
-  dfwrite.air_temp = get_air_temp();
-  dfwrite.brake_temp = get_brake_temp();
-  dfwrite.dcdc_temp = get_dcdc_temp();
-  dfwrite.mainIO_temp = get_mainIO_temp();
-  dfwrite.motor_controller_temp = get_motor_controller_temp();
-  dfwrite.motor_temp = get_motor_temp();
-  dfwrite.road_temp = get_road_temp();
-  dfwrite.l_turn_led_en = get_l_turn_led_en();
-  dfwrite.r_turn_led_en = get_r_turn_led_en();
-  dfwrite.brake_led_en = get_brake_led_en();
-  dfwrite.headlights_led_en = get_headlights_led_en();
-  dfwrite.hazards = get_hazards();
-  dfwrite.main_5V_bus = get_main_5V_bus();
-  dfwrite.main_12V_bus = get_main_12V_bus();
-  dfwrite.main_24V_bus = get_main_24V_bus();
-  dfwrite.main_5V_current = get_main_5V_current();
-  dfwrite.main_12V_current = get_main_12V_current();
-  dfwrite.main_24V_current = get_main_24V_current();
-  dfwrite.bms_can_heartbeat = get_bms_can_heartbeat();
-  dfwrite.mainIO_heartbeat = get_mainIO_heartbeat();
-  dfwrite.mcc_can_heartbeat = get_mcc_can_heartbeat();
-  dfwrite.mppt_can_heartbeat = get_mppt_can_heartbeat();
-  dfwrite.mppt_mode = get_mppt_mode();
-  dfwrite.mppt_current_out = get_mppt_current_out();
-  dfwrite.string1_temp = get_string1_temp();
-  dfwrite.string2_temp = get_string2_temp();
-  dfwrite.string3_temp = get_string3_temp();
-  dfwrite.string1_V_in = get_string1_V_in();
-  dfwrite.string2_V_in = get_string2_V_in();
-  dfwrite.string3_V_in = get_string3_V_in();
-  dfwrite.string1_I_in = get_string1_I_in();
-  dfwrite.string2_I_in = get_string2_I_in();
-  dfwrite.string3_I_in = get_string3_I_in();
-  dfwrite.pack_temp = get_pack_temp();
-  dfwrite.pack_internal_temp = get_pack_internal_temp();
-  dfwrite.pack_current = get_pack_current();
-  dfwrite.pack_voltage = get_pack_voltage();
-  dfwrite.pack_power = get_pack_power();
-  dfwrite.populated_cells = get_populated_cells();
-  dfwrite.soc = get_soc();
-  dfwrite.soh = get_soh();
-  dfwrite.pack_amphours = get_pack_amphours();
-  dfwrite.adaptive_total_capacity = get_adaptive_total_capacity();
-  dfwrite.fan_speed = get_fan_speed();
-  dfwrite.pack_resistance = get_pack_resistance();
-  dfwrite.bms_input_voltage = get_bms_input_voltage();
-  dfwrite.bps_fault = get_bps_fault();
-  dfwrite.voltage_failsafe = get_voltage_failsafe();
-  dfwrite.current_failsafe = get_current_failsafe();
-  dfwrite.relay_failsafe = get_relay_failsafe();
-  dfwrite.cell_balancing_active = get_cell_balancing_active();
-  dfwrite.charge_interlock_failsafe = get_charge_interlock_failsafe();
-  dfwrite.thermistor_b_value_table_invalid = get_thermistor_b_value_table_invalid();
-  dfwrite.input_power_supply_failsafe = get_input_power_supply_failsafe();
-  dfwrite.discharge_limit_enforcement_fault = get_discharge_limit_enforcement_fault();
-  dfwrite.charger_safety_relay_fault = get_charger_safety_relay_fault();
-  dfwrite.internal_hardware_fault = get_internal_hardware_fault();
-  dfwrite.internal_heatsink_fault = get_internal_heatsink_fault();
-  dfwrite.internal_software_fault = get_internal_software_fault();
-  dfwrite.highest_cell_voltage_too_high_fault = get_highest_cell_voltage_too_high_fault();
-  dfwrite.lowest_cell_voltage_too_low_fault = get_lowest_cell_voltage_too_low_fault();
-  dfwrite.pack_too_hot_fault = get_pack_too_hot_fault();
-  dfwrite.high_voltage_interlock_signal_fault = get_high_voltage_interlock_signal_fault();
-  dfwrite.precharge_circuit_malfunction = get_precharge_circuit_malfunction();
-  dfwrite.abnormal_state_of_charge_behavior = get_abnormal_state_of_charge_behavior();
-  dfwrite.internal_communication_fault = get_internal_communication_fault();
-  dfwrite.cell_balancing_stuck_off_fault = get_cell_balancing_stuck_off_fault();
-  dfwrite.weak_cell_fault = get_weak_cell_fault();
-  dfwrite.low_cell_voltage_fault = get_low_cell_voltage_fault();
-  dfwrite.open_wiring_fault = get_open_wiring_fault();
-  dfwrite.current_sensor_fault = get_current_sensor_fault();
-  dfwrite.highest_cell_voltage_over_5V_fault = get_highest_cell_voltage_over_5V_fault();
-  dfwrite.cell_asic_fault = get_cell_asic_fault();
-  dfwrite.weak_pack_fault = get_weak_pack_fault();
-  dfwrite.fan_monitor_fault = get_fan_monitor_fault();
-  dfwrite.thermistor_fault = get_thermistor_fault();
-  dfwrite.external_communication_fault = get_external_communication_fault();
-  dfwrite.redundant_power_supply_fault = get_redundant_power_supply_fault();
-  dfwrite.high_voltage_isolation_fault = get_high_voltage_isolation_fault();
-  dfwrite.input_power_supply_fault = get_input_power_supply_fault();
-  dfwrite.charge_limit_enforcement_fault = get_charge_limit_enforcement_fault();
-  dfwrite.cell_group1_voltage = get_cell_group1_voltage();
-  dfwrite.cell_group2_voltage = get_cell_group2_voltage();
-  dfwrite.cell_group3_voltage = get_cell_group3_voltage();
-  dfwrite.cell_group4_voltage = get_cell_group4_voltage();
-  dfwrite.cell_group5_voltage = get_cell_group5_voltage();
-  dfwrite.cell_group6_voltage = get_cell_group6_voltage();
-  dfwrite.cell_group7_voltage = get_cell_group7_voltage();
-  dfwrite.cell_group8_voltage = get_cell_group8_voltage();
-  dfwrite.cell_group9_voltage = get_cell_group9_voltage();
-  dfwrite.cell_group10_voltage = get_cell_group10_voltage();
-  dfwrite.cell_group11_voltage = get_cell_group11_voltage();
-  dfwrite.cell_group12_voltage = get_cell_group12_voltage();
-  dfwrite.cell_group13_voltage = get_cell_group13_voltage();
-  dfwrite.cell_group14_voltage = get_cell_group14_voltage();
-  dfwrite.cell_group15_voltage = get_cell_group15_voltage();
-  dfwrite.cell_group16_voltage = get_cell_group16_voltage();
-  dfwrite.cell_group17_voltage = get_cell_group17_voltage();
-  dfwrite.cell_group18_voltage = get_cell_group18_voltage();
-  dfwrite.cell_group19_voltage = get_cell_group19_voltage();
-  dfwrite.cell_group20_voltage = get_cell_group20_voltage();
-  dfwrite.cell_group21_voltage = get_cell_group21_voltage();
-  dfwrite.cell_group22_voltage = get_cell_group22_voltage();
-  dfwrite.cell_group23_voltage = get_cell_group23_voltage();
-  dfwrite.cell_group24_voltage = get_cell_group24_voltage();
-  dfwrite.cell_group25_voltage = get_cell_group25_voltage();
-  dfwrite.cell_group26_voltage = get_cell_group26_voltage();
-  dfwrite.cell_group27_voltage = get_cell_group27_voltage();
-  dfwrite.cell_group28_voltage = get_cell_group28_voltage();
-  dfwrite.cell_group29_voltage = get_cell_group29_voltage();
-  dfwrite.cell_group30_voltage = get_cell_group30_voltage();
-  dfwrite.cell_group31_voltage = get_cell_group31_voltage();
-  dfwrite.tstamp_ms = get_tstamp_ms();
-  dfwrite.tstamp_sc = get_tstamp_sc();
-  dfwrite.tstamp_mn = get_tstamp_mn();
-  dfwrite.tstamp_hr = get_tstamp_hr();
-  dfwrite.tstamp_unix = get_tstamp_unix();
-  dfwrite.lat = get_lat();
-  dfwrite.lon = get_lon();
-  dfwrite.elev = get_elev();
-  dfwrite_mutex.unlock();
-}
 
 float get_accelerator_pedal() {
   accelerator_pedal_mutex.lock();
@@ -2321,4 +2247,3 @@ void set_elev(float val) {
   elev_mutex.unlock();
 }
  /* Autogenerated Code Ends */
-

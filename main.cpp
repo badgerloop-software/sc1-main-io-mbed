@@ -2,7 +2,6 @@
 #include "analog.h"
 #include "candecoder.h"
 #include "digital.h"
-#include "telemetry.h"
 
 #define SAMPLE_INTERVAL 50ms
 #define DEBUG_PRINT 0
