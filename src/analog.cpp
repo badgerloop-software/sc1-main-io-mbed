@@ -12,34 +12,21 @@ Thermistor mc_therm(NCP21XM472J03RA_Constants, A3, 4700, 3.3);
 Thermistor motor_therm(NCP21XM472J03RA_Constants, A5, 4700, 3.3);
 Thermistor road_therm(NCP21XM472J03RA_Constants, A1, 4700, 3.3);
 
-volatile float air_temperature = 0.0;
-volatile float brake_temperature = 0.0;
-volatile float dcdc_temperature = 0.0;
-volatile float main_io_temperature = 0.0;
-volatile float motor_controller_temperature = 0.0;
-volatile float motor_temperature = 0.0;
-volatile float road_temperature = 0.0;
 
 // rail voltages
 AnalogInMutexless LV_12V_TELEM(PF_6);
 AnalogInMutexless LV_24V_TELEM(PC_3);
 AnalogInMutexless LV_5V_TELEM(PF_8);
 
-volatile float bus_12v = 0.0;
-volatile float bus_24v = 0.0;
-volatile float bus_5v = 0.0;
 
 // rail currents
 INA281Driver I_OUT_5V(PA_4, 0.005);
 INA281Driver I_IN_12V(PA_0, 0.005);
 INA281Driver I_OUT_24V(A4, 0.005);
 
-volatile float input_current_12v = 0.0;
-volatile float output_current_5v = 0.0;
-volatile float output_current_24v = 0.0;
 
 void read_temperatures() {
-    air_temperature = air_therm.get_temperature();
+    set_air_temp(air_therm.get_temperature());
     brake_temperature = brk_therm.get_temperature();
     dcdc_temperature = dcdc_therm.get_temperature();
     main_io_temperature = main_therm.get_temperature();
