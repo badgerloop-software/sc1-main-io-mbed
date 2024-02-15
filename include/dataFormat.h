@@ -1,10 +1,6 @@
-
-        /*
-         * This is an auto-generated file which is automatically generated whenever the target is built
-         */
-
-
-        
+/*
+ * This is an auto-generated file which is automatically generated whenever the target is built
+ */
 #ifndef __dataFormat__h__
 #define __dataFormat__h__
 
@@ -14,6 +10,7 @@
 #define TOTAL_BYTES 404
 
 typedef struct {
+  // MCC Signals
   float accelerator_pedal;
   float speed;
   uint8_t mcc_state;
@@ -29,6 +26,8 @@ typedef struct {
   float motor_current;
   float motor_power;
   uint8_t mc_status;
+
+  // HV Signals
   bool driver_eStop;
   bool external_eStop;
   bool crash;
@@ -51,6 +50,8 @@ typedef struct {
   bool use_supp;
   float est_supplemental_soc;
   bool bms_mpio1;
+
+  // MainIO
   bool park_brake;
   float air_temp;
   float brake_temp;
@@ -74,6 +75,8 @@ typedef struct {
   bool mainIO_heartbeat;
   bool mcc_can_heartbeat;
   bool mppt_can_heartbeat;
+
+  // MPPT 
   bool mppt_mode;
   float mppt_current_out;
   float string1_temp;
@@ -85,6 +88,8 @@ typedef struct {
   float string1_I_in;
   float string2_I_in;
   float string3_I_in;
+
+  // BMS
   float pack_temp;
   float pack_internal_temp;
   float pack_current;
@@ -164,6 +169,8 @@ typedef struct {
   float cell_group29_voltage;
   float cell_group30_voltage;
   float cell_group31_voltage;
+
+  // Software
   uint16_t tstamp_ms;
   uint8_t tstamp_sc;
   uint8_t tstamp_mn;
