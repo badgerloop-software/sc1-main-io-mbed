@@ -24,21 +24,4 @@ struct Digital_Data {
 
 extern volatile Digital_Data digital_data;
 
-// thermistor temperatures. Found in analog.cpp
-extern volatile float air_temperature;
-extern volatile float brake_temperature;
-extern volatile float dcdc_temperature;
-extern volatile float main_io_temperature;
-extern volatile float motor_controller_temperature;
-extern volatile float motor_temperature;
-extern volatile float road_temperature;
-
-// bus voltages and currents Found in analog.cpp
-extern volatile float bus_12v;
-extern volatile float bus_24v;
-extern volatile float bus_5v;
-extern volatile float input_current_12v;
-extern volatile float output_current_5v;
-extern volatile float output_current_24v;
-
 #endif
