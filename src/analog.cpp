@@ -27,26 +27,26 @@ INA281Driver I_OUT_24V(A4, 0.005);
 
 void read_temperatures() {
     set_air_temp(air_therm.get_temperature());
-    brake_temperature = brk_therm.get_temperature();
-    dcdc_temperature = dcdc_therm.get_temperature();
-    main_io_temperature = main_therm.get_temperature();
-    motor_controller_temperature = mc_therm.get_temperature();
-    motor_temperature = motor_therm.get_temperature();
-    road_temperature = road_therm.get_temperature();
+    set_brake_temp(brk_therm.get_temperature());
+    set_dcdc_temp(dcdc_therm.get_temperature());
+    set_mainIO_temp(main_therm.get_temperature());
+    set_motor_controller_temp(mc_therm.get_temperature());
+    set_motor_temp(motor_therm.get_temperature());
+    set_road_temp(road_therm.get_temperature());
 }
 
 // reads bus voltages and scales them
 void read_bus_voltages() {
-    bus_12v = LV_12V_TELEM.read() * 3.3 *  35.1/5.1;
-    bus_24v = LV_24V_TELEM.read() * 3.3 * 56.1/5.1;
-    bus_5v = LV_5V_TELEM.read() * 3.3 * 15.1/5.1;
+    set_main_12V_bus(LV_12V_TELEM.read() * 3.3 *  35.1/5.1);
+    set_main_24V_bus(LV_24V_TELEM.read() * 3.3 * 56.1/5.1);
+    set_main_5V_bus(LV_5V_TELEM.read() * 3.3 * 15.1/5.1);
 }
 
 // reads bus currents
 void read_bus_currents() {
-    input_current_12v = I_IN_12V.readCurrent();
-    output_current_24v = I_OUT_24V.readCurrent();
-    output_current_5v = I_OUT_5V.readCurrent();
+    set_main_12V_current(I_IN_12V.readCurrent());
+    set_main_24V_current(I_OUT_24V.readCurrent());
+    set_main_5V_current(I_OUT_5V.readCurrent());
 }
 
 // read all analog input
