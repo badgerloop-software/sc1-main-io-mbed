@@ -2,10 +2,7 @@
 #define __DIGITAL_H__
 
 #include "mbed.h"
-#include "telemetry.h"
-
-// read input from the digital pins
-void readDigital();
+#include "dataFormat.h"
 
 // automatically read brake pins at a set interval
 void initDigital(std::chrono::milliseconds readSignalPeriod);

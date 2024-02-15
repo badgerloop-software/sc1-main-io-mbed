@@ -1,5 +1,4 @@
 #include "digital.h"
-#include "dataFormat.h"
 
 // Ticker to setup a recurring interrupt to repeatedly call a function at a
 // specified rate
@@ -20,8 +19,6 @@ DigitalIn left_turn_signal(PD_13);
 DigitalIn right_turn_signal(PD_12);
 #endif
 
-// storing every digital data inside a struct to reduce the memory
-volatile struct Digital_Data digital_data = {};
 
 // read input from the digital pins
 void readDigital() {
