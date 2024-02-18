@@ -18,6 +18,10 @@ void dataSender(int *size, void **data){
     *data = &dfwrite;
 }
 
+void dataReceiver(void *data, int size) {
+    set_restart_enable(true);
+}
+
 
 #if DEBUG_PRINT
 void printDebug(char* boardSelect) {
@@ -133,7 +137,7 @@ int main()
 
     // Initialize bus
     CANDecoder canBus(CAN_RX, CAN_TX);
-    EthernetClient es("192.168.1.16", 4005, NULL, dataSender);
+    EthernetClient es("192.168.1.16", 4005, dataReceiver, dataSender);
     es.run();
 
     while (true) {
