@@ -1,15 +1,10 @@
 #ifndef __CAN_DECODE_H__
 #define __CAN_DECODE_H__
 
-#include <unordered_map>
-using namespace std;
-
 #include "canmanager.h"
 #include "dataFormat.h"
-#include "digital.h"
 
 #define BOARD_ID_MASK 0x700
-
 
 class CANDecoder : public CANManager {
     private:
@@ -31,7 +26,17 @@ class CANDecoder : public CANManager {
         void decodeHV(int messageID, SharedPtr<unsigned char> data, int length);
         void decodeMPPT(int messageID, SharedPtr<unsigned char> data, int length);
 
-        //HV DATA STRUCT
+
+        // MCC DATA STRUCT
+        struct Digital_Data {
+            bool cruiseEnabled : 1;
+            bool motorPower : 1;
+            bool forwardAndReverse : 1;
+            bool ecoMode : 1;
+            bool brakeStatus : 1;
+        };
+
+        // HV DATA STRUCT
         struct HV_Digital_Data {
             bool driver_EStop : 1;
             bool external_EStop : 1;
@@ -57,8 +62,5 @@ class CANDecoder : public CANManager {
         void readHandler(int messageID, SharedPtr<unsigned char> data, int length);
         void send_mainio_data();
 };
-
-void set_startup_signal(bool value);
-bool get_startup_signal();
 
 #endif

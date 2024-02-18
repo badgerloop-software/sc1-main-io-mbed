@@ -9,10 +9,11 @@
 #pragma pack(push, 1)
 
 #define BYTE_ARRAY_SIZE 404
+#define ACQUIRE_TIME_MS 0ms
 
 // Restart enable managment
 bool get_restart_enable();
-void set_restart_enable();
+void set_restart_enable(bool val);
 
 // Clears data struct
 void cleardfdata();
