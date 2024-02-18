@@ -80,10 +80,10 @@ void CANDecoder::decode101(unsigned char *data) {
 
     set_pack_power(packCurrent * packOpenVoltage);
     
-    int packSOC = data[4] * 0.5;
+    float packSOC = data[4] * 0.5;
     set_soc(packSOC);
 
-    int packSOH = data[5];
+    float packSOH = data[5];
     set_soh(packSOH);
 
     int packResistance = getValueFrom2Bytes(data[6], data[7]);
@@ -263,21 +263,12 @@ void CANDecoder::decodeBMS(int messageID, SharedPtr<unsigned char> data, int len
 }
 
 void CANDecoder::decode200(unsigned char *data) {
-    // Struct from MCC that is sent at 200
-    struct Digital_Data {
-        bool cruiseEnabled : 1;
-        bool motorPower : 1;
-        bool forwardAndReverse : 1;
-        bool ecoMode : 1;
-        bool brakeStatus : 1;
-    };
     struct Digital_Data parsedData = *(Digital_Data*)data;
 
     set_main_telem(parsedData.motorPower);
     set_fr_telem(parsedData.forwardAndReverse);
     set_eco(parsedData.ecoMode);
     set_foot_brake(parsedData.brakeStatus);
-
 }
 
 /*
@@ -342,7 +333,6 @@ void CANDecoder::decode300(unsigned char *data) {
     set_mcu_hv_en(formattedData->mcu_hv_en);
 }
 
-//TODO: needs to be verified
 /*
     Decode HV messages (0x300 offset)
 */
@@ -425,9 +415,9 @@ void CANDecoder::readHandler(int messageID, SharedPtr<unsigned char> data, int l
     }
 }
 
-bool manual_startup_signal = 0;
-
 void CANDecoder::send_mainio_data() {
+    bool startup_signal = get_restart_enable();
+
     // MCU_HV_EN from software
-    this->sendMessage(0x025, (void*)&manual_startup_signal, 1);
+    this->sendMessage(0x025, (void*)&startup_signal, 1);
 }
