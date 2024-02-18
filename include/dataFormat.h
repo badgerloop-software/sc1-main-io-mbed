@@ -8,7 +8,7 @@
 
 #pragma pack(push, 1)
 
-#define BYTE_ARRAY_SIZE 404
+#define BYTE_ARRAY_SIZE 412
 
 
 // Restart enable managment
@@ -22,6 +22,9 @@ void cleardfdata();
 void copyDataStructToWriteStruct();
 
 typedef struct data_format {
+  // <bsr>
+  char header[4];
+
   // MCC Signals
   float accelerator_pedal;
   float speed;
@@ -191,6 +194,9 @@ typedef struct data_format {
   float lat;
   float lon;
   float elev;
+
+  // </bsr>
+  char footer[4];
 } data_format;
 
 
