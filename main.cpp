@@ -12,7 +12,7 @@
 #define CAN_TX PD_1
 
 
-void dataSender(int *size, void **data){
+void dataSender(int *size, void **data) {
     *size = BYTE_ARRAY_SIZE;
     copyDataStructToWriteStruct();
     *data = &dfwrite;
@@ -131,13 +131,10 @@ int main()
     char buf[1];
 #endif
 
-    // read brake pin inputs every SAMPLE_INTERVAL seconds
-    //initDigital(SAMPLE_INTERVAL);
-    //initAnalog(SAMPLE_INTERVAL);
-
     // Initialize bus
     CANDecoder canBus(CAN_RX, CAN_TX);
     EthernetClient es("192.168.1.16", 4005, dataReceiver, dataSender);
+    cleardfdata();
     es.run();
 
     while (true) {
@@ -152,6 +149,10 @@ int main()
             }
         }
 #endif
+        // Sample on board IO
+        readAnalog();
+        readDigital();
+
         // Process inbound messages 
         canBus.send_mainio_data();
         canBus.runQueue(1000ms);
