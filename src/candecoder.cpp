@@ -331,6 +331,16 @@ void CANDecoder::decode300(unsigned char *data) {
     set_use_supp(formattedData->use_supp);
     set_use_dcdc(formattedData->use_dcdc);
     set_mcu_hv_en(formattedData->mcu_hv_en);
+
+    // Clear restart enable if any of the faults asserted (0)
+    if (!formattedData->driver_EStop || 
+        !formattedData->external_EStop || 
+        !formattedData->crash_sensor || 
+        !formattedData->battery_discharge_enabled || 
+        !formattedData->battery_charge_enabled || 
+        !formattedData->isolation_status) {
+            set_restart_enable(false);
+        }
 }
 
 /*

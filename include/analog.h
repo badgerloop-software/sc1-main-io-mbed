@@ -6,6 +6,9 @@
 #include "mutexless_analog.h"
 #include "thermistor.h"
 
+// Read analog signals
+void readAnalog();
+
 // repeatedly call the function with the given parameter
 void initAnalog(std::chrono::microseconds readSignalPeriod);
 

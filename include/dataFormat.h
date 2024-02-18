@@ -23,7 +23,7 @@ void copyDataStructToWriteStruct();
 
 typedef struct data_format {
   // <bsr>
-  char header[4];
+  char header[5];
 
   // MCC Signals
   float accelerator_pedal;
@@ -196,7 +196,7 @@ typedef struct data_format {
   float elev;
 
   // </bsr>
-  char footer[4];
+  char footer[6];
 } data_format;
 
 
