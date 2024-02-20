@@ -8,7 +8,7 @@
 
 #pragma pack(push, 1)
 
-#define BYTE_ARRAY_SIZE 412
+#define BYTE_ARRAY_SIZE sizeof(data_format)
 
 
 // Restart enable managment
