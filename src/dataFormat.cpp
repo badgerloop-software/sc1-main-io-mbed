@@ -49,7 +49,12 @@ void cleardfdata() {
 
 
 void copyDataStructToWriteStruct() {
+  char header[6] = "<bsr>";
+  char footer[7] = "</bsr>";
   dfwrite_mutex.lock();
+  for (int i = 0; i < 5; i++) {
+        dfwrite.header[i] = header[i];
+    }
   dfwrite.accelerator_pedal = get_accelerator_pedal();
   dfwrite.speed = get_speed();
   dfwrite.mcc_state = get_mcc_state();
@@ -200,6 +205,9 @@ void copyDataStructToWriteStruct() {
   dfwrite.cell_group29_voltage = get_cell_group29_voltage();
   dfwrite.cell_group30_voltage = get_cell_group30_voltage();
   dfwrite.cell_group31_voltage = get_cell_group31_voltage();
+  for (int i = 0; i < 6; i++) {
+        dfwrite.footer[i] = footer[i];
+    }
   dfwrite_mutex.unlock();
 }
 
