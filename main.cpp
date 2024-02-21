@@ -11,6 +11,10 @@
 #define CAN_RX PD_0
 #define CAN_TX PD_1
 
+#define BMS_TIMEOUT 4
+#define MCC_TIMEOUT 4
+#define MPPT_TIMEOUT 4
+
 
 void dataSender(int *size, void **data) {
     *size = BYTE_ARRAY_SIZE;
@@ -123,6 +127,10 @@ void printDebug(char* boardSelect) {
 }
 #endif
 
+extern Timer timerBMS;
+extern Timer timerMCC;
+extern Timer timerMPPT;
+
 int main()
 {
 #if DEBUG_PRINT
@@ -131,6 +139,10 @@ int main()
     char buf[1];
 #endif
 
+    // start timers
+    timerBMS.start();
+    timerMCC.start();
+    timerMPPT.start();
     // Initialize bus
     CANDecoder canBus(CAN_RX, CAN_TX);
     EthernetClient es("192.168.1.16", 4005, dataReceiver, dataSender);
@@ -156,5 +168,15 @@ int main()
         // Process inbound messages 
         canBus.send_mainio_data();
         canBus.runQueue(1000ms);
+
+        if (timerBMS.read() > BMS_TIMEOUT) {
+            set_bms_can_heartbeat(false);
+        }
+        if (timerMCC.read() > MCC_TIMEOUT) {
+            set_mcc_can_heartbeat(false);
+        }
+        if (timerMPPT.read() > MPPT_TIMEOUT) {
+            set_mppt_can_heartbeat(false);
+        }        
     }
 }
