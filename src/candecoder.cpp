@@ -2,6 +2,7 @@
 #include "dataFormat.h"
 
 Timer timerBMS;
+Timer timerHV;
 Timer timerMCC;
 Timer timerMPPT;
 
@@ -423,6 +424,8 @@ void CANDecoder::readHandler(int messageID, SharedPtr<unsigned char> data, int l
             decodeMCC(messageID, data, length);
             break;
         case 0x300:
+            timerHV.reset();
+            set_hv_can_heartbeat(true);
             decodeHV(messageID, data, length);
             break;
         case 0x400:

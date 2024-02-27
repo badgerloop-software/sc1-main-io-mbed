@@ -11,9 +11,10 @@
 #define CAN_RX PD_0
 #define CAN_TX PD_1
 
-#define BMS_TIMEOUT 4
-#define MCC_TIMEOUT 4
-#define MPPT_TIMEOUT 4
+#define BMS_TIMEOUT 4s
+#define HV_TIMEOUT 4s
+#define MCC_TIMEOUT 4s
+#define MPPT_TIMEOUT 4s
 
 
 void dataSender(int *size, void **data) {
@@ -128,6 +129,7 @@ void printDebug(char* boardSelect) {
 #endif
 
 extern Timer timerBMS;
+extern Timer timerHV;
 extern Timer timerMCC;
 extern Timer timerMPPT;
 
@@ -141,6 +143,7 @@ int main()
 
     // start timers
     timerBMS.start();
+    timerHV.start();
     timerMCC.start();
     timerMPPT.start();
     // Initialize bus
@@ -169,14 +172,17 @@ int main()
         canBus.send_mainio_data();
         canBus.runQueue(1000ms);
 
-        if (timerBMS.read() > BMS_TIMEOUT) {
+        if (timerBMS.elapsed_time() > BMS_TIMEOUT) {
             set_bms_can_heartbeat(false);
         }
-        if (timerMCC.read() > MCC_TIMEOUT) {
+        if (timerHV.elapsed_time() > HV_TIMEOUT) {
+            set_hv_can_heartbeat(false);
+        }
+        if (timerMCC.elapsed_time() > MCC_TIMEOUT) {
             set_mcc_can_heartbeat(false);
         }
-        if (timerMPPT.read() > MPPT_TIMEOUT) {
+        if (timerMPPT.elapsed_time() > MPPT_TIMEOUT) {
             set_mppt_can_heartbeat(false);
-        }        
+        }
     }
 }

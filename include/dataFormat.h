@@ -88,6 +88,7 @@ typedef struct data_format {
   float main_24V_current;
   bool bms_can_heartbeat;
   bool mainIO_heartbeat;
+  bool hv_can_heartbeat;
   bool mcc_can_heartbeat;
   bool mppt_can_heartbeat;
 
@@ -375,6 +376,9 @@ void set_main_24V_current(float val);
 
 bool get_bms_can_heartbeat();
 void set_bms_can_heartbeat(bool val);
+
+bool get_hv_can_heartbeat();
+void set_hv_can_heartbeat(bool val);
 
 bool get_mainIO_heartbeat();
 void set_mainIO_heartbeat(bool val);
