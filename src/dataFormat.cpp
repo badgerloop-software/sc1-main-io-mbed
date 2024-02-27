@@ -112,6 +112,7 @@ void copyDataStructToWriteStruct() {
   dfwrite.main_12V_current = get_main_12V_current();
   dfwrite.main_24V_current = get_main_24V_current();
   dfwrite.bms_can_heartbeat = get_bms_can_heartbeat();
+  dfwrite.hv_can_heartbeat = get_hv_can_heartbeat();
   dfwrite.mainIO_heartbeat = get_mainIO_heartbeat();
   dfwrite.mcc_can_heartbeat = get_mcc_can_heartbeat();
   dfwrite.mppt_can_heartbeat = get_mppt_can_heartbeat();
@@ -269,6 +270,7 @@ Mutex main_5V_current_mutex;
 Mutex main_12V_current_mutex;
 Mutex main_24V_current_mutex;
 Mutex bms_can_heartbeat_mutex;
+Mutex hv_can_heartbeat_mutex;
 Mutex mainIO_heartbeat_mutex;
 Mutex mcc_can_heartbeat_mutex;
 Mutex mppt_can_heartbeat_mutex;
@@ -1054,6 +1056,18 @@ void set_bms_can_heartbeat(bool val) {
   bms_can_heartbeat_mutex.lock();
   dfdata.bms_can_heartbeat = val;
   bms_can_heartbeat_mutex.unlock();
+}
+
+bool get_hv_can_heartbeat() {
+  hv_can_heartbeat_mutex.lock();
+  bool val = dfdata.hv_can_heartbeat;
+  hv_can_heartbeat_mutex.unlock();
+  return val;
+}
+void set_hv_can_heartbeat(bool val) {
+  hv_can_heartbeat_mutex.lock();
+  dfdata.hv_can_heartbeat = val;
+  hv_can_heartbeat_mutex.unlock();
 }
 
 bool get_mainIO_heartbeat() {
