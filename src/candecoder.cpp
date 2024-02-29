@@ -320,19 +320,19 @@ void CANDecoder::decodeMCC(int messageID, SharedPtr<unsigned char> data, int len
 void CANDecoder::decode300(unsigned char *data) {
     struct HV_Digital_Data *formattedData = (HV_Digital_Data*)data;
     //start decoding all the flags
-    set_driver_eStop(formattedData->driver_EStop);
-    set_external_eStop(formattedData->external_EStop);
+    set_driver_eStop(!formattedData->driver_EStop);
+    set_external_eStop(!formattedData->external_EStop);
     set_mcu_stat_fdbk(formattedData->start_shutdown_status);
-    set_isolation(formattedData->isolation_status);
-    set_discharge_enabled(formattedData->battery_discharge_enabled);
+    set_isolation(!formattedData->isolation_status);
+    set_discharge_enabled(!formattedData->battery_discharge_enabled);
     set_discharge_enable(formattedData->battery_discharge_enable);
-    set_charge_enabled(formattedData->battery_charge_enabled);
+    set_charge_enabled(!formattedData->battery_charge_enabled);
     set_charge_enable(formattedData->battery_charge_enable);
     set_bms_mpio1(formattedData->BMS_MPO1);
     set_low_contactor(formattedData->lv_contactor);
     set_motor_controller_contactor(formattedData->mc_contactor);
     set_mppt_contactor(formattedData->mppt_contactor);
-    set_crash(formattedData->crash_sensor);
+    set_crash(!formattedData->crash_sensor);
     set_use_supp(formattedData->use_supp);
     set_use_dcdc(formattedData->use_dcdc);
     set_mcu_hv_en(formattedData->mcu_hv_en);
