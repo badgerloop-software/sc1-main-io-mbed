@@ -18,6 +18,10 @@
 
 
 void dataSender(int *size, void **data) {
+    // Sample on board IO
+    readAnalog();
+    readDigital();
+
     *size = BYTE_ARRAY_SIZE;
     copyDataStructToWriteStruct();
     *data = &dfwrite;
@@ -164,9 +168,6 @@ int main()
             }
         }
 #endif
-        // Sample on board IO
-        readAnalog();
-        readDigital();
 
         // Process inbound messages 
         canBus.send_mainio_data();
