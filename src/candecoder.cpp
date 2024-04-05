@@ -304,6 +304,9 @@ void CANDecoder::decodeMCC(int messageID, SharedPtr<unsigned char> data, int len
         case 0x206:
             set_speed(*(float*)data.get());
             break;
+        case 0x207:
+            set_crz_pwr_setpt(*(float*)data.get());
+            break;
         default:
             break;
     }

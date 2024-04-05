@@ -78,8 +78,8 @@ void printDebug(char* boardSelect) {
             printf("USE_SUPP: %d\n", get_use_supp());
             printf("USE_DCDC: %d\n", get_use_dcdc());
             printf("\nAnalog CAN data from HV:\n");
-            printf("DCDC_IS: %f\n", get_dcdc_current() * 22700 / 1200);
-            printf("SUPP_IS: %f\n", get_supplemental_current() * 22700 / 1200);
+            printf("DCDC_IS: %f\n", get_dcdc_current());
+            printf("SUPP_IS: %f\n", get_supplemental_current());
             printf("SENSE_VSUPP: %f\n", get_supplemental_voltage());
             break;
 
