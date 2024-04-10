@@ -273,7 +273,7 @@ void CANDecoder::decode200(unsigned char *data) {
     set_main_telem(parsedData.motorPower);
     set_fr_telem(parsedData.forwardAndReverse);
     set_eco(parsedData.ecoMode);
-    set_foot_brake(parsedData.brakeStatus);
+    // set_foot_brake(parsedData.brakeStatus);
 }
 
 /*
@@ -303,6 +303,7 @@ void CANDecoder::decodeMCC(int messageID, SharedPtr<unsigned char> data, int len
             break;
         case 0x206:
             set_speed(*(float*)data.get());
+            set_foot_brake(!get_foot_brake());
             break;
         case 0x207:
             set_crz_pwr_setpt(*(float*)data.get());
