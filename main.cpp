@@ -6,6 +6,7 @@
 #include "ethernet.h"
 
 #define SAMPLE_INTERVAL 50ms
+#define SOFI_INTERVAL 50ms
 #define DEBUG_PRINT 1
 
 #define CAN_RX PD_0
@@ -91,6 +92,7 @@ void printDebug(char* boardSelect) {
             printf("Foot Brake: %s\n", get_foot_brake() ? "On" : "Off");
             printf("Cruise Speed Mode: %s\n", get_crz_spd_mode() ? "On" : "Off");
             printf("Cruise Speed Setpoint: %f\n", get_crz_spd_setpt());
+            printf("Analog Pedal: %f\n", get_crz_pwr_setpt());
             printf("Accelerator Pedal: %f\n", get_accelerator_pedal());
             printf("Regen Brake: %f\n", get_regen_brake());
             printf("Speed: %f\n", get_speed());
@@ -143,6 +145,7 @@ int main()
     BufferedSerial serial(USBTX, USBRX, 115200);
     serial.set_blocking(false);
     char buf[1];
+    uint8_t printDelay = 0;
 #endif
 
     // start timers
@@ -158,20 +161,25 @@ int main()
 
     while (true) {
 #if DEBUG_PRINT
-        printDebug(buf);
-        printf("Commands:\n0/1 to set mcu_hv_en\nm: MainIO Printout\nh: HV Printout\nc: MCC Printout\np: MPPT Printout\nb: BMS Printout\n");
-        if (serial.read(buf, 1) > 0) {
-            if (buf[0] == '0') {
-                set_restart_enable(0);
-            } else if (buf[0] == '1') {
-                set_restart_enable(1);
+        printDelay = printDelay + 1;
+        if (printDelay >= 1000 / SOFI_INTERVAL.count()) {
+            printDebug(buf);
+            printf("Commands:\n0/1 to set mcu_hv_en\nm: MainIO Printout\nh: HV Printout\nc: MCC Printout\np: MPPT Printout\nb: BMS Printout\n");
+            if (serial.read(buf, 1) > 0) {
+                if (buf[0] == '0') {
+                    set_restart_enable(0);
+                } else if (buf[0] == '1') {
+                    set_restart_enable(1);
+                }
             }
+
+            printDelay = 0;
         }
 #endif
 
         // Process inbound messages 
         canBus.send_mainio_data();
-        canBus.runQueue(1000ms);
+        canBus.runQueue(SOFI_INTERVAL);
 
         if (timerBMS.elapsed_time() > BMS_TIMEOUT) {
             set_bms_can_heartbeat(false);
