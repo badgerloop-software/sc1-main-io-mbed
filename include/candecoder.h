@@ -3,6 +3,7 @@
 
 #include "canmanager.h"
 #include "dataFormat.h"
+#include "sofi.h"
 
 #define BOARD_ID_MASK 0x700
 
