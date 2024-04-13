@@ -2,6 +2,7 @@
 #include "analog.h"
 #include "candecoder.h"
 #include "dataFormat.h"
+#include "sofi.h"
 #include "digital.h"
 #include "ethernet.h"
 
@@ -29,7 +30,7 @@ void dataSender(int *size, void **data) {
 }
 
 void dataReceiver(void *data, int size) {
-    set_restart_enable(true);
+    sofi_data = *(sofi_struct*)data;
 }
 
 
@@ -92,7 +93,7 @@ void printDebug(char* boardSelect) {
             printf("Foot Brake: %s\n", get_foot_brake() ? "On" : "Off");
             printf("Cruise Speed Mode: %s\n", get_crz_spd_mode() ? "On" : "Off");
             printf("Cruise Speed Setpoint: %f\n", get_crz_spd_setpt());
-            printf("Analog Pedal: %f\n", get_crz_pwr_setpt());
+            // printf("Analog Pedal: %f\n", get_crz_pwr_setpt()); // this signal no longer exists in dataFormat
             printf("Accelerator Pedal: %f\n", get_accelerator_pedal());
             printf("Regen Brake: %f\n", get_regen_brake());
             printf("Speed: %f\n", get_speed());

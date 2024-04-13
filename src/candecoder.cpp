@@ -287,7 +287,6 @@ void CANDecoder::decodeMCC(int messageID, SharedPtr<unsigned char> data, int len
         case 0x201:
             // Cruise mode. 0 for both off, 1 speed, 2 power
             set_crz_spd_mode(*data & 0x1);
-            set_crz_pwr_mode(*data & 0x2);
             break;
         case 0x202:
             set_mcc_state(*data);
@@ -304,9 +303,6 @@ void CANDecoder::decodeMCC(int messageID, SharedPtr<unsigned char> data, int len
         case 0x206:
             set_speed(*(float*)data.get());
             set_foot_brake(!get_foot_brake());
-            break;
-        case 0x207:
-            set_crz_pwr_setpt(*(float*)data.get());
             break;
         default:
             break;
@@ -443,8 +439,15 @@ void CANDecoder::readHandler(int messageID, SharedPtr<unsigned char> data, int l
 }
 
 void CANDecoder::send_mainio_data() {
-    bool startup_signal = get_restart_enable();
+    bool startup_signal = get_sofi_mcu_hv_en();
+    bool mppt_overvoltage_fault_reset = get_sofi_mppt_overvoltage_fault_reset();
+    float speed_target = get_sofi_speed_target();
+    float energy_target = get_sofi_energy_target();
 
     // MCU_HV_EN from software
     this->sendMessage(0x025, (void*)&startup_signal, 1);
+    // placeholder IDs
+    this->sendMessage(0x026, (void*)&mppt_overvoltage_fault_reset, 1);
+    this->sendMessage(0x027, (void*)&speed_target, 4);
+    this->sendMessage(0x028, (void*)&energy_target, 4);
 }

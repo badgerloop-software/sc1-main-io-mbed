@@ -1,7 +1,10 @@
-/*
- * This is an auto-generated file which is automatically generated whenever the target is built
- */
-     
+
+        /*
+         * This is an auto-generated file which is automatically generated whenever the target is built
+         */
+
+
+        
 #include "dataFormat.h"
 
 // Two structs
@@ -11,8 +14,7 @@ Mutex dfwrite_mutex;
 data_format dfwrite;
 data_format dfdata;
 
-
-// Restart enable variable and manageent
+// Restart enable variable and management
 Mutex restart_enable_mutex;
 bool restart_enable;
 
@@ -29,7 +31,6 @@ void set_restart_enable(bool val) {
   restart_enable_mutex.unlock();
 }
 
-// Clears dfdata
 void cleardfdata() {
     memset(&dfdata, 0, BYTE_ARRAY_SIZE);
 
@@ -48,20 +49,17 @@ void cleardfdata() {
 }
 
 
+
 void copyDataStructToWriteStruct() {
+  dfwrite_mutex.lock();
   char header[6] = "<bsr>";
   char footer[7] = "</bsr>";
-  dfwrite_mutex.lock();
-  for (int i = 0; i < 5; i++) {
-        dfwrite.header[i] = header[i];
-    }
+  for (int i = 0; i < 5; i++) dfwrite.header[i] = header[i]; 
   dfwrite.accelerator_pedal = get_accelerator_pedal();
   dfwrite.speed = get_speed();
   dfwrite.mcc_state = get_mcc_state();
   dfwrite.fr_telem = get_fr_telem();
-  dfwrite.crz_pwr_mode = get_crz_pwr_mode();
   dfwrite.crz_spd_mode = get_crz_spd_mode();
-  dfwrite.crz_pwr_setpt = get_crz_pwr_setpt();
   dfwrite.crz_spd_setpt = get_crz_spd_setpt();
   dfwrite.eco = get_eco();
   dfwrite.main_telem = get_main_telem();
@@ -206,20 +204,23 @@ void copyDataStructToWriteStruct() {
   dfwrite.cell_group29_voltage = get_cell_group29_voltage();
   dfwrite.cell_group30_voltage = get_cell_group30_voltage();
   dfwrite.cell_group31_voltage = get_cell_group31_voltage();
-  for (int i = 0; i < 6; i++) {
-        dfwrite.footer[i] = footer[i];
-    }
+  dfwrite.tstamp_ms = get_tstamp_ms();
+  dfwrite.tstamp_sc = get_tstamp_sc();
+  dfwrite.tstamp_mn = get_tstamp_mn();
+  dfwrite.tstamp_hr = get_tstamp_hr();
+  dfwrite.tstamp_unix = get_tstamp_unix();
+  dfwrite.lat = get_lat();
+  dfwrite.lon = get_lon();
+  dfwrite.elev = get_elev();
+  for (int i = 0; i < 6; i++) dfwrite.footer[i] = footer[i];
   dfwrite_mutex.unlock();
 }
-
 
 Mutex accelerator_pedal_mutex;
 Mutex speed_mutex;
 Mutex mcc_state_mutex;
 Mutex fr_telem_mutex;
-Mutex crz_pwr_mode_mutex;
 Mutex crz_spd_mode_mutex;
-Mutex crz_pwr_setpt_mutex;
 Mutex crz_spd_setpt_mutex;
 Mutex eco_mutex;
 Mutex main_telem_mutex;
@@ -373,7 +374,6 @@ Mutex lat_mutex;
 Mutex lon_mutex;
 Mutex elev_mutex;
 
-
 float get_accelerator_pedal() {
   accelerator_pedal_mutex.lock();
   float val = dfdata.accelerator_pedal;
@@ -422,18 +422,6 @@ void set_fr_telem(bool val) {
   fr_telem_mutex.unlock();
 }
 
-bool get_crz_pwr_mode() {
-  crz_pwr_mode_mutex.lock();
-  bool val = dfdata.crz_pwr_mode;
-  crz_pwr_mode_mutex.unlock();
-  return val;
-}
-void set_crz_pwr_mode(bool val) {
-  crz_pwr_mode_mutex.lock();
-  dfdata.crz_pwr_mode = val;
-  crz_pwr_mode_mutex.unlock();
-}
-
 bool get_crz_spd_mode() {
   crz_spd_mode_mutex.lock();
   bool val = dfdata.crz_spd_mode;
@@ -444,18 +432,6 @@ void set_crz_spd_mode(bool val) {
   crz_spd_mode_mutex.lock();
   dfdata.crz_spd_mode = val;
   crz_spd_mode_mutex.unlock();
-}
-
-float get_crz_pwr_setpt() {
-  crz_pwr_setpt_mutex.lock();
-  float val = dfdata.crz_pwr_setpt;
-  crz_pwr_setpt_mutex.unlock();
-  return val;
-}
-void set_crz_pwr_setpt(float val) {
-  crz_pwr_setpt_mutex.lock();
-  dfdata.crz_pwr_setpt = val;
-  crz_pwr_setpt_mutex.unlock();
 }
 
 float get_crz_spd_setpt() {
@@ -494,13 +470,13 @@ void set_main_telem(bool val) {
   main_telem_mutex.unlock();
 }
 
-bool get_foot_brake() {
+float get_foot_brake() {
   foot_brake_mutex.lock();
-  bool val = dfdata.foot_brake;
+  float val = dfdata.foot_brake;
   foot_brake_mutex.unlock();
   return val;
 }
-void set_foot_brake(bool val) {
+void set_foot_brake(float val) {
   foot_brake_mutex.lock();
   dfdata.foot_brake = val;
   foot_brake_mutex.unlock();
