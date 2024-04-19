@@ -446,8 +446,7 @@ void CANDecoder::send_mainio_data() {
 
     // MCU_HV_EN from software
     this->sendMessage(0x025, (void*)&startup_signal, 1);
-    // placeholder IDs
-    this->sendMessage(0x026, (void*)&mppt_overvoltage_fault_reset, 1);
-    this->sendMessage(0x027, (void*)&speed_target, 4);
-    this->sendMessage(0x028, (void*)&energy_target, 4);
+    this->sendMessage(0x051, (void*)&mppt_overvoltage_fault_reset, 1);
+    this->sendMessage(0x026, (void*)&speed_target, 4);
+    this->sendMessage(0x027, (void*)&energy_target, 4); // unused
 }
