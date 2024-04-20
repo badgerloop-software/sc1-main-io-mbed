@@ -39,17 +39,14 @@ void printDebug(char* boardSelect) {
     printf("\e[1;1H\e[2J");
     switch (boardSelect[0]) {
         case 'm':
-            printf("Restart Enable: %s\n", get_restart_enable() ? "On" : "Off");
-            printf("Brake 1: %s\n", get_park_brake() ? "On" : "Off");
+            printf("Restart Enable: %s\n", get_sofi_mcu_hv_en() ? "On" : "Off");
             printf("Hazards: %s\n", get_hazards() ? "On" : "Off");
-            printf("Headlights: %s\n", get_hazards() ? "On" : "Off");
             printf("Left Blink: %s\n", get_l_turn_led_en() ? "On" : "Off");
             printf("Right Blink: %s\n", get_r_turn_led_en() ? "On" : "Off");
 
             printf("Air Temp: %f\n", get_air_temp());
             printf("Brake Temp: %f\n", get_brake_temp());
             printf("DCDC Temp: %f\n", get_dcdc_temp());
-            printf("MainIO Temp: %f\n", get_mainIO_temp());
             printf("MC Temp: %f\n", get_motor_controller_temp());
             printf("Motor Temp: %f\n", get_motor_temp());
             printf("Road Temp: %f\n", get_road_temp());
@@ -93,7 +90,7 @@ void printDebug(char* boardSelect) {
             printf("Foot Brake: %s\n", get_foot_brake() ? "On" : "Off");
             printf("Cruise Speed Mode: %s\n", get_crz_spd_mode() ? "On" : "Off");
             printf("Cruise Speed Setpoint: %f\n", get_crz_spd_setpt());
-            // printf("Analog Pedal: %f\n", get_crz_pwr_setpt()); // this signal no longer exists in dataFormat
+            printf("Park Brake: %s\n", get_park_brake() ? "On" : "Off"); // this signal no longer exists in dataFormat
             printf("Accelerator Pedal: %f\n", get_accelerator_pedal());
             printf("Regen Brake: %f\n", get_regen_brake());
             printf("Speed: %f\n", get_speed());
@@ -168,9 +165,9 @@ int main()
             printf("Commands:\n0/1 to set mcu_hv_en\nm: MainIO Printout\nh: HV Printout\nc: MCC Printout\np: MPPT Printout\nb: BMS Printout\n");
             if (serial.read(buf, 1) > 0) {
                 if (buf[0] == '0') {
-                    set_restart_enable(0);
+                    set_sofi_mcu_hv_en(0);
                 } else if (buf[0] == '1') {
-                    set_restart_enable(1);
+                    set_sofi_mcu_hv_en(1);
                 }
             }
 
