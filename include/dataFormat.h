@@ -14,16 +14,12 @@
 
 #define BYTE_ARRAY_SIZE sizeof(data_format)
 
-// Restart enable management
-bool get_restart_enable();
-void set_restart_enable(bool val);
 
 // Clears data struct
 void cleardfdata();
 
 // To freeze telemetry readings for transmissions
 void copyDataStructToWriteStruct();
-
 
 
 typedef struct data_format {
@@ -36,8 +32,9 @@ typedef struct data_format {
   bool crz_spd_mode;
   float crz_spd_setpt;
   bool eco;
-  bool main_telem;
   float foot_brake;
+  bool main_telem;
+  bool park_brake;
   float regen_brake;
   float motor_current;
   float motor_power;
@@ -68,18 +65,14 @@ typedef struct data_format {
   bool bms_mpio1;
 
   // MainIO
-  bool park_brake;
   float air_temp;
   float brake_temp;
   float dcdc_temp;
-  float mainIO_temp;
   float motor_controller_temp;
   float motor_temp;
   float road_temp;
   bool l_turn_led_en;
   bool r_turn_led_en;
-  bool brake_led_en;
-  bool headlights_led_en;
   bool hazards;
   float main_5V_bus;
   float main_12V_bus;
@@ -226,11 +219,14 @@ void set_crz_spd_setpt(float val);
 bool get_eco();
 void set_eco(bool val);
 
+float get_foot_brake();
+void set_foot_brake(float val);
+
 bool get_main_telem();
 void set_main_telem(bool val);
 
-float get_foot_brake();
-void set_foot_brake(float val);
+bool get_park_brake();
+void set_park_brake(bool val);
 
 float get_regen_brake();
 void set_regen_brake(float val);
@@ -310,9 +306,6 @@ void set_est_supplemental_soc(float val);
 bool get_bms_mpio1();
 void set_bms_mpio1(bool val);
 
-bool get_park_brake();
-void set_park_brake(bool val);
-
 float get_air_temp();
 void set_air_temp(float val);
 
@@ -321,9 +314,6 @@ void set_brake_temp(float val);
 
 float get_dcdc_temp();
 void set_dcdc_temp(float val);
-
-float get_mainIO_temp();
-void set_mainIO_temp(float val);
 
 float get_motor_controller_temp();
 void set_motor_controller_temp(float val);
@@ -339,12 +329,6 @@ void set_l_turn_led_en(bool val);
 
 bool get_r_turn_led_en();
 void set_r_turn_led_en(bool val);
-
-bool get_brake_led_en();
-void set_brake_led_en(bool val);
-
-bool get_headlights_led_en();
-void set_headlights_led_en(bool val);
 
 bool get_hazards();
 void set_hazards(bool val);

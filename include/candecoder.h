@@ -29,12 +29,12 @@ class CANDecoder : public CANManager {
 
 
         // MCC DATA STRUCT
-        struct Digital_Data {
+        struct MCC_Digital_Data {
             bool cruiseEnabled : 1;
             bool motorPower : 1;
             bool forwardAndReverse : 1;
             bool ecoMode : 1;
-            bool brakeStatus : 1;
+            bool parkBrake : 1;
         };
 
         // HV DATA STRUCT

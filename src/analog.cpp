@@ -7,29 +7,27 @@ Ticker readAnalogDelay;
 Thermistor air_therm(NCP21XM472J03RA_Constants, PF_4, 4700, 3.3);
 Thermistor brk_therm(NCP21XM472J03RA_Constants, PC_2, 4700, 3.3);
 Thermistor dcdc_therm(NCP21XM472J03RA_Constants, PB_1, 4700, 3.3);
-Thermistor main_therm(NCP21XM472J03RA_Constants, A0, 4700, 3.3);
-Thermistor mc_therm(NCP21XM472J03RA_Constants, A3, 4700, 3.3);
-Thermistor motor_therm(NCP21XM472J03RA_Constants, A5, 4700, 3.3);
-Thermistor road_therm(NCP21XM472J03RA_Constants, A1, 4700, 3.3);
+Thermistor mc_therm(NCP21XM472J03RA_Constants, PF_3, 4700, 3.3);
+Thermistor motor_therm(NCP21XM472J03RA_Constants, PF_10, 4700, 3.3);
+Thermistor road_therm(NCP21XM472J03RA_Constants, PC_0, 4700, 3.3);
 
 
 // rail voltages
 AnalogInMutexless LV_12V_TELEM(PF_6);
-AnalogInMutexless LV_24V_TELEM(PC_3);
-AnalogInMutexless LV_5V_TELEM(PF_8);
+AnalogInMutexless LV_24V_TELEM(PF_8);
+AnalogInMutexless LV_5V_TELEM(PF_5);
 
 
 // rail currents
-INA281Driver I_OUT_5V(PA_4, 0.005);
-INA281Driver I_IN_12V(PA_0, 0.005);
-INA281Driver I_OUT_24V(A4, 0.005);
+INA281Driver I_OUT_5V(PF_7, 0.005);
+INA281Driver I_IN_12V(PA_3, 0.005);
+INA281Driver I_OUT_24V(PF_9, 0.005);
 
 
 void read_temperatures() {
     set_air_temp(air_therm.get_temperature());
     set_brake_temp(brk_therm.get_temperature());
     set_dcdc_temp(dcdc_therm.get_temperature());
-    set_mainIO_temp(main_therm.get_temperature());
     set_motor_controller_temp(mc_therm.get_temperature());
     set_motor_temp(motor_therm.get_temperature());
     set_road_temp(road_therm.get_temperature());

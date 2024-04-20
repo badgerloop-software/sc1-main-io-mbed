@@ -268,12 +268,12 @@ void CANDecoder::decodeBMS(int messageID, SharedPtr<unsigned char> data, int len
 }
 
 void CANDecoder::decode200(unsigned char *data) {
-    struct Digital_Data parsedData = *(Digital_Data*)data;
+    struct MCC_Digital_Data parsedData = *(MCC_Digital_Data*)data;
 
     set_main_telem(parsedData.motorPower);
     set_fr_telem(parsedData.forwardAndReverse);
     set_eco(parsedData.ecoMode);
-    // set_foot_brake(parsedData.brakeStatus);
+    set_park_brake(parsedData.parkBrake);
 }
 
 /*
@@ -302,14 +302,15 @@ void CANDecoder::decodeMCC(int messageID, SharedPtr<unsigned char> data, int len
             break;
         case 0x206:
             set_speed(*(float*)data.get());
-            set_foot_brake(!get_foot_brake());
+            break;
+        case 0x207:
+            set_foot_brake(*(float*)data.get());
             break;
         default:
             break;
     }
 }
 
-//TODO: verify this
 /*
     decodes the data from ID = x300. 
     15B struct from HV's values
@@ -344,7 +345,7 @@ void CANDecoder::decode300(unsigned char *data) {
         !formattedData->battery_discharge_enabled || 
         !formattedData->battery_charge_enabled || 
         !formattedData->isolation_status) {
-            set_restart_enable(false);
+            set_sofi_mcu_hv_en(false);
         }
 }
 
