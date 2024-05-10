@@ -153,6 +153,7 @@ int main()
     timerMPPT.start();
     // Initialize bus
     CANDecoder canBus(CAN_RX, CAN_TX);
+
     EthernetClient es("192.168.1.16", 4005, dataReceiver, dataSender);
     cleardfdata();
     es.run();
