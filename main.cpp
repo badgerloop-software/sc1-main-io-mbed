@@ -30,7 +30,8 @@ void dataSender(int *size, void **data) {
 }
 
 void dataReceiver(void *data, int size) {
-    sofi_data = *(sofi_struct*)data;
+    set_sofi_mcu_hv_en(true);
+    //sofi_data = *(sofi_struct*)data; // uncomment when Software sends MainIO more data than MCU_HV_EN
 }
 
 
