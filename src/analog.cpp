@@ -36,7 +36,7 @@ void read_temperatures() {
 // reads bus voltages and scales them
 void read_bus_voltages() {
     set_main_12V_bus(LV_12V_TELEM.read() * 3.3 *  35.1/5.1);
-    set_main_24V_bus(LV_24V_TELEM.read() * 3.3 * 56.1/5.1);
+    set_main_24V_bus(LV_24V_TELEM.read() * 3.3 * 51/5.1);
     set_main_5V_bus(LV_5V_TELEM.read() * 3.3 * 15.1/5.1);
 }
 

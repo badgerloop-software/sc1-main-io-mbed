@@ -4,9 +4,9 @@
 // specified rate
 Ticker readDigitalDelay;
 
-DigitalIn hazard_signal(PE_2);
-DigitalIn left_turn_signal(PD_13);
-DigitalIn right_turn_signal(PD_12);
+DigitalIn hazard_signal(PE_3);
+DigitalIn left_turn_signal(PD_5);
+DigitalIn right_turn_signal(PD_7);
 
 
 // read input from the digital pins
