@@ -112,6 +112,7 @@ void printDebug(char* boardSelect) {
             break;
 
         case 'b':
+            printf("Adaptive Capacity: %f\n", get_adaptive_total_capacity());
             printf("Pack Current: %f\n", get_pack_current());
             printf("Pack Voltage: %f\n", get_pack_voltage());
             printf("SOC: %f\n", get_soc());
@@ -122,7 +123,6 @@ void printDebug(char* boardSelect) {
             printf("Input Voltage: %f\n", get_bms_input_voltage());
             printf("Pack Temp: %f\n", get_pack_temp());
             printf("Internal Temp: %f\n", get_pack_internal_temp());
-            printf("Pack Current: %f\n", get_pack_current());
             printf("Fan Speed: %i\n", get_fan_speed());
             break;
 
@@ -152,9 +152,11 @@ int main()
     timerMPPT.start();
     // Initialize bus
     CANDecoder canBus(CAN_RX, CAN_TX);
-    EthernetClient es("192.168.1.16", 4005, dataReceiver, dataSender);
+    //EthernetClient es("192.168.1.16", 4005, dataReceiver, dataSender);
     cleardfdata();
-    es.run();
+    //es.run();
+
+    set_soc(0); // set SOC to 0. SOC is how much the SOC has changed from the start of the car's operation. 
 
     while (true) {
 #if DEBUG_PRINT
