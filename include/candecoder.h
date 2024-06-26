@@ -6,6 +6,9 @@
 #include "sofi.h"
 
 #define BOARD_ID_MASK 0x700
+#define VSUPP_MULTIPLIER 4.02
+#define CAN_READ_INTERVAL 0.25 // seconds between reading messages
+#define MAX_CAPACITY_AH 48 // max capacity of battery in amp-hours
 
 class CANDecoder : public CANManager {
     private:
