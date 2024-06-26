@@ -14,7 +14,7 @@ Timer timerMPPT;
     
 */
 int CANDecoder::getValueFrom2Bytes(unsigned char bigByte, unsigned char smallByte) {
-    return ((bigByte << 8) + smallByte);
+    return (int16_t)((bigByte << 8) | smallByte);
 }
 
 /*
@@ -85,7 +85,7 @@ void CANDecoder::decode101(unsigned char *data) {
 
     set_pack_power(packCurrent * packOpenVoltage);
     
-    float packSOC = data[4] * 0.5;
+    float packSOC = get_soc() + ((packCurrent * CAN_READ_INTERVAL / 3600) / MAX_CAPACITY_AH); 
     set_soc(packSOC);
 
     float packSOH = data[5];
@@ -364,7 +364,7 @@ void CANDecoder::decodeHV(int messageID, SharedPtr<unsigned char> data, int leng
             set_supplemental_current(*(float*)(data.get()));
             break;
         case 0x303:
-            set_supplemental_voltage(*(float*)(data.get()));
+            set_supplemental_voltage(VSUPP_MULTIPLIER * (*(float*)(data.get())));
             break;
         default:
             break;
