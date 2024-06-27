@@ -6,6 +6,8 @@ Timer timerHV;
 Timer timerMCC;
 Timer timerMPPT;
 
+Ticker updateSOC;
+
 /*
     gets value from 2 bytes.
     - 
@@ -14,7 +16,7 @@ Timer timerMPPT;
     
 */
 int CANDecoder::getValueFrom2Bytes(unsigned char bigByte, unsigned char smallByte) {
-    return ((bigByte << 8) + smallByte);
+    return (int16_t)((bigByte << 8) | smallByte);
 }
 
 /*
@@ -85,8 +87,7 @@ void CANDecoder::decode101(unsigned char *data) {
 
     set_pack_power(packCurrent * packOpenVoltage);
     
-    float packSOC = data[4] * 0.5;
-    set_soc(packSOC);
+    //SOC setting used to be here
 
     float packSOH = data[5];
     set_soh(packSOH);
@@ -364,7 +365,7 @@ void CANDecoder::decodeHV(int messageID, SharedPtr<unsigned char> data, int leng
             set_supplemental_current(*(float*)(data.get()));
             break;
         case 0x303:
-            set_supplemental_voltage(*(float*)(data.get()));
+            set_supplemental_voltage(VSUPP_MULTIPLIER * (*(float*)(data.get())));
             break;
         default:
             break;
@@ -454,4 +455,14 @@ void CANDecoder::send_mainio_data() {
     this->sendMessage(0x026, (void*)&speed_target, 4);
     this->sendMessage(0x027, (void*)&energy_target, 4); // unused
     */
+}
+
+void updateSOCHelper() {
+    float packCurrent = get_pack_current();
+    float packSOC = get_soc() + ((packCurrent * UPDATE_SOC_INTERVAL / 3600) / MAX_CAPACITY_AH); 
+    set_soc(packSOC);
+}
+
+void initUpdateSOC(std::chrono::milliseconds readSignalPeriod) {
+    updateSOC.attach(updateSOCHelper, readSignalPeriod);
 }
