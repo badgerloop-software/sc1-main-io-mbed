@@ -160,6 +160,7 @@ int main()
     //es.run();
 
     set_soc(0); // set SOC to 0. SOC is how much the SOC has changed from the start of the car's operation. 
+    initUpdateSOC(UPDATE_SOC_INTERVAL_MS);
 
     while (true) {
 #if DEBUG_PRINT

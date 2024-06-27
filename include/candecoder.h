@@ -7,7 +7,8 @@
 
 #define BOARD_ID_MASK 0x700
 #define VSUPP_MULTIPLIER 4.02
-#define CAN_READ_INTERVAL 0.25 // seconds between reading messages
+#define UPDATE_SOC_INTERVAL_MS 100ms // seconds between reading messages
+#define UPDATE_SOC_INTERVAL 0.1
 #define MAX_CAPACITY_AH 48 // max capacity of battery in amp-hours
 
 class CANDecoder : public CANManager {
@@ -66,5 +67,8 @@ class CANDecoder : public CANManager {
         void readHandler(int messageID, SharedPtr<unsigned char> data, int length);
         void send_mainio_data();
 };
+
+void updateSOCHelper();
+void initUpdateSOC(std::chrono::milliseconds readSignalPeriod);
 
 #endif
