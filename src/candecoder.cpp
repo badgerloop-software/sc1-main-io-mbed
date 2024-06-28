@@ -7,6 +7,8 @@ Timer timerMCC;
 Timer timerMPPT;
 
 Ticker updateSOC;
+volatile float packCurrent;
+volatile float delta_soc; // change in SOC since the car started up
 
 /*
     gets value from 2 bytes.
@@ -79,7 +81,7 @@ void CANDecoder::decode100(unsigned char *data) {
     
 */
 void CANDecoder::decode101(unsigned char *data) {
-    float packCurrent = getValueFrom2Bytes(data[0], data[1]) * 0.1;
+    packCurrent = getValueFrom2Bytes(data[0], data[1]) * 0.1;
     set_pack_current(packCurrent);
 
     float packOpenVoltage = getValueFrom2Bytes(data[2], data[3]) * 0.1;
@@ -87,7 +89,8 @@ void CANDecoder::decode101(unsigned char *data) {
 
     set_pack_power(packCurrent * packOpenVoltage);
     
-    //SOC setting used to be here
+    // update SOC value in telemetry
+    set_soc(delta_soc);
 
     float packSOH = data[5];
     set_soh(packSOH);
@@ -458,9 +461,7 @@ void CANDecoder::send_mainio_data() {
 }
 
 void updateSOCHelper() {
-    float packCurrent = get_pack_current();
-    float packSOC = get_soc() + ((packCurrent * UPDATE_SOC_INTERVAL / 3600) / MAX_CAPACITY_AH); 
-    set_soc(packSOC);
+    delta_soc = delta_soc + ((packCurrent * UPDATE_SOC_INTERVAL / 3600) / MAX_CAPACITY_AH); 
 }
 
 void initUpdateSOC(std::chrono::milliseconds readSignalPeriod) {
