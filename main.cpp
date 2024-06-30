@@ -154,9 +154,9 @@ int main()
     timerMPPT.start();
     // Initialize bus
     CANDecoder canBus(CAN_RX, CAN_TX);
-    //EthernetClient es("192.168.1.16", 4005, dataReceiver, dataSender);
+    EthernetClient es("192.168.1.16", 4005, dataReceiver, dataSender);
     cleardfdata();
-    //es.run();
+    es.run();
 
     set_soc(0); // set SOC to 0. SOC is how much the SOC has changed from the start of the car's operation. 
     initUpdateSOC(UPDATE_SOC_INTERVAL_MS);
