@@ -461,7 +461,8 @@ void CANDecoder::send_mainio_data() {
 }
 
 void updateSOCHelper() {
-    delta_soc = delta_soc + ((packCurrent * UPDATE_SOC_INTERVAL / 3600) / MAX_CAPACITY_AH); 
+    // subtract because negative current means current flowing into battery.
+    delta_soc -= ((packCurrent * UPDATE_SOC_INTERVAL / 3600) / MAX_CAPACITY_AH); 
 }
 
 void initUpdateSOC(std::chrono::milliseconds readSignalPeriod) {
