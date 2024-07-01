@@ -14,12 +14,12 @@
 
 #define BYTE_ARRAY_SIZE sizeof(data_format)
 
-
 // Clears data struct
 void cleardfdata();
 
 // To freeze telemetry readings for transmissions
 void copyDataStructToWriteStruct();
+
 
 
 typedef struct data_format {
@@ -32,9 +32,8 @@ typedef struct data_format {
   bool crz_spd_mode;
   float crz_spd_setpt;
   bool eco;
-  float foot_brake;
   bool main_telem;
-  bool park_brake;
+  float foot_brake;
   float regen_brake;
   float motor_current;
   float motor_power;
@@ -65,6 +64,7 @@ typedef struct data_format {
   bool bms_mpio1;
 
   // MainIO
+  bool park_brake;
   float air_temp;
   float brake_temp;
   float dcdc_temp;
@@ -219,14 +219,11 @@ void set_crz_spd_setpt(float val);
 bool get_eco();
 void set_eco(bool val);
 
-float get_foot_brake();
-void set_foot_brake(float val);
-
 bool get_main_telem();
 void set_main_telem(bool val);
 
-bool get_park_brake();
-void set_park_brake(bool val);
+float get_foot_brake();
+void set_foot_brake(float val);
 
 float get_regen_brake();
 void set_regen_brake(float val);
@@ -305,6 +302,9 @@ void set_est_supplemental_soc(float val);
 
 bool get_bms_mpio1();
 void set_bms_mpio1(bool val);
+
+bool get_park_brake();
+void set_park_brake(bool val);
 
 float get_air_temp();
 void set_air_temp(float val);

@@ -349,7 +349,7 @@ void CANDecoder::decode300(unsigned char *data) {
         !formattedData->battery_discharge_enabled || 
         !formattedData->battery_charge_enabled || 
         !formattedData->isolation_status) {
-            set_sofi_mcu_hv_en(false);
+            set_mcu_hv_en(false);
         }
 }
 
@@ -444,7 +444,7 @@ void CANDecoder::readHandler(int messageID, SharedPtr<unsigned char> data, int l
 }
 
 void CANDecoder::send_mainio_data() {
-    bool startup_signal = get_sofi_mcu_hv_en();
+    bool startup_signal = get_mcu_hv_en();
     
     // MCU_HV_EN from software
     this->sendMessage(0x025, (void*)&startup_signal, 1);
