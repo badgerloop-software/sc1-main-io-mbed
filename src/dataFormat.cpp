@@ -14,7 +14,6 @@ Mutex dfwrite_mutex;
 data_format dfwrite;
 data_format dfdata;
 
-
 void cleardfdata() {
     memset(&dfdata, 0, BYTE_ARRAY_SIZE);
 
@@ -32,7 +31,6 @@ void cleardfdata() {
     }
 }
 
-
 void copyDataStructToWriteStruct() {
   dfwrite_mutex.lock();
   char header[6] = "<bsr>";
@@ -45,9 +43,8 @@ void copyDataStructToWriteStruct() {
   dfwrite.crz_spd_mode = get_crz_spd_mode();
   dfwrite.crz_spd_setpt = get_crz_spd_setpt();
   dfwrite.eco = get_eco();
-  dfwrite.foot_brake = get_foot_brake();
   dfwrite.main_telem = get_main_telem();
-  dfwrite.park_brake = get_park_brake();
+  dfwrite.foot_brake = get_foot_brake();
   dfwrite.regen_brake = get_regen_brake();
   dfwrite.motor_current = get_motor_current();
   dfwrite.motor_power = get_motor_power();
@@ -74,6 +71,7 @@ void copyDataStructToWriteStruct() {
   dfwrite.use_supp = get_use_supp();
   dfwrite.est_supplemental_soc = get_est_supplemental_soc();
   dfwrite.bms_mpio1 = get_bms_mpio1();
+  dfwrite.park_brake = get_park_brake();
   dfwrite.air_temp = get_air_temp();
   dfwrite.brake_temp = get_brake_temp();
   dfwrite.dcdc_temp = get_dcdc_temp();
@@ -203,9 +201,8 @@ Mutex fr_telem_mutex;
 Mutex crz_spd_mode_mutex;
 Mutex crz_spd_setpt_mutex;
 Mutex eco_mutex;
-Mutex foot_brake_mutex;
 Mutex main_telem_mutex;
-Mutex park_brake_mutex;
+Mutex foot_brake_mutex;
 Mutex regen_brake_mutex;
 Mutex motor_current_mutex;
 Mutex motor_power_mutex;
@@ -232,6 +229,7 @@ Mutex supplemental_deg_mutex;
 Mutex use_supp_mutex;
 Mutex est_supplemental_soc_mutex;
 Mutex bms_mpio1_mutex;
+Mutex park_brake_mutex;
 Mutex air_temp_mutex;
 Mutex brake_temp_mutex;
 Mutex dcdc_temp_mutex;
@@ -435,18 +433,6 @@ void set_eco(bool val) {
   eco_mutex.unlock();
 }
 
-float get_foot_brake() {
-  foot_brake_mutex.lock();
-  float val = dfdata.foot_brake;
-  foot_brake_mutex.unlock();
-  return val;
-}
-void set_foot_brake(float val) {
-  foot_brake_mutex.lock();
-  dfdata.foot_brake = val;
-  foot_brake_mutex.unlock();
-}
-
 bool get_main_telem() {
   main_telem_mutex.lock();
   bool val = dfdata.main_telem;
@@ -459,16 +445,16 @@ void set_main_telem(bool val) {
   main_telem_mutex.unlock();
 }
 
-bool get_park_brake() {
-  park_brake_mutex.lock();
-  bool val = dfdata.park_brake;
-  park_brake_mutex.unlock();
+float get_foot_brake() {
+  foot_brake_mutex.lock();
+  float val = dfdata.foot_brake;
+  foot_brake_mutex.unlock();
   return val;
 }
-void set_park_brake(bool val) {
-  park_brake_mutex.lock();
-  dfdata.park_brake = val;
-  park_brake_mutex.unlock();
+void set_foot_brake(float val) {
+  foot_brake_mutex.lock();
+  dfdata.foot_brake = val;
+  foot_brake_mutex.unlock();
 }
 
 float get_regen_brake() {
@@ -781,6 +767,18 @@ void set_bms_mpio1(bool val) {
   bms_mpio1_mutex.lock();
   dfdata.bms_mpio1 = val;
   bms_mpio1_mutex.unlock();
+}
+
+bool get_park_brake() {
+  park_brake_mutex.lock();
+  bool val = dfdata.park_brake;
+  park_brake_mutex.unlock();
+  return val;
+}
+void set_park_brake(bool val) {
+  park_brake_mutex.lock();
+  dfdata.park_brake = val;
+  park_brake_mutex.unlock();
 }
 
 float get_air_temp() {

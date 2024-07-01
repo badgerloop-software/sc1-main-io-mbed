@@ -30,7 +30,7 @@ void dataSender(int *size, void **data) {
 }
 
 void dataReceiver(void *data, int size) {
-    set_sofi_mcu_hv_en(true);
+    set_mcu_hv_en(true);
     //sofi_data = *(sofi_struct*)data; // uncomment when Software sends MainIO more data than MCU_HV_EN
 }
 
@@ -40,7 +40,7 @@ void printDebug(char* boardSelect) {
     printf("\e[1;1H\e[2J");
     switch (boardSelect[0]) {
         case 'm':
-            printf("Restart Enable: %s\n", get_sofi_mcu_hv_en() ? "On" : "Off");
+            printf("Restart Enable: %s\n", get_mcu_hv_en() ? "On" : "Off");
             printf("Hazards: %s\n", get_hazards() ? "On" : "Off");
             printf("Left Blink: %s\n", get_l_turn_led_en() ? "On" : "Off");
             printf("Right Blink: %s\n", get_r_turn_led_en() ? "On" : "Off");
@@ -170,9 +170,9 @@ int main()
             printf("Commands:\n0/1 to set mcu_hv_en\nm: MainIO Printout\nh: HV Printout\nc: MCC Printout\np: MPPT Printout\nb: BMS Printout\n");
             if (serial.read(buf, 1) > 0) {
                 if (buf[0] == '0') {
-                    set_sofi_mcu_hv_en(0);
+                    set_mcu_hv_en(0);
                 } else if (buf[0] == '1') {
-                    set_sofi_mcu_hv_en(1);
+                    set_mcu_hv_en(1);
                 }
             }
 
