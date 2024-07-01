@@ -6,6 +6,7 @@
 
         
 #include "sofi.h"
+#include "dataFormat.h"
 
 sofi_struct sofi_data;
 
@@ -23,6 +24,7 @@ bool get_sofi_mcu_hv_en() {
 void set_sofi_mcu_hv_en(bool val) {
   mcu_hv_en_sofi_mutex.lock();
   sofi_data.mcu_hv_en = val;
+  set_mcu_hv_en(val);
   mcu_hv_en_sofi_mutex.unlock();
 }
 
