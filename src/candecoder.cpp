@@ -6,7 +6,6 @@ Timer timerHV;
 Timer timerMCC;
 Timer timerMPPT;
 
-Ticker updateSOC;
 volatile float packCurrent;
 volatile float delta_soc; // change in SOC since the car started up
 
@@ -349,7 +348,7 @@ void CANDecoder::decode300(unsigned char *data) {
         !formattedData->battery_discharge_enabled || 
         !formattedData->battery_charge_enabled || 
         !formattedData->isolation_status) {
-            set_mcu_hv_en(false);
+            set_sofi_mcu_hv_en(false);
         }
 }
 
@@ -444,7 +443,7 @@ void CANDecoder::readHandler(int messageID, SharedPtr<unsigned char> data, int l
 }
 
 void CANDecoder::send_mainio_data() {
-    bool startup_signal = get_mcu_hv_en();
+    bool startup_signal = get_sofi_mcu_hv_en();
     
     // MCU_HV_EN from software
     this->sendMessage(0x025, (void*)&startup_signal, 1);
@@ -460,11 +459,8 @@ void CANDecoder::send_mainio_data() {
     */
 }
 
-void updateSOCHelper() {
+// this method is called in main.cpp every 1s 
+void updateSOC() {
     // subtract because negative current means current flowing into battery.
-    delta_soc -= ((packCurrent * UPDATE_SOC_INTERVAL / 3600) / MAX_CAPACITY_AH); 
-}
-
-void initUpdateSOC(std::chrono::milliseconds readSignalPeriod) {
-    updateSOC.attach(updateSOCHelper, readSignalPeriod);
+    delta_soc -= ((packCurrent / 3600) / MAX_CAPACITY_AH); 
 }
