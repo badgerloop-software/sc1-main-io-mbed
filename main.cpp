@@ -6,8 +6,7 @@
 #include "digital.h"
 #include "ethernet.h"
 
-#define SAMPLE_INTERVAL 50ms
-#define SOFI_INTERVAL 50ms
+#define SOFI_INTERVAL 1000ms
 #define DEBUG_PRINT 1
 
 #define CAN_RX PD_0
@@ -30,7 +29,7 @@ void dataSender(int *size, void **data) {
 }
 
 void dataReceiver(void *data, int size) {
-    set_mcu_hv_en(true);
+    set_sofi_mcu_hv_en(true);
     //sofi_data = *(sofi_struct*)data; // uncomment when Software sends MainIO more data than MCU_HV_EN
 }
 
@@ -40,7 +39,7 @@ void printDebug(char* boardSelect) {
     printf("\e[1;1H\e[2J");
     switch (boardSelect[0]) {
         case 'm':
-            printf("Restart Enable: %s\n", get_mcu_hv_en() ? "On" : "Off");
+            printf("Restart Enable: %s\n", get_sofi_mcu_hv_en() ? "On" : "Off");
             printf("Hazards: %s\n", get_hazards() ? "On" : "Off");
             printf("Left Blink: %s\n", get_l_turn_led_en() ? "On" : "Off");
             printf("Right Blink: %s\n", get_r_turn_led_en() ? "On" : "Off");
@@ -146,6 +145,7 @@ int main()
     char buf[1];
     uint8_t printDelay = 0;
 #endif
+    uint8_t socDelay = 0;
 
     // start timers
     timerBMS.start();
@@ -159,25 +159,28 @@ int main()
     es.run();
 
     set_soc(0); // set SOC to 0. SOC is how much the SOC has changed from the start of the car's operation. 
-    initUpdateSOC(UPDATE_SOC_INTERVAL_MS);
 
     while (true) {
 #if DEBUG_PRINT
-        printDelay = printDelay + 1;
+        printDelay++;
         if (printDelay >= 1000 / SOFI_INTERVAL.count()) {
             printDebug(buf);
             printf("Commands:\n0/1 to set mcu_hv_en\nm: MainIO Printout\nh: HV Printout\nc: MCC Printout\np: MPPT Printout\nb: BMS Printout\n");
             if (serial.read(buf, 1) > 0) {
                 if (buf[0] == '0') {
-                    set_mcu_hv_en(0);
+                    set_sofi_mcu_hv_en(0);
                 } else if (buf[0] == '1') {
-                    set_mcu_hv_en(1);
+                    set_sofi_mcu_hv_en(1);
                 }
             }
 
             printDelay = 0;
         }
 #endif
+        socDelay++;
+        if (socDelay >= 1000 / SOFI_INTERVAL.count()) {
+            updateSOC();
+        }
 
         // Process inbound messages 
         canBus.send_mainio_data();
