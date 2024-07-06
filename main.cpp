@@ -185,6 +185,7 @@ int main()
 
         // Process inbound messages 
         canBus.send_mainio_data();
+        // wait_us(1000000);
         canBus.runQueue(SOFI_INTERVAL);
 
         if (timerBMS.elapsed_time() > BMS_TIMEOUT) {
