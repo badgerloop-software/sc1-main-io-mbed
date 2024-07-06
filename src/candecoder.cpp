@@ -457,6 +457,7 @@ void CANDecoder::send_mainio_data() {
 }
 
 // this method is called in main.cpp every 1s 
+// NOTE: the calculation assumes the interval is 1s. 
 void updateSOC() {
     // subtract because negative current means current flowing into battery.
     delta_soc -= ((packCurrent / 3600) / MAX_CAPACITY_AH); 
