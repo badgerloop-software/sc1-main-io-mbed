@@ -9,7 +9,4 @@
 // Read analog signals
 void readAnalog();
 
-// repeatedly call the function with the given parameter
-void initAnalog(std::chrono::microseconds readSignalPeriod);
-
 #endif

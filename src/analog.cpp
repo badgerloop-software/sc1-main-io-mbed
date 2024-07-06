@@ -1,8 +1,5 @@
 #include "analog.h"
 
-// initialize Ticker to setup a recurring interrupt to repeatedly call the function at a specified rate
-Ticker readAnalogDelay;
-
 // thermistor initializations
 Thermistor air_therm(NCP21XM472J03RA_Constants, PF_4, 4700, 3.3);
 Thermistor brk_therm(NCP21XM472J03RA_Constants, PC_2, 4700, 3.3);
@@ -52,9 +49,4 @@ void readAnalog() {
     read_temperatures();
     read_bus_voltages();
     read_bus_currents();
-}
-
-// Set up polling of analog IO at specified rate
-void initAnalog(std::chrono::microseconds readSignalPeriod) {
-    readAnalogDelay.attach(readAnalog, readSignalPeriod);
 }
