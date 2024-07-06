@@ -87,9 +87,6 @@ void CANDecoder::decode101(unsigned char *data) {
     set_pack_voltage(packOpenVoltage);
 
     set_pack_power(packCurrent * packOpenVoltage);
-    
-    // update SOC value in telemetry
-    set_soc(delta_soc);
 
     float packSOH = data[5];
     set_soh(packSOH);
@@ -446,7 +443,7 @@ void CANDecoder::send_mainio_data() {
     bool startup_signal = get_sofi_mcu_hv_en();
     
     // MCU_HV_EN from software
-    this->sendMessage(0x025, (void*)&startup_signal, 1);
+    this->sendMessage(0x025, (void*)&startup_signal, 1, 1ms);
 
     /* Uncomment this when Software decides they want to send MainIO more commands
     bool mppt_overvoltage_fault_reset = get_sofi_mppt_overvoltage_fault_reset();
@@ -463,4 +460,6 @@ void CANDecoder::send_mainio_data() {
 void updateSOC() {
     // subtract because negative current means current flowing into battery.
     delta_soc -= ((packCurrent / 3600) / MAX_CAPACITY_AH); 
+    // update SOC value in telemetry
+    set_soc(delta_soc);
 }
