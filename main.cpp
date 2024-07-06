@@ -6,17 +6,21 @@
 #include "digital.h"
 #include "ethernet.h"
 
-#define SOFI_INTERVAL 1000ms
+#define SOFI_INTERVAL 1000ms // keep it at 1000ms. Nucleo crashes at 100ms
 #define DEBUG_PRINT 1
 
 #define CAN_RX PD_0
 #define CAN_TX PD_1
 
-#define BMS_TIMEOUT 4s
-#define HV_TIMEOUT 4s
-#define MCC_TIMEOUT 4s
-#define MPPT_TIMEOUT 4s
+#define BMS_TIMEOUT 4
+#define HV_TIMEOUT 4
+#define MCC_TIMEOUT 4
+#define MPPT_TIMEOUT 4
 
+extern Timer timerBMS;
+extern Timer timerHV;
+extern Timer timerMCC;
+extern Timer timerMPPT;
 
 void dataSender(int *size, void **data) {
     // Sample on board IO
@@ -90,7 +94,7 @@ void printDebug(char* boardSelect) {
             printf("Foot Brake: %s\n", get_foot_brake() ? "On" : "Off");
             printf("Cruise Speed Mode: %s\n", get_crz_spd_mode() ? "On" : "Off");
             printf("Cruise Speed Setpoint: %f\n", get_crz_spd_setpt());
-            printf("Park Brake: %s\n", get_park_brake() ? "On" : "Off"); // this signal no longer exists in dataFormat
+            printf("Park Brake: %s\n", get_park_brake() ? "On" : "Off");
             printf("Accelerator Pedal: %f\n", get_accelerator_pedal());
             printf("Regen Brake: %f\n", get_regen_brake());
             printf("Speed: %f\n", get_speed());
@@ -125,17 +129,18 @@ void printDebug(char* boardSelect) {
             printf("Internal Temp: %f\n", get_pack_internal_temp());
             printf("Fan Speed: %i\n", get_fan_speed());
             break;
+        case 't':
+            printf("CAN heartbeats:\n");
+            printf("BMS: %.2f | %s\n", timerBMS.read(), (get_bms_can_heartbeat())? "yes" : "no");
+            printf("HV: %.2f | %s\n", timerHV.read(), (get_hv_can_heartbeat())? "yes" : "no");
+            printf("MCC: %.2f | %s\n", timerMCC.read(), (get_mcc_can_heartbeat())? "yes" : "no");
+            printf("MPPT: %.2f | %s\n", timerMPPT.read(), (get_mppt_can_heartbeat())? "yes" : "no");
 
         default:
             break;
     }
 }
 #endif
-
-extern Timer timerBMS;
-extern Timer timerHV;
-extern Timer timerMCC;
-extern Timer timerMPPT;
 
 int main()
 {
@@ -166,7 +171,7 @@ int main()
         printDelay++;
         if (printDelay >= 1000 / SOFI_INTERVAL.count()) {
             printDebug(buf);
-            printf("Commands:\n0/1 to set mcu_hv_en\nm: MainIO Printout\nh: HV Printout\nc: MCC Printout\np: MPPT Printout\nb: BMS Printout\n");
+            printf("Commands:\n0/1 to set mcu_hv_en\nm: MainIO Printout\nh: HV Printout\nc: MCC Printout\np: MPPT Printout\nb: BMS Printout\nt: CAN heartbeats\n");
             if (serial.read(buf, 1) > 0) {
                 if (buf[0] == '0') {
                     set_sofi_mcu_hv_en(0);
@@ -181,23 +186,23 @@ int main()
         socDelay++;
         if (socDelay >= 1000 / SOFI_INTERVAL.count()) {
             updateSOC();
+            socDelay = 0;
         }
 
         // Process inbound messages 
         canBus.send_mainio_data();
-        // wait_us(1000000);
         canBus.runQueue(SOFI_INTERVAL);
 
-        if (timerBMS.elapsed_time() > BMS_TIMEOUT) {
+        if (timerBMS.read() > BMS_TIMEOUT) {
             set_bms_can_heartbeat(false);
         }
-        if (timerHV.elapsed_time() > HV_TIMEOUT) {
+        if (timerHV.read() > HV_TIMEOUT) {
             set_hv_can_heartbeat(false);
         }
-        if (timerMCC.elapsed_time() > MCC_TIMEOUT) {
+        if (timerMCC.read() > MCC_TIMEOUT) {
             set_mcc_can_heartbeat(false);
         }
-        if (timerMPPT.elapsed_time() > MPPT_TIMEOUT) {
+        if (timerMPPT.read() > MPPT_TIMEOUT) {
             set_mppt_can_heartbeat(false);
         }
     }
