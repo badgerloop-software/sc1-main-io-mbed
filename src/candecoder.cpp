@@ -1,11 +1,6 @@
 #include "candecoder.h"
 #include "dataFormat.h"
 
-Timer timerBMS;
-Timer timerHV;
-Timer timerMCC;
-Timer timerMPPT;
-
 volatile float packCurrent;
 volatile float delta_soc; // change in SOC since the car started up
 
@@ -415,22 +410,18 @@ void CANDecoder::readHandler(int messageID, SharedPtr<unsigned char> data, int l
     // IDs are 11 bits, first 3 are used to ID the board, rest for message
     switch (messageID & BOARD_ID_MASK) {
         case 0x100:
-            timerBMS.reset();
             set_bms_can_heartbeat(true);
             decodeBMS(messageID, data, length);
             break;
         case 0x200:
-            timerMCC.reset();
             set_mcc_can_heartbeat(true);
             decodeMCC(messageID, data, length);
             break;
         case 0x300:
-            timerHV.reset();
             set_hv_can_heartbeat(true);
             decodeHV(messageID, data, length);
             break;
         case 0x400:
-            timerMPPT.reset();
             set_mppt_can_heartbeat(true);
             decodeMPPT(messageID, data, length);
             break;

@@ -12,15 +12,6 @@
 #define CAN_RX PD_0
 #define CAN_TX PD_1
 
-#define BMS_TIMEOUT 4
-#define HV_TIMEOUT 4
-#define MCC_TIMEOUT 4
-#define MPPT_TIMEOUT 4
-
-extern Timer timerBMS;
-extern Timer timerHV;
-extern Timer timerMCC;
-extern Timer timerMPPT;
 
 void dataSender(int *size, void **data) {
     // Sample on board IO
@@ -30,6 +21,12 @@ void dataSender(int *size, void **data) {
     *size = BYTE_ARRAY_SIZE;
     copyDataStructToWriteStruct();
     *data = &dfwrite;
+
+    // Reset CAN heartbeats for next update
+    set_bms_can_heartbeat(false);
+    set_hv_can_heartbeat(false);
+    set_mcc_can_heartbeat(false);
+    set_mppt_can_heartbeat(false);
 }
 
 void dataReceiver(void *data, int size) {
@@ -139,13 +136,6 @@ void printDebug(char* boardSelect) {
             printf("Internal Temp: %f\n", get_pack_internal_temp());
             printf("Fan Speed: %i\n", get_fan_speed());
             break;
-        case 't':
-            printf("CAN heartbeats:\n");
-            printf("BMS: %.2f | %s\n", timerBMS.read(), (get_bms_can_heartbeat())? "yes" : "no");
-            printf("HV: %.2f | %s\n", timerHV.read(), (get_hv_can_heartbeat())? "yes" : "no");
-            printf("MCC: %.2f | %s\n", timerMCC.read(), (get_mcc_can_heartbeat())? "yes" : "no");
-            printf("MPPT: %.2f | %s\n", timerMPPT.read(), (get_mppt_can_heartbeat())? "yes" : "no");
-
         default:
             break;
     }
@@ -162,11 +152,6 @@ int main()
 #endif
     uint8_t socDelay = 0;
 
-    // start timers
-    timerBMS.start();
-    timerHV.start();
-    timerMCC.start();
-    timerMPPT.start();
     // Initialize bus
     CANDecoder canBus(CAN_RX, CAN_TX);
     EthernetClient es("192.168.1.16", 4005, dataReceiver, dataSender);
@@ -180,7 +165,7 @@ int main()
         printDelay++;
         if (printDelay >= 1000 / SOFI_INTERVAL.count()) {
             printDebug(buf);
-            printf("Commands:\n0/1 to set mcu_hv_en\nm: MainIO Printout\nh: HV Printout\nc: MCC Printout\np: MPPT Printout\nb: BMS Printout\nt: CAN heartbeats\n");
+            printf("Commands:\n0/1 to set mcu_hv_en\nm: MainIO Printout\nh: HV Printout\nc: MCC Printout\np: MPPT Printout\nb: BMS Printout\n");
             if (serial.read(buf, 1) > 0) {
                 if (buf[0] == '0') {
                     set_sofi_mcu_hv_en(0);
@@ -201,18 +186,5 @@ int main()
         // Process inbound messages 
         canBus.send_mainio_data();
         canBus.runQueue(SOFI_INTERVAL);
-
-        if (timerBMS.read() > BMS_TIMEOUT) {
-            set_bms_can_heartbeat(false);
-        }
-        if (timerHV.read() > HV_TIMEOUT) {
-            set_hv_can_heartbeat(false);
-        }
-        if (timerMCC.read() > MCC_TIMEOUT) {
-            set_mcc_can_heartbeat(false);
-        }
-        if (timerMPPT.read() > MPPT_TIMEOUT) {
-            set_mppt_can_heartbeat(false);
-        }
     }
 }
