@@ -88,7 +88,17 @@ void printDebug(char* boardSelect) {
 
         case 'c':
             printf("Motor Power: %s\n", get_main_telem() ? "On" : "Off");
-            printf("MCC State: %i\n", get_mcc_state());
+            printf("MCC State: ");
+            switch (get_mcc_state()) {
+                case 0: printf("Off"); break;
+                case 1: printf("Parked"); break;
+                case 2: printf("Idle"); break;
+                case 3: printf("Forward"); break;
+                case 4: printf("Backward"); break;
+                case 5: printf("Cruise control"); break;
+                default: printf("Error"); break;
+            }
+            printf("\n");
             printf("Direction: %s\n", get_fr_telem() ? "Reverse" : "Forward");
             printf("Eco: %s\n", get_eco() ? "On" : "Off");
             printf("Foot Brake: %s\n", get_foot_brake() ? "On" : "Off");
