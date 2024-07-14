@@ -12,10 +12,10 @@
 #define CAN_RX PD_0
 #define CAN_TX PD_1
 
-#define BMS_TIMEOUT 4
-#define HV_TIMEOUT 4
-#define MCC_TIMEOUT 4
-#define MPPT_TIMEOUT 4
+#define BMS_TIMEOUT 4ms
+#define HV_TIMEOUT 4ms
+#define MCC_TIMEOUT 4ms
+#define MPPT_TIMEOUT 4ms
 
 extern Timer timerBMS;
 extern Timer timerHV;
@@ -154,6 +154,10 @@ void printDebug(char* boardSelect) {
 
 int main()
 {
+    // 40s stall to sync with Pi boot time
+    wait_us(35000000);
+
+
 #if DEBUG_PRINT
     BufferedSerial serial(USBTX, USBRX, 115200);
     serial.set_blocking(false);
@@ -202,16 +206,16 @@ int main()
         canBus.send_mainio_data();
         canBus.runQueue(SOFI_INTERVAL);
 
-        if (timerBMS.read() > BMS_TIMEOUT) {
+        if (timerBMS.elapsed_time() > BMS_TIMEOUT) {
             set_bms_can_heartbeat(false);
         }
-        if (timerHV.read() > HV_TIMEOUT) {
+        if (timerHV.elapsed_time() > HV_TIMEOUT) {
             set_hv_can_heartbeat(false);
         }
-        if (timerMCC.read() > MCC_TIMEOUT) {
+        if (timerMCC.elapsed_time() > MCC_TIMEOUT) {
             set_mcc_can_heartbeat(false);
         }
-        if (timerMPPT.read() > MPPT_TIMEOUT) {
+        if (timerMPPT.elapsed_time() > MPPT_TIMEOUT) {
             set_mppt_can_heartbeat(false);
         }
     }
