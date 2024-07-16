@@ -154,9 +154,6 @@ void printDebug(char* boardSelect) {
 
 int main()
 {
-    // 40s stall to sync with Pi boot time
-    wait_us(35000000);
-
 
 #if DEBUG_PRINT
     BufferedSerial serial(USBTX, USBRX, 115200);
@@ -198,7 +195,7 @@ int main()
 #endif
         socDelay++;
         if (socDelay >= 1000 / SOFI_INTERVAL.count()) {
-            updateSOC();
+            updateDeltaSOC();
             socDelay = 0;
         }
 

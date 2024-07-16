@@ -7,7 +7,7 @@
 
 #define BOARD_ID_MASK 0x700
 #define VSUPP_MULTIPLIER 4.02
-#define MAX_CAPACITY_AH 48 // max capacity of battery in amp-hours
+#define MAX_CAPACITY_AH 48.75 // max capacity of battery in amp-hours
 
 class CANDecoder : public CANManager {
     private:
@@ -66,6 +66,6 @@ class CANDecoder : public CANManager {
         void send_mainio_data();
 };
 
-void updateSOC();
+void updateDeltaSOC();
 
 #endif

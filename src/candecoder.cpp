@@ -88,6 +88,9 @@ void CANDecoder::decode101(unsigned char *data) {
 
     set_pack_power(packCurrent * packOpenVoltage);
 
+    float packSOC = (float)data[4] / 2;
+    set_soc(packSOC);
+
     float packSOH = data[5];
     set_soh(packSOH);
 
@@ -458,9 +461,9 @@ void CANDecoder::send_mainio_data() {
 
 // this method is called in main.cpp every 1s 
 // NOTE: the calculation assumes the interval is 1s. 
-void updateSOC() {
+void updateDeltaSOC() {
     // subtract because negative current means current flowing into battery.
     delta_soc -= ((packCurrent / 3600) / MAX_CAPACITY_AH); 
     // update SOC value in telemetry
-    set_soc(delta_soc);
+    set_delta_soc(delta_soc);
 }

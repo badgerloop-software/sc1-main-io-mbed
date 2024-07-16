@@ -107,6 +107,7 @@ typedef struct data_format {
   float pack_power;
   uint16_t populated_cells;
   float soc;
+  float delta_soc;
   float soh;
   float pack_amphours;
   float adaptive_total_capacity;
@@ -419,6 +420,9 @@ void set_populated_cells(uint16_t val);
 
 float get_soc();
 void set_soc(float val);
+
+float get_delta_soc();
+void set_delta_soc(float val);
 
 float get_soh();
 void set_soh(float val);
