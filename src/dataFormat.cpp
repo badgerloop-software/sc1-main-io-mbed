@@ -110,6 +110,7 @@ void copyDataStructToWriteStruct() {
   dfwrite.pack_power = get_pack_power();
   dfwrite.populated_cells = get_populated_cells();
   dfwrite.soc = get_soc();
+  dfwrite.delta_soc = get_delta_soc();
   dfwrite.soh = get_soh();
   dfwrite.pack_amphours = get_pack_amphours();
   dfwrite.adaptive_total_capacity = get_adaptive_total_capacity();
@@ -268,6 +269,7 @@ Mutex pack_voltage_mutex;
 Mutex pack_power_mutex;
 Mutex populated_cells_mutex;
 Mutex soc_mutex;
+Mutex delta_soc_mutex;
 Mutex soh_mutex;
 Mutex pack_amphours_mutex;
 Mutex adaptive_total_capacity_mutex;
@@ -1234,6 +1236,18 @@ float get_soc() {
 void set_soc(float val) {
   soc_mutex.lock();
   dfdata.soc = val;
+  soc_mutex.unlock();
+}
+
+float get_delta_soc() {
+  soc_mutex.lock();
+  float val = dfdata.delta_soc;
+  soc_mutex.unlock();
+  return val;
+}
+void set_delta_soc(float val) {
+  soc_mutex.lock();
+  dfdata.delta_soc = val;
   soc_mutex.unlock();
 }
 
