@@ -251,8 +251,10 @@ Mutex hv_can_heartbeat_mutex;
 Mutex mainIO_heartbeat_mutex;
 Mutex mcc_can_heartbeat_mutex;
 Mutex mppt_can_heartbeat_mutex;
+Mutex boost_enable_mutex;
 Mutex mppt_mode_mutex;
-Mutex mppt_current_out_mutex;
+Mutex mppt_target_voltage_mutex;
+Mutex mppt_target_current_mutex;
 Mutex string1_temp_mutex;
 Mutex string2_temp_mutex;
 Mutex string3_temp_mutex;
@@ -262,6 +264,9 @@ Mutex string3_V_in_mutex;
 Mutex string1_I_in_mutex;
 Mutex string2_I_in_mutex;
 Mutex string3_I_in_mutex;
+Mutex string1_duty_mutex;
+Mutex string2_duty_mutex;
+Mutex string3_duty_mutex;
 Mutex pack_temp_mutex;
 Mutex pack_internal_temp_mutex;
 Mutex pack_current_mutex;
@@ -1023,28 +1028,56 @@ void set_mppt_can_heartbeat(bool val) {
   mppt_can_heartbeat_mutex.unlock();
 }
 
+bool get_boost_enable() {
+  boost_enable_mutex.lock();
+  bool val = dfdata.boost_enable;
+  boost_enable_mutex.unlock();
+  return val;
+}
+
+void set_boost_enable(bool val) {
+  boost_enable_mutex.lock();
+  dfdata.boost_enable = val;
+  boost_enable_mutex.unlock();
+}
+
 bool get_mppt_mode() {
   mppt_mode_mutex.lock();
   bool val = dfdata.mppt_mode;
   mppt_mode_mutex.unlock();
   return val;
 }
+
 void set_mppt_mode(bool val) {
   mppt_mode_mutex.lock();
   dfdata.mppt_mode = val;
   mppt_mode_mutex.unlock();
 }
 
-float get_mppt_current_out() {
-  mppt_current_out_mutex.lock();
-  float val = dfdata.mppt_current_out;
-  mppt_current_out_mutex.unlock();
+float get_mppt_target_voltage() {
+  mppt_target_voltage_mutex.lock();
+  float val = dfdata.mppt_target_voltage;
+  mppt_target_voltage_mutex.unlock();
   return val;
 }
-void set_mppt_current_out(float val) {
-  mppt_current_out_mutex.lock();
-  dfdata.mppt_current_out = val;
-  mppt_current_out_mutex.unlock();
+
+void set_mppt_target_voltage(float val) {
+  mppt_target_voltage_mutex.lock();
+  dfdata.mppt_target_voltage = val;
+  mppt_target_voltage_mutex.unlock();
+}
+
+float get_mppt_target_current() {
+  mppt_target_current_mutex.lock();
+  float val = dfdata.mppt_target_current;
+  mppt_target_current_mutex.unlock();
+  return val;
+}
+
+void set_mppt_target_current(float val) {
+  mppt_target_current_mutex.lock();
+  dfdata.mppt_target_current = val;
+  mppt_target_current_mutex.unlock();
 }
 
 float get_string1_temp() {
@@ -1153,6 +1186,42 @@ void set_string3_I_in(float val) {
   string3_I_in_mutex.lock();
   dfdata.string3_I_in = val;
   string3_I_in_mutex.unlock();
+}
+
+uint16_t get_string1_duty() {
+  string1_duty_mutex.lock();
+  uint16_t val = dfdata.string1_duty;
+  string1_duty_mutex.unlock();
+  return val;
+}
+void set_string1_duty(uint16_t val) {
+  string1_duty_mutex.lock();
+  dfdata.string1_duty = val;
+  string1_duty_mutex.unlock();
+}
+
+uint16_t get_string2_duty() {
+  string2_duty_mutex.lock();
+  uint16_t val = dfdata.string2_duty;
+  string2_duty_mutex.unlock();
+  return val;
+}
+void set_string2_duty(uint16_t val) {
+  string2_duty_mutex.lock();
+  dfdata.string2_duty = val;
+  string2_duty_mutex.unlock();
+}
+
+uint16_t get_string3_duty() {
+  string3_duty_mutex.lock();
+  uint16_t val = dfdata.string3_duty;
+  string3_duty_mutex.unlock();
+  return val;
+}
+void set_string3_duty(uint16_t val) {
+  string3_duty_mutex.lock();
+  dfdata.string3_duty = val;
+  string3_duty_mutex.unlock();
 }
 
 float get_pack_temp() {

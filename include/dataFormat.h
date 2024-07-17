@@ -87,8 +87,10 @@ typedef struct data_format {
   bool mppt_can_heartbeat;
 
   // MPPT
+  bool boost_enable;
   bool mppt_mode;
-  float mppt_current_out;
+  float mppt_target_voltage;
+  float mppt_target_current;
   float string1_temp;
   float string2_temp;
   float string3_temp;
@@ -98,6 +100,9 @@ typedef struct data_format {
   float string1_I_in;
   float string2_I_in;
   float string3_I_in;
+  uint16_t string1_duty;
+  uint16_t string2_duty;
+  uint16_t string3_duty;
 
   // BMS
   float pack_temp;
@@ -367,11 +372,17 @@ void set_mcc_can_heartbeat(bool val);
 bool get_mppt_can_heartbeat();
 void set_mppt_can_heartbeat(bool val);
 
+bool get_boost_enable();
+void set_boost_enable(bool val);
+
 bool get_mppt_mode();
 void set_mppt_mode(bool val);
 
-float get_mppt_current_out();
-void set_mppt_current_out(float val);
+float get_mppt_target_voltage();
+void set_mppt_target_voltage(float val);
+
+float get_mppt_target_current();
+void set_mppt_target_current(float val);
 
 float get_string1_temp();
 void set_string1_temp(float val);
@@ -399,6 +410,15 @@ void set_string2_I_in(float val);
 
 float get_string3_I_in();
 void set_string3_I_in(float val);
+
+float get_string1_duty();
+void set_string1_duty(float val);
+
+float get_string2_duty();
+void set_string2_duty(float val);
+
+float get_string3_duty();
+void set_string3_duty(float val);
 
 float get_pack_temp();
 void set_pack_temp(float val);
