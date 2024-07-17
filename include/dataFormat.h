@@ -411,14 +411,14 @@ void set_string2_I_in(float val);
 float get_string3_I_in();
 void set_string3_I_in(float val);
 
-float get_string1_duty();
-void set_string1_duty(float val);
+uint16_t get_string1_duty();
+void set_string1_duty(uint16_t val);
 
-float get_string2_duty();
-void set_string2_duty(float val);
+uint16_t get_string2_duty();
+void set_string2_duty(uint16_t val);
 
-float get_string3_duty();
-void set_string3_duty(float val);
+uint16_t get_string3_duty();
+void set_string3_duty(uint16_t val);
 
 float get_pack_temp();
 void set_pack_temp(float val);
