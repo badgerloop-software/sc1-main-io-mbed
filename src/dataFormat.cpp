@@ -94,8 +94,6 @@ void copyDataStructToWriteStruct() {
   dfwrite.mppt_can_heartbeat = get_mppt_can_heartbeat();
   dfwrite.boost_enable = get_boost_enable();
   dfwrite.mppt_mode = get_mppt_mode();
-  dfwrite.mppt_target_voltage = get_mppt_target_voltage();
-  dfwrite.mppt_target_current = get_mppt_target_current();
   dfwrite.string1_temp = get_string1_temp();
   dfwrite.string2_temp = get_string2_temp();
   dfwrite.string3_temp = get_string3_temp();
@@ -108,6 +106,9 @@ void copyDataStructToWriteStruct() {
   dfwrite.string1_duty = get_string1_duty();
   dfwrite.string2_duty = get_string2_duty();
   dfwrite.string3_duty = get_string3_duty();
+  dfwrite.string1_target = get_string1_target();
+  dfwrite.string2_target = get_string2_target();
+  dfwrite.string3_target = get_string3_target();
   dfwrite.pack_temp = get_pack_temp();
   dfwrite.pack_internal_temp = get_pack_internal_temp();
   dfwrite.pack_current = get_pack_current();
@@ -258,8 +259,6 @@ Mutex mcc_can_heartbeat_mutex;
 Mutex mppt_can_heartbeat_mutex;
 Mutex boost_enable_mutex;
 Mutex mppt_mode_mutex;
-Mutex mppt_target_voltage_mutex;
-Mutex mppt_target_current_mutex;
 Mutex string1_temp_mutex;
 Mutex string2_temp_mutex;
 Mutex string3_temp_mutex;
@@ -272,6 +271,9 @@ Mutex string3_I_in_mutex;
 Mutex string1_duty_mutex;
 Mutex string2_duty_mutex;
 Mutex string3_duty_mutex;
+Mutex string1_target_mutex;
+Mutex string2_target_mutex;
+Mutex string3_target_mutex;
 Mutex pack_temp_mutex;
 Mutex pack_internal_temp_mutex;
 Mutex pack_current_mutex;
@@ -1059,32 +1061,6 @@ void set_mppt_mode(bool val) {
   mppt_mode_mutex.unlock();
 }
 
-float get_mppt_target_voltage() {
-  mppt_target_voltage_mutex.lock();
-  float val = dfdata.mppt_target_voltage;
-  mppt_target_voltage_mutex.unlock();
-  return val;
-}
-
-void set_mppt_target_voltage(float val) {
-  mppt_target_voltage_mutex.lock();
-  dfdata.mppt_target_voltage = val;
-  mppt_target_voltage_mutex.unlock();
-}
-
-float get_mppt_target_current() {
-  mppt_target_current_mutex.lock();
-  float val = dfdata.mppt_target_current;
-  mppt_target_current_mutex.unlock();
-  return val;
-}
-
-void set_mppt_target_current(float val) {
-  mppt_target_current_mutex.lock();
-  dfdata.mppt_target_current = val;
-  mppt_target_current_mutex.unlock();
-}
-
 float get_string1_temp() {
   string1_temp_mutex.lock();
   float val = dfdata.string1_temp;
@@ -1227,6 +1203,42 @@ void set_string3_duty(uint16_t val) {
   string3_duty_mutex.lock();
   dfdata.string3_duty = val;
   string3_duty_mutex.unlock();
+}
+
+float get_string1_target() {
+    string1_target_mutex.lock();
+    float val = dfdata.string1_target;
+    string1_target_mutex.unlock();
+    return val;
+}
+void set_string1_target(float val) {
+    string1_target_mutex.lock();
+    dfdata.string1_duty = val;
+    string1_target_mutex.unlock();
+}
+
+float get_string2_target() {
+    string2_target_mutex.lock();
+    float val = dfdata.string2_target;
+    string2_target_mutex.unlock();
+    return val;
+}
+void set_string2_target(float val) {
+    string2_target_mutex.lock();
+    dfdata.string2_duty = val;
+    string2_target_mutex.unlock();
+}
+
+float get_string3_target() {
+    string3_target_mutex.lock();
+    float val = dfdata.string3_target;
+    string3_target_mutex.unlock();
+    return val;
+}
+void set_string3_target(float val) {
+    string3_target_mutex.lock();
+    dfdata.string3_duty = val;
+    string3_target_mutex.unlock();
 }
 
 float get_pack_temp() {

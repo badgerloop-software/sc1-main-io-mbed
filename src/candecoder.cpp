@@ -382,39 +382,39 @@ void CANDecoder::decodeMPPT(int messageID, SharedPtr<unsigned char> data, int le
         case 0x401:
             set_mppt_mode(*(bool*)(data.get()));
             break;
-        case 0x402:
-            set_mppt_target_voltage(*(float*)(data.get()));
-            break;
-        case 0x403:
-            set_mppt_target_current(*(float*)(data.get()));
-            break;
         
         // array 1
-        case 0x404: // array 1 voltage
+        case 0x402: // array 1 voltage
             set_string1_V_in(*(float*)(data.get()));
             break;
-        case 0x405: // array 1 current
+        case 0x403: // array 1 current
             set_string1_I_in(*(float*)(data.get()));
             break;
-        case 0x406: // array 1 temp
+        case 0x404: // array 1 temp
             set_string1_temp(*(float*)(data.get()));
             break;
-        case 0x407:
+        case 0x405:
             set_string1_duty(*(uint16_t*)(data.get()));
+            break;
+        case 0x406:
+            set_string1_target(*(float*)(data.get()));
             break;
 
         // array 2
-        case 0x408: // array 2 voltage
+        case 0x407: // array 2 voltage
             set_string2_V_in(*(float*)(data.get()));
             break;
-        case 0x409: // array 2 current
+        case 0x408: // array 2 current
             set_string2_I_in(*(float*)(data.get()));
             break;
-        case 0x410: // array 2 temp
+        case 0x409: // array 2 temp
             set_string2_temp(*(float*)(data.get()));
             break;
-        case 0x411:
+        case 0x410:
             set_string2_duty(*(uint16_t*)(data.get()));
+            break;
+        case 0x411:
+            set_string2_duty(*(float*)(data.get()));
             break;
 
         // array 3
@@ -429,6 +429,9 @@ void CANDecoder::decodeMPPT(int messageID, SharedPtr<unsigned char> data, int le
             break;
         case 0x415:
             set_string3_duty(*(uint16_t*)(data.get()));
+            break;
+        case 0x416:
+            set_string3_duty(*(float*)(data.get()));
             break;
             
         default:

@@ -89,8 +89,6 @@ typedef struct data_format {
   // MPPT
   bool boost_enable;
   bool mppt_mode;
-  float mppt_target_voltage;
-  float mppt_target_current;
   float string1_temp;
   float string2_temp;
   float string3_temp;
@@ -103,6 +101,9 @@ typedef struct data_format {
   uint16_t string1_duty;
   uint16_t string2_duty;
   uint16_t string3_duty;
+  float string1_target;
+  float string2_target;
+  float string3_target;
 
   // BMS
   float pack_temp;
@@ -378,12 +379,6 @@ void set_boost_enable(bool val);
 bool get_mppt_mode();
 void set_mppt_mode(bool val);
 
-float get_mppt_target_voltage();
-void set_mppt_target_voltage(float val);
-
-float get_mppt_target_current();
-void set_mppt_target_current(float val);
-
 float get_string1_temp();
 void set_string1_temp(float val);
 
@@ -419,6 +414,15 @@ void set_string2_duty(uint16_t val);
 
 uint16_t get_string3_duty();
 void set_string3_duty(uint16_t val);
+
+float get_string1_target();
+void set_string1_target(float val);
+
+float get_string2_target();
+void set_string2_target(float val);
+
+float get_string3_target();
+void set_string3_target(float val);
 
 float get_pack_temp();
 void set_pack_temp(float val);
