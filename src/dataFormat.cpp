@@ -92,8 +92,10 @@ void copyDataStructToWriteStruct() {
   dfwrite.mainIO_heartbeat = get_mainIO_heartbeat();
   dfwrite.mcc_can_heartbeat = get_mcc_can_heartbeat();
   dfwrite.mppt_can_heartbeat = get_mppt_can_heartbeat();
+  dfwrite.boost_enable = get_boost_enable();
   dfwrite.mppt_mode = get_mppt_mode();
-  dfwrite.mppt_current_out = get_mppt_current_out();
+  dfwrite.mppt_target_voltage = get_mppt_target_voltage();
+  dfwrite.mppt_target_current = get_mppt_target_current();
   dfwrite.string1_temp = get_string1_temp();
   dfwrite.string2_temp = get_string2_temp();
   dfwrite.string3_temp = get_string3_temp();
@@ -103,6 +105,9 @@ void copyDataStructToWriteStruct() {
   dfwrite.string1_I_in = get_string1_I_in();
   dfwrite.string2_I_in = get_string2_I_in();
   dfwrite.string3_I_in = get_string3_I_in();
+  dfwrite.string1_duty = get_string1_duty();
+  dfwrite.string2_duty = get_string2_duty();
+  dfwrite.string3_duty = get_string3_duty();
   dfwrite.pack_temp = get_pack_temp();
   dfwrite.pack_internal_temp = get_pack_internal_temp();
   dfwrite.pack_current = get_pack_current();
